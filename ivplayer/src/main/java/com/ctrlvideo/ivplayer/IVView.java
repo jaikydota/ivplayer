@@ -39,7 +39,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
     private MyChromeClient chromeClient = null;
 
     //事件监听器
-    private IVViewListener listener = null;
+    private IVPlayerListener listener = null;
 
     //项目地址
     private String mPid;
@@ -105,11 +105,11 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
     }
 
 
-    public void initIVView(@Nullable String pid, @Nullable String config_url, @Nonnull IVViewListener ivViewListener, @Nonnull Activity mContext) {
-        this.initIVView(pid, config_url, ivViewListener, mContext, false);
+    public void initIVView(@Nullable String pid, @Nullable String config_url, @Nonnull IVPlayerListener ivPlayerListener, @Nonnull Activity mContext) {
+        this.initIVView(pid, config_url, ivPlayerListener, mContext, false);
     }
 
-    public void initIVView(@Nullable String pid, @Nullable String config_url, @Nonnull IVViewListener ivViewListener, @Nonnull Activity mContext, boolean openTestEnv) {
+    public void initIVView(@Nullable String pid, @Nullable String config_url, @Nonnull IVPlayerListener ivPlayerListener, @Nonnull Activity mContext, boolean openTestEnv) {
         Log.d(TAG, "initIVView: " + pid + " OpenTestEnv: " + openTestEnv);
         nowViewStatus = ViewState.STATE_LOADING;
 
@@ -123,7 +123,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
         this.mPid = pid == null ? "" : pid;
         this.config_url = config_url == null ? "" : config_url;
-        this.listener = ivViewListener;
+        this.listener = ivPlayerListener;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             //绑定生命周期

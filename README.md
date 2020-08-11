@@ -4,35 +4,30 @@ An open source Interaction Video Player for Android.
 ### Using
 Add to your layout xml:
 ```
-<com.ctrlvideo.ivsdk.IVView
-    android:id="@+id/ivViewContainer"
+<com.ctrlvideo.ivplayer.IVPlayer
+    android:id="@+id/ivplayer"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-</com.ctrlvideo.ivsdk.IVView>
+</com.ctrlvideo.ivplayer.IVPlayer>
 ```
 
 Binding to your code:
 ```
-IVView ivView = findViewById(R.id.ivViewContainer);
-ivView.initIVView(pid, new IVListener());
+IVPlayer ivplayer = findViewById(R.id.ivplayer);
+ivplayer.init(pid, new IVListener());
 ```
 
 Implement this Interface:
 ```
-private class IVListener implements IVViewListener {
+private class IVListener implements IVPlayerListener {
 
-    void onIVViewStateChanged(String state);
+    void onIVPlayerStateChanged(String state);
 
-    long getPlayerCurrentTime();
-
-    void seekToTime(long time);
-
-    void setPlayOrPause(String state);
-
-    void onIVViewClick(String info);   
+    void onIVPlayerClick(String info);   
     
     void onEventStateChanged(String eType, String state);
- 
+    
+    void onError(String errorType);
 }
 ```
 

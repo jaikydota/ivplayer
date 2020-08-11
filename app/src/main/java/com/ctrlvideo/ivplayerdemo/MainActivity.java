@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 
 import com.ctrlvideo.ivplayer.IVEvent;
 import com.ctrlvideo.ivplayer.IVView;
-import com.ctrlvideo.ivplayer.IVViewListener;
+import com.ctrlvideo.ivplayer.IVPlayerListener;
 import com.ctrlvideo.ivplayer.ViewState;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -207,7 +207,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
 
     //互动事件listener
-    private class IVListener implements IVViewListener {
+    private class IVListener implements IVPlayerListener {
 
 
         /**
