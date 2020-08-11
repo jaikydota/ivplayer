@@ -9,6 +9,8 @@ import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,8 +25,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 
 /**
@@ -105,11 +105,11 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
     }
 
 
-    public void initIVView(@Nullable String pid, @Nullable String config_url, @Nonnull IVPlayerListener ivPlayerListener, @Nonnull Activity mContext) {
+    public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVPlayerListener ivPlayerListener, @NonNull Activity mContext) {
         this.initIVView(pid, config_url, ivPlayerListener, mContext, false);
     }
 
-    public void initIVView(@Nullable String pid, @Nullable String config_url, @Nonnull IVPlayerListener ivPlayerListener, @Nonnull Activity mContext, boolean openTestEnv) {
+    public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVPlayerListener ivPlayerListener, @NonNull Activity mContext, boolean openTestEnv) {
         Log.d(TAG, "initIVView: " + pid + " OpenTestEnv: " + openTestEnv);
         nowViewStatus = ViewState.STATE_LOADING;
 
