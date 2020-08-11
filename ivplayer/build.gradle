@@ -58,8 +58,3 @@ publish {
     website = 'https://www.ctrlvideo.com'//网站，不重要
 }
 
-
-// 上传执行 注意查看IVView loadUrl是否为线上
-// gradlew clean build
-// gradlew generatePomFileForReleasePublication   注销support-compat
-// gradlew publishReleasePublicationToMavenLocal    不上传javadoc 和 javasource 就不用执行
