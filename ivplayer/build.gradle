@@ -1,0 +1,65 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+android {
+    compileSdkVersion 28
+
+
+
+    defaultConfig {
+        minSdkVersion 17
+        targetSdkVersion 28
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = 1.8
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+//    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+
+    implementation 'com.google.flogger:flogger:0.3.1'
+    implementation 'com.google.flogger:flogger-system-backend:0.3.1'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'com.google.guava:guava:27.0.1-android'
+//    implementation 'com.google.protobuf:protobuf-lite:3.0.0'
+//    implementation 'com.google.protobuf:protobuf-java:3.11.4'
+    implementation 'com.google.protobuf:protobuf-javalite:3.11.4'
+
+    //上传jcenter时注销
+    implementation 'com.android.support:support-compat:28.0.0'
+
+}
+
+//发布
+publish {
+    userOrg = 'jaikydota'//bintray.com用户名
+    groupId = 'com.ctrlvideo.ivplayer'//jcenter上的路径
+    artifactId = 'ivplayer'//项目名称
+    publishVersion = '0.0.1'//版本号
+    desc = 'ctrlvideo interaction video player for android'//描述，不重要
+    website = 'https://www.ctrlvideo.com'//网站，不重要
+}
+
+
+// 上传执行 注意查看IVView loadUrl是否为线上
+// gradlew clean build
+// gradlew generatePomFileForReleasePublication   注销support-compat
+// gradlew publishReleasePublicationToMavenLocal    不上传javadoc 和 javasource 就不用执行

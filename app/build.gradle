@@ -1,0 +1,76 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.ctrlvideo.ivplayerdemo"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+    }
+
+    signingConfigs {
+        config {
+            storeFile file('src/main/key/test.jks')
+            storePassword "com.ctrlvideo.www"
+            keyAlias "key0"
+            keyPassword "com.ctrlvideo.www"
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.config
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            signingConfig signingConfigs.config
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+    }
+
+}
+
+
+
+dependencies {
+    //使用android support，请加入 androidx.core1.1.0_nosupportv4.jar。
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+
+    //播放器相关
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.11.4'
+    //exoplayer依赖androidx，所以需要排除下与support的冲突和 添加 core1.0.0_nosupportv4.jar，不使用的exoplayer的用户，无需这添加这些。
+    implementation ('com.google.android.exoplayer:exoplayer-ui:2.11.4')  {
+        exclude group: 'androidx.core', module: 'core'
+        exclude group: 'androidx.versionedparcelable', module: 'versionedparcelable'
+    }
+
+    //引入sdk
+//    implementation 'com.ctrlvideo.ivplayer:ivplayer:0.1.0'
+
+
+
+    //使用androidx配置
+//    implementation ('androidx.appcompat:appcompat:1.2.0-beta01') {
+//        exclude group: 'androidx.lifecycle', module: 'lifecycle-livedata-core'
+//        exclude group: 'androidx.lifecycle', module: 'lifecycle-livedata'
+//    }
+
+//    implementation 'com.google.android.exoplayer:exoplayer-core:2.11.4'
+//    implementation 'com.google.android.exoplayer:exoplayer-ui:2.11.4'
+
+    api project(':ivplayer')
+
+}
