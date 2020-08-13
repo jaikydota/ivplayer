@@ -1,16 +1,10 @@
-package com.ctrlvideo.ivplayer;
+package com.ctrlvideo.ivview;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +18,15 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
+
+import com.ctrlvideo.ivplayer.R;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.OnLifecycleEvent;
 
 
 
@@ -39,7 +42,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
     private MyChromeClient chromeClient = null;
 
     //事件监听器
-    private IVPlayerListener listener = null;
+    private IVViewListener listener = null;
 
     //项目地址
     private String mPid;
@@ -105,11 +108,11 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
     }
 
 
-    public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVPlayerListener ivPlayerListener, @NonNull Activity mContext) {
-        this.initIVView(pid, config_url, ivPlayerListener, mContext, false);
+    public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext) {
+        this.initIVView(pid, config_url, ivViewListener, mContext, false);
     }
 
-    public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVPlayerListener ivPlayerListener, @NonNull Activity mContext, boolean openTestEnv) {
+    public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext, boolean openTestEnv) {
         Log.d(TAG, "initIVView: " + pid + " OpenTestEnv: " + openTestEnv);
         nowViewStatus = ViewState.STATE_LOADING;
 
@@ -123,7 +126,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
         this.mPid = pid == null ? "" : pid;
         this.config_url = config_url == null ? "" : config_url;
-        this.listener = ivPlayerListener;
+        this.listener = ivViewListener;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             //绑定生命周期
@@ -170,9 +173,9 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 //        webView.loadUrl("http://192.168.3.156:3102/");
         //如果是测试环境
         if (isTestEnv)
-            webView.loadUrl("https://ivetest.ctrlvideo.com/jssdk/native022.html");
+            webView.loadUrl("https://ivetest.ctrlvideo.com/jssdk/native025.html");
         else
-            webView.loadUrl("https://ive.ctrlvideo.com/jssdk/native022.html");
+            webView.loadUrl("https://ive.ctrlvideo.com/jssdk/native025.html");
 
 //        webView.setOnTouchListener(new OnTouchListener() {
 //            @Override
@@ -298,9 +301,9 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
     }
 
     //SDK初始化
-    private void evalJSNativeSDKInit(String pid, String channel, String config_url) {
-        Log.d(TAG, "evalJS NativeSDKInit " + "javascript:nativeSDKInit('" + pid + "', '" + channel + "', '" + config_url + "', " + isSelfRecord + ")");
-        webView.evaluateJavascript("javascript:nativeSDKInit('" + pid + "', '" + channel + "', '" + config_url + "', " + isSelfRecord + ")", null);
+    private void evalJSNativeSDKInit(String pid, String config_url) {
+        Log.d(TAG, "evalJS NativeSDKInit " + "javascript:nativeSDKInit('" + pid + "', 'ivplayer', '" + config_url + "', " + isSelfRecord + ")");
+        webView.evaluateJavascript("javascript:nativeSDKInit('" + pid + "', 'ivplayer', '" + config_url + "', " + isSelfRecord + ")", null);
     }
 
     //手势识别结果上报
@@ -370,14 +373,15 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
      * @param state 状态，"onReadied" 当ui逻辑初始化完成
      */
     @JavascriptInterface
-    public void webPageStateChanged(String state) {
-        Log.d(TAG, "webPageStateChanged " + state);
+    public void webPageStateChanged(String state, String data) {
+        Log.d(TAG, "webPageStateChanged " + state + "  " + data);
+
         if (state.equals("onReadied")){
             nowViewStatus = ViewState.STATE_READIED;
             this.post(new Runnable() {
                 @Override
                 public void run() {
-                    listener.onIVViewStateChanged(nowViewStatus);
+                    listener.onIVViewStateChanged(nowViewStatus, data);
                 }
             });
         }
@@ -522,7 +526,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
         public void onPageFinished(WebView view, String url) {
             //页面加载完成后，初始化sdk
 //            webView.setVisibility(View.VISIBLE);
-            evalJSNativeSDKInit(mPid, "xiaoqie", config_url);
+            evalJSNativeSDKInit(mPid, config_url);
             super.onPageFinished(view, url);
         }
 

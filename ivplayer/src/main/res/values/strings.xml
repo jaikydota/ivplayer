@@ -1,4 +1,3 @@
 <resources>
-    <string name="app_name">IVSDK</string>
-    <string name="no_camera_access">请授予摄像头权限</string>
+    <string name="app_name">IVPlayer</string>
 </resources>

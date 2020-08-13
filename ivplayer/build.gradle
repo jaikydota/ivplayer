@@ -34,10 +34,10 @@ android {
 
 dependencies {
 //    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-
-    //上传jcenter时注销
-    implementation 'com.android.support:support-compat:28.0.0'
-
+    //播放器相关
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.11.4'
+    //exoplayer依赖androidx
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.11.4'
 }
 
 //发布
@@ -45,7 +45,7 @@ publish {
     userOrg = 'jaikydota'//bintray.com用户名
     groupId = 'com.ctrlvideo.ivplayer'//jcenter上的路径
     artifactId = 'ivplayer'//项目名称
-    publishVersion = '0.1.0'//版本号
+    publishVersion = '0.1.1'//版本号
     desc = 'ctrlvideo interaction video player for android'//描述，不重要
     website = 'https://www.ctrlvideo.com'//网站，不重要
 }

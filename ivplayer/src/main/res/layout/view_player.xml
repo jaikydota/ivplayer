@@ -10,10 +10,10 @@
         android:layout_height="match_parent">
     </com.google.android.exoplayer2.ui.PlayerView>
 
-    <com.ctrlvideo.ivplayer.IVView
+    <com.ctrlvideo.ivview.IVView
         android:id="@+id/ivViewContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </com.ctrlvideo.ivplayer.IVView>
+    </com.ctrlvideo.ivview.IVView>
 
 </FrameLayout>

@@ -6,38 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/video_view"
+    <com.ctrlvideo.ivplayer.IVPlayer
+        android:id="@+id/iv_Player"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </com.google.android.exoplayer2.ui.PlayerView>
-
-    <com.ctrlvideo.ivplayer.IVView
-        android:id="@+id/ivViewContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </com.ctrlvideo.ivplayer.IVView>
-
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/btn_interrupt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/btn_pure"
-            android:text="中断事件"
-        />
-        <Button
-            android:id="@+id/btn_pure"
-            android:layout_marginLeft="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="开关纯净模式"
-            />
-    </RelativeLayout>
+    </com.ctrlvideo.ivplayer.IVPlayer>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -61,14 +34,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@mipmap/chapter_one"
+                    android:src="@mipmap/chapter_ep1"
                     />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textColor="@android:color/white"
-                    android:text="语音手势样片"
+                    android:text="Demo样片1"
                     android:textSize="14sp"/>
             </FrameLayout>
             <FrameLayout
@@ -87,7 +60,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textColor="@android:color/white"
-                    android:text="EP01样片"
+                    android:text="Demo样片2"
                     android:textSize="14sp"/>
             </FrameLayout>
             <FrameLayout
@@ -99,14 +72,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@mipmap/chapter_two"
+                    android:src="@mipmap/chapter_ep1"
                     />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textColor="@android:color/white"
-                    android:text="UI类示例"
+                    android:text="Demo样片3"
                     android:textSize="14sp"/>
             </FrameLayout>
             <FrameLayout
@@ -118,14 +91,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@mipmap/chapter_three"
+                    android:src="@mipmap/chapter_ep1"
                     />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textColor="@android:color/white"
-                    android:text="SDK测试2"
+                    android:text="Demo样片4"
                     android:textSize="14sp"/>
             </FrameLayout>
         </LinearLayout>

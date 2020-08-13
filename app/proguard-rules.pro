@@ -466,7 +466,7 @@ protected * ;
 -keep class com.tencent.qqlive.report.**{*;}
 
 
-#ivsdk
+#ivplayer
 -keep class com.google.**{*;}
 -keep class com.ctrlvideo.**{*;}
 
