@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.ctrlvideo.ivplayer.IVPlayer;
 import com.ctrlvideo.ivplayer.IVPlayerListener;
@@ -25,6 +26,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private FrameLayout fl_chapterTwo;
     private FrameLayout fl_chapterThree;
     private FrameLayout fl_chapterFour;
+    private FrameLayout fl_chapterFive;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,13 +37,15 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         fl_chapterTwo = findViewById(R.id.fl_chapterTwo);
         fl_chapterThree = findViewById(R.id.fl_chapterThree);
         fl_chapterFour = findViewById(R.id.fl_chapterFour);
+        fl_chapterFive = findViewById(R.id.fl_chapterFive);
 
         fl_chapterOne.setOnClickListener(this);
         fl_chapterTwo.setOnClickListener(this);
         fl_chapterThree.setOnClickListener(this);
         fl_chapterFour.setOnClickListener(this);
+        fl_chapterFive.setOnClickListener(this);
 
-        ivPlayer.loadIVideo("5100013351026235", new PlayerListener());
+        ivPlayer.loadIVideo("5186806079378924", new PlayerListener());
     }
 
 
@@ -58,6 +62,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
         else if (v == fl_chapterFour){
             ivPlayer.loadIVideo("5100016302721417", new PlayerListener());
+        }
+        else if (v == fl_chapterFive){
+            ivPlayer.loadIVideo("5186806079378924", new PlayerListener());
         }
     }
 
@@ -130,6 +137,15 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         @Override
         public void onError(String errorType) {
             Log.d(TAG, "onError " + errorType);
+        }
+
+        /**
+         * 当IVView收到自定义通知
+         * @param msg 通知内容
+         */
+        @Override
+        public void onCustomNotify(String msg) {
+            Toast.makeText(MainActivity.this,"收到通知： " + msg, Toast.LENGTH_LONG).show();
         }
     }
 

@@ -212,6 +212,16 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
             Log.d(TAG, "onIvViewError " + errorType);
             pListener.onError(errorType);
         }
+
+        /**
+         * 当IVView收到自定义通知
+         * @param msg 通知内容
+         */
+        @Override
+        public void onCustomNotify(String msg) {
+            pListener.onCustomNotify(msg);
+        }
+
     }
 
 

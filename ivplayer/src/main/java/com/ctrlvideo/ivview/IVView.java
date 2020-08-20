@@ -478,6 +478,22 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
     }
 
 
+    /**
+     * 当webview收到自定义通知时
+     * @param msg 消息
+     */
+    @JavascriptInterface
+    public void onCustomNotify(final String msg) {
+        Log.d(TAG, "onCustomNotify " + msg);
+
+        this.post(new Runnable() {
+            @Override
+            public void run() {
+                listener.onCustomNotify(msg);
+            }
+        });
+    }
+
     //webview chromeclient
     public class MyChromeClient extends WebChromeClient {
 

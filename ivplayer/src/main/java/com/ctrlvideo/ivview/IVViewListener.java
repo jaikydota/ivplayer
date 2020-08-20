@@ -52,4 +52,10 @@ public interface IVViewListener {
      * @param errorType 错误信息
      */
     void onError(String errorType);
+
+    /**
+     * 当IVView收到自定义通知
+     * @param msg 通知内容
+     */
+    void onCustomNotify(String msg);
 }

@@ -45,7 +45,7 @@ publish {
     userOrg = 'jaikydota'//bintray.com用户名
     groupId = 'com.ctrlvideo.ivplayer'//jcenter上的路径
     artifactId = 'ivplayer'//项目名称
-    publishVersion = '0.1.1'//版本号
+    publishVersion = '0.1.2'//版本号
     desc = 'ctrlvideo interaction video player for android'//描述，不重要
     website = 'https://www.ctrlvideo.com'//网站，不重要
 }
