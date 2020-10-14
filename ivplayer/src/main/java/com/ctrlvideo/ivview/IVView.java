@@ -170,7 +170,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
         webView.getSettings().setSupportZoom(false);
         webView.getSettings().setLoadWithOverviewMode(true);
 
-//        webView.loadUrl("http://192.168.3.156:3102/");
+//        webView.loadUrl("http://192.168.3.156:3102");
         //如果是测试环境
         if (isTestEnv)
             webView.loadUrl("https://ivetest.ctrlvideo.com/jssdk/native025.html");
@@ -553,6 +553,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            Log.e(TAG, "onReceivedError " + errorCode + " " + description + "  " + failingUrl);
             super.onReceivedError(view, errorCode, description, failingUrl);
         }
     }
