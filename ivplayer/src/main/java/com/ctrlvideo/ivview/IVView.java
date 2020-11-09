@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.PermissionRequest;
@@ -39,6 +40,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
     protected String TAG = "IVSDKView";
 
     protected WebView webView;
+    protected RelativeLayout rlWVContainer;
     private MyChromeClient chromeClient = null;
 
     //事件监听器
@@ -63,6 +65,9 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
     //当前currentTime
     private String lastTime = "0";
 
+    //是否启用功能
+    private boolean enableFeature = true;
+
     public IVView(Context context) {
         super(context);
         initView(context);
@@ -83,10 +88,36 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
             return;
         }
         RelativeLayout inflate = (RelativeLayout) LayoutInflater.from(context).inflate(R.layout.view_webview, this, true);
+        rlWVContainer = findViewById(R.id.rlWVContainer);
         webView = findViewById(R.id.webvContainer);
         webView.setBackgroundColor(0);
         webView.getBackground().setAlpha(0);
-//        webView.setVisibility(View.INVISIBLE);
+
+        //安卓5.0以上启用功能
+        enableFeature = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+
+        try {
+            String userAgentString = webView.getSettings().getUserAgentString();
+            Log.d(TAG, "UA: " + userAgentString);
+            String[] ugArr = userAgentString.split(" ");
+            for (String info: ugArr){
+                if (info.startsWith("Chrome")) {
+                    String version = info.split("/")[1];
+                    int versionInt = Integer.parseInt(version.split("\\.")[0]);
+                    Log.d(TAG, "Webview Chorme Version: " + version + " " + versionInt);
+                    //小于41的版本不开启
+                    if (versionInt < 41) {
+                        enableFeature = false;
+                    }
+                }
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        if (IVUtils.isBBKStudentPhone())
+            enableFeature = false;
     };
 
 
@@ -107,6 +138,10 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
         Log.d(TAG, "IVView onDestroy");
     }
 
+    //是否启用
+    public boolean isEnable() {
+        return enableFeature;
+    }
 
     public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext) {
         this.initIVView(pid, config_url, ivViewListener, mContext, false);
@@ -128,7 +163,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
         this.config_url = config_url == null ? "" : config_url;
         this.listener = ivViewListener;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (enableFeature) {
             //绑定生命周期
             if (mContext instanceof LifecycleOwner)
                 ((LifecycleOwner)mContext).getLifecycle().addObserver(this);
@@ -143,7 +178,19 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
     @SuppressLint({"SetJavaScriptEnabled", "JavascriptInterface"})
     private void initWebView() {
-//        webView.setVisibility(View.INVISIBLE);
+        //移除webview，新建一个，防止出现白屏BUG（一直白屏BUG，和低版本一闪而逝白屏BUG）
+        rlWVContainer.removeView(webView);
+        webView = new WebView(this.getContext());
+        webView.setId(R.id.webvContainer);
+        webView.setBackgroundResource(android.R.color.transparent);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        rlWVContainer.addView(webView, params);
+
+        //设置基础属性
+        webView.setBackgroundColor(0);
+        webView.getBackground().setAlpha(0);
+        webView.setVisibility(View.GONE);
+
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 
@@ -170,7 +217,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
         webView.getSettings().setSupportZoom(false);
         webView.getSettings().setLoadWithOverviewMode(true);
 
-//        webView.loadUrl("http://192.168.3.156:3102");
+//        webView.loadUrl("http://192.168.3.156:3102/");
         //如果是测试环境
         if (isTestEnv)
             webView.loadUrl("https://ivetest.ctrlvideo.com/jssdk/native025.html");
@@ -213,7 +260,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
      * @param isOpen 是否打开
      */
     public void setPureMode(boolean isOpen) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (enableFeature) {
             Log.d(TAG, "setPureMode: " + isOpen);
             isPureMode = isOpen;
             if (isOpen) {
@@ -236,7 +283,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
      * 执行action行为
      */
     public void performAction(String action) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (enableFeature) {
             Log.d(TAG, "performAction: " + action);
 
             //重置这个值
@@ -265,7 +312,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
     //调用JS开始暂停播放 status "onplay" 播放，"onpause" 暂停
     public void onPlayerStateChanged(String status) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && nowViewStatus.equals(ViewState.STATE_READIED)) {
+        if (enableFeature && nowViewStatus.equals(ViewState.STATE_READIED)) {
             Log.d(TAG, "evalJS OnPlayerStateChanged " + status);
             webView.evaluateJavascript("javascript:onSDKPlayerStateChanged('" + status + "')", null);
         }
@@ -280,7 +327,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
     //调用语音识别结果
     public void recognResultSend(String result) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && nowViewStatus.equals(ViewState.STATE_READIED)) {
+        if (enableFeature && nowViewStatus.equals(ViewState.STATE_READIED)) {
             Log.d(TAG, "evalJS recognTextSend " + result);
             webView.evaluateJavascript("javascript:recognTextSend('" + result + "')", null);
         }
@@ -375,16 +422,20 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
     @JavascriptInterface
     public void webPageStateChanged(String state, String data) {
         Log.d(TAG, "webPageStateChanged " + state + "  " + data);
+        nowViewStatus = state;
 
-        if (state.equals("onReadied")){
-            nowViewStatus = ViewState.STATE_READIED;
-            this.post(new Runnable() {
-                @Override
-                public void run() {
-                    listener.onIVViewStateChanged(nowViewStatus, data);
-                }
-            });
-        }
+        //如果是互动点信息下发
+        if (state.equals(ViewState.STATE_GET_IV_INFO))
+            data = data.replaceAll("#douhao#", ",");
+
+//        Log.d(TAG, data);
+        final String result = data;
+        this.post(new Runnable() {
+            @Override
+            public void run() {
+                listener.onIVViewStateChanged(nowViewStatus, result);
+            }
+        });
     }
 
     /**
@@ -540,10 +591,10 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            //页面加载完成后，初始化sdk
-//            webView.setVisibility(View.VISIBLE);
             evalJSNativeSDKInit(mPid, config_url);
             super.onPageFinished(view, url);
+            //页面加载完成后，初始化sdk
+            webView.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -553,7 +604,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-            Log.e(TAG, "onReceivedError " + errorCode + " " + description + "  " + failingUrl);
+            Log.e(TAG, "Webview onReceivedError: " + errorCode + " " + description + " " + failingUrl);
             super.onReceivedError(view, errorCode, description, failingUrl);
         }
     }
