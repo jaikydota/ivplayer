@@ -9,9 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
 
-import com.ctrlvideo.ivview.IVView;
-import com.ctrlvideo.ivview.IVViewListener;
-import com.ctrlvideo.ivview.ViewState;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleObserver;
+
+import com.ctrlvideo.comment.IVViewListener;
+import com.ctrlvideo.comment.IView;
+import com.ctrlvideo.comment.ViewState;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -19,9 +22,6 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LifecycleObserver;
 
 
 /**
@@ -37,7 +37,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
     private SimpleExoPlayer player;
 
     //互动视频视图组件
-    private IVView ivView;
+    private IView ivView;
 
     private IVPlayerListener pListener = null;
 

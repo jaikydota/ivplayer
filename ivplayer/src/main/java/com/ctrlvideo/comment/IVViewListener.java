@@ -1,4 +1,4 @@
-package com.ctrlvideo.ivview;
+package com.ctrlvideo.comment;
 
 /**
  * Author by Jaiky, Date on 2020/4/8.

@@ -20,8 +20,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 
-import com.ctrlvideo.ivplayer.R;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
@@ -29,13 +27,17 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.OnLifecycleEvent;
 
+import com.ctrlvideo.comment.IVViewListener;
+import com.ctrlvideo.comment.IView;
+import com.ctrlvideo.comment.ViewState;
+import com.ctrlvideo.ivplayer.R;
 
 
 /**
  * Author by Jaiky, Date on 2020/4/8.
  */
 @SuppressLint("NewApi")
-public class IVView extends RelativeLayout implements LifecycleObserver {
+public class IVView extends RelativeLayout implements LifecycleObserver, IView {
 
     protected String TAG = "IVSDKView";
 
@@ -84,7 +86,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
     }
 
     private void initView(Context context) {
-        if (isInEditMode()){
+        if (isInEditMode()) {
             return;
         }
         RelativeLayout inflate = (RelativeLayout) LayoutInflater.from(context).inflate(R.layout.view_webview, this, true);
@@ -100,7 +102,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
             String userAgentString = webView.getSettings().getUserAgentString();
             Log.d(TAG, "UA: " + userAgentString);
             String[] ugArr = userAgentString.split(" ");
-            for (String info: ugArr){
+            for (String info : ugArr) {
                 if (info.startsWith("Chrome")) {
                     String version = info.split("/")[1];
                     int versionInt = Integer.parseInt(version.split("\\.")[0]);
@@ -111,30 +113,31 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
                     }
                 }
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         if (IVUtils.isBBKStudentPhone())
             enableFeature = false;
-    };
+    }
+
+    ;
 
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    public void onResume(){
+    public void onResume() {
         //重置后恢复
         setPureMode(false);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    public void onPause(){
+    public void onPause() {
         //暂停后，设置纯净模式
         setPureMode(true);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    public void onDestroy(){
+    public void onDestroy() {
         Log.d(TAG, "IVView onDestroy");
     }
 
@@ -143,10 +146,12 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
         return enableFeature;
     }
 
+    @Override
     public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext) {
         this.initIVView(pid, config_url, ivViewListener, mContext, false);
     }
 
+    @Override
     public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext, boolean openTestEnv) {
         Log.d(TAG, "initIVView: " + pid + " OpenTestEnv: " + openTestEnv);
         nowViewStatus = ViewState.STATE_LOADING;
@@ -166,11 +171,10 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
         if (enableFeature) {
             //绑定生命周期
             if (mContext instanceof LifecycleOwner)
-                ((LifecycleOwner)mContext).getLifecycle().addObserver(this);
+                ((LifecycleOwner) mContext).getLifecycle().addObserver(this);
 
             initWebView();
-        }
-        else {
+        } else {
             //如果小于API 21,通知无法使用
             this.listener.onError("android_api_too_lower");
         }
@@ -257,6 +261,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
     /**
      * 打开纯净模式
+     *
      * @param isOpen 是否打开
      */
     public void setPureMode(boolean isOpen) {
@@ -267,8 +272,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
                 this.setVisibility(View.GONE);
                 //事件内中断事件
                 interruptEvent();
-            }
-            else
+            } else
                 this.setVisibility(View.VISIBLE);
         }
     }
@@ -295,7 +299,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
                 interruptEvent();
             }
             //中断事件行为，并重新进入起始点
-            else if (action.equals(IVEvent.EventAction.SKIP_PREPARE_TIME)){
+            else if (action.equals(IVEvent.EventAction.SKIP_PREPARE_TIME)) {
                 interruptEvent();
                 if (nowEventPrepareTime >= 0) {
                     //向前1秒
@@ -311,6 +315,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
 
     //调用JS开始暂停播放 status "onplay" 播放，"onpause" 暂停
+    @Override
     public void onPlayerStateChanged(String status) {
         if (enableFeature && nowViewStatus.equals(ViewState.STATE_READIED)) {
             Log.d(TAG, "evalJS OnPlayerStateChanged " + status);
@@ -332,8 +337,6 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
             webView.evaluateJavascript("javascript:recognTextSend('" + result + "')", null);
         }
     }
-
-
 
 
     //中断视频录制和录音
@@ -375,14 +378,13 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
     private long nowEventPrepareTime = -1;
 
 
-
-
     //TODO 解决部分机器上重复下发prepare的bug
     private String lastEventState = "";
     private long lastEventTime = 0L;
 
     /**
      * 录音状态改变
+     *
      * @param state 状态
      */
     @JavascriptInterface
@@ -404,10 +406,8 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
                 if (state.equals("prepare")) {
                     nowEventPrepareTime = mmTime;
-                }
-                else if (state.equals("start")) {
-                }
-                else {
+                } else if (state.equals("start")) {
+                } else {
                     nowEventPrepareTime = -1;
                 }
             }
@@ -417,6 +417,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
     /**
      * web网页状态改变
+     *
      * @param state 状态，"onReadied" 当ui逻辑初始化完成
      */
     @JavascriptInterface
@@ -440,6 +441,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
     /**
      * 获取播放时间
+     *
      * @return 当前播放时间，单位：秒 [如有小数带小数]
      */
     @JavascriptInterface
@@ -448,8 +450,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
         if (isPureMode) {
             Log.d("showGetCurrentTime", "getCurrentTime " + lastTime);
             return lastTime;
-        }
-        else {
+        } else {
             float time = ((float) listener.getPlayerCurrentTime() / 1000);
             lastTime = time + "";
             Log.d("showGetCurrentTime", "getCurrentTime " + lastTime);
@@ -459,6 +460,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
     /**
      * 设置播放时间
+     *
      * @param time 传过来的时间，单位：秒 [带小数的字符串]
      */
     @JavascriptInterface
@@ -476,6 +478,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
     /**
      * 执行播放/暂停
+     *
      * @param state 是否播放，如播放，传“play”，暂停传“pause”
      */
     @JavascriptInterface
@@ -487,8 +490,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
             public void run() {
                 if (state.equals("play")) {
                     listener.ctrlPlayer("play");
-                }
-                else if (state.equals("pause")) {
+                } else if (state.equals("pause")) {
                     listener.ctrlPlayer("pause");
                 }
             }
@@ -498,6 +500,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
     /**
      * 当view点击空白处时 [如点击webview中控件将阻止向上冒泡]
+     *
      * @param info 点击区域信息
      */
     @JavascriptInterface
@@ -514,6 +517,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
     /**
      * 当webview发生错误时
+     *
      * @param errorInfo 点击区域信息
      */
     @JavascriptInterface
@@ -531,6 +535,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
 
     /**
      * 当webview收到自定义通知时
+     *
      * @param msg 消息
      */
     @JavascriptInterface
@@ -578,7 +583,6 @@ public class IVView extends RelativeLayout implements LifecycleObserver {
             request.grant(request.getResources());
         }
     }
-
 
 
     class MyWebViewClient extends WebViewClient {
