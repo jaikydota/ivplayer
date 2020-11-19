@@ -25,13 +25,13 @@ public class VideoProtocolInfo {
      * 事件轨道
      */
     public class EventRail {
-        public List<EventComenet> obj_list;
+        public List<EventComponent> obj_list;
     }
 
     /**
      * 事件组件
      */
-    public class EventComenet {
+    public class EventComponent {
 
         //互动组件类型
         public String obj_type;
@@ -39,6 +39,12 @@ public class VideoProtocolInfo {
         public List<EventOption> options;
 
         public String classify;
+        public float start_time;
+        public float end_time;
+        public float duration;
+        public String event_id;
+        public boolean time_limit;
+
 
     }
 
@@ -50,6 +56,8 @@ public class VideoProtocolInfo {
         public String option_id;
         public EventOptionCustom custom;
         public EventOptionStyle layout_style;
+        public boolean align_screen;
+        public boolean hide_option;
     }
 
     /**
@@ -87,8 +95,25 @@ public class VideoProtocolInfo {
     public class EventOptionStyle {
 
         public String base_color;
-        public int rotate;
-        public int font_size;
+        public float rotate;
+        public float font_size;
+        public String text;//文字
+        public String color;//字体颜色
+        public String writing_mode;//方向
+        public EventOptionFilter filter;//混合选项
+
+
+        public float top;
+        public float left;
+        public float width;
+        public float height;
+
+
+    }
+
+    public class EventOptionFilter {
+
+        public float opacity;
     }
 
 
@@ -98,6 +123,17 @@ public class VideoProtocolInfo {
     public class ReleaseInfo {
 
         public String url;
+
+        public VideoParams v_params;
+    }
+
+    public class VideoParams {
+
+        public float duration;
+        public int width;
+        public int height;
+        public int fps;
+        public String v_bitRate;
     }
 
 }
