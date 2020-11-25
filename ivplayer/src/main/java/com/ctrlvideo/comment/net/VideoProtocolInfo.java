@@ -25,7 +25,10 @@ public class VideoProtocolInfo {
      * 事件轨道
      */
     public class EventRail {
+        // 组件列表
         public List<EventComponent> obj_list;
+        // 隐藏轨道
+        public boolean hide_track;
     }
 
     /**
@@ -35,8 +38,10 @@ public class VideoProtocolInfo {
 
         //互动组件类型
         public String obj_type;
+        public String type;
         //控件
         public List<EventOption> options;
+
 
         public String classify;
         public float start_time;

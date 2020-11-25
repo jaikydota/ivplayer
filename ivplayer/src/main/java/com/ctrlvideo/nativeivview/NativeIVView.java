@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
@@ -20,16 +19,21 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
+import com.ctrlvideo.comment.net.DownloadCallback;
 import com.ctrlvideo.comment.net.GetIVideoInfoCallback;
 import com.ctrlvideo.comment.net.HttpClient;
 import com.ctrlvideo.comment.net.VideoProtocolInfo;
 import com.ctrlvideo.ivplayer.R;
-import com.ctrlvideo.ivview.SelectedComponent;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
-public class NativeIVView extends RelativeLayout implements LifecycleObserver, IView {
+public class NativeIVView extends RelativeLayout implements LifecycleObserver, IView, IComponentListener {
 
 
     @Override
@@ -40,7 +44,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     protected String TAG = "NativeIVView";
 
     //轮询间隔
-    private long delay = 1000 / 25;
+    private long delay = 40;
 
     //当前视图状态
     private String nowViewStatus = ViewState.STATE_LOADING;
@@ -157,23 +161,116 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         nowViewStatus = ViewState.STATE_READIED;
         listener.onIVViewStateChanged(nowViewStatus, videoProtocolInfo.release_info.url);
 
+        rlWVContainer.removeAllViews();
+        componentManger = new ComponentManger();
+        componentManger.initParmas(rlWVContainer, videoProtocolInfo, this);
+
 //        Log.d(TAG, "currentTime=" + current);
 
 //        String url = videoProtocolInfo.protocol.event_list.get(2).obj_list.get(0).options.get(0).custom.click_default.image_url;
 
 //        Log.d(TAG, "url=" + url);
-
+        preloadResouse();
 
         getHandler().removeCallbacks(mTicker);
         getHandler().post(mTicker);
     }
+
+    /**
+     * 预加载资源
+     */
+    private void preloadResouse() {
+
+        resourseMap.clear();
+
+        if (videoProtocolInfo == null) return;
+
+        VideoProtocolInfo.Protocol protocol = videoProtocolInfo.protocol;
+        if (protocol == null) return;
+
+        List<VideoProtocolInfo.EventRail> eventRails = protocol.event_list;
+        if (eventRails == null || eventRails.isEmpty()) return;
+
+        for (VideoProtocolInfo.EventRail eventRail : eventRails) {
+            List<VideoProtocolInfo.EventComponent> eventComponents = eventRail.obj_list;
+
+            if (eventComponents != null && !eventComponents.isEmpty()) {
+
+                for (VideoProtocolInfo.EventComponent eventComponent : eventComponents) {
+
+                    long loadTime = (long) (eventComponent.start_time * 1000 - 10000);
+                    if (loadTime < 0) {
+                        loadTime = 0;
+                    }
+
+                    List<VideoProtocolInfo.EventOption> eventOptions = eventComponent.options;
+                    if (eventOptions != null && !eventOptions.isEmpty()) {
+
+                        for (VideoProtocolInfo.EventOption eventOption : eventOptions) {
+
+                            VideoProtocolInfo.EventOptionCustom optionCustom = eventOption.custom;
+                            if (optionCustom != null) {
+
+                                VideoProtocolInfo.EventOptionStatus clickDefault = optionCustom.click_default;
+                                addResourseMap(clickDefault.image_url, loadTime);
+                                addResourseMap(clickDefault.audio_url, loadTime);
+
+                                VideoProtocolInfo.EventOptionStatus clickOn = optionCustom.click_on;
+                                addResourseMap(clickOn.image_url, loadTime);
+                                addResourseMap(clickOn.audio_url, loadTime);
+
+                                VideoProtocolInfo.EventOptionStatus clickEnded = optionCustom.click_ended;
+                                addResourseMap(clickEnded.image_url, loadTime);
+                                addResourseMap(clickEnded.audio_url, loadTime);
+
+                                VideoProtocolInfo.EventOptionStatus clickFailed = optionCustom.click_failed;
+                                addResourseMap(clickFailed.image_url, loadTime);
+                                addResourseMap(clickFailed.audio_url, loadTime);
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
+     * 添加需要下载的资源
+     *
+     * @param url
+     * @param time
+     */
+    private void addResourseMap(String url, long time) {
+        if (!NativeViewUtils.isNullOrEmptyString(url) && !new File(NativeViewUtils.getDowmloadFilePath(), NativeViewUtils.getFileName(url)).exists()) {
+            if (!resourseMap.containsKey(url) || time < resourseMap.get(url)) {
+                resourseMap.put(url, time);
+            }
+        }
+    }
+
+
+    private Map<String, Long> resourseMap = new HashMap<String, Long>();
+
+
+    private long systemTime;
 
     private final Runnable mTicker = new Runnable() {
         public void run() {
 
 
             long currentPosition = listener.getPlayerCurrentTime();
-            Log.d(TAG, "currentTime=" + currentPosition);
+
+
+            long newTime = System.currentTimeMillis();
+
+
+            Log.d(TAG, "currentTime=" + currentPosition + "---------------offst=" + (newTime - systemTime));
+
+            systemTime = newTime;
+
+            downLoadResouse(currentPosition);
             dealwithProtocol(currentPosition);
 
             long now = SystemClock.uptimeMillis();
@@ -186,9 +283,80 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
 
     /**
+     * 下载资源文件
+     *
+     * @param currentPosition
+     */
+    private void downLoadResouse(long currentPosition) {
+
+        Set<String> keys = resourseMap.keySet();
+
+        for (String key : keys) {
+            Long time = resourseMap.get(key);
+            if (currentPosition > time) {
+//                Log.d("downLoadResouse", "下载文件---" + key);
+
+
+                File file = new File(NativeViewUtils.getDowmloadFilePath(), NativeViewUtils.getFileName(key));
+                if (!file.exists() && !downloading.contains(key)) {
+                    HttpClient.getInstanse().download(key, NativeViewUtils.getDowmloadFilePath(), NativeViewUtils.getFileName(key), new DownloadCallback() {
+                        @Override
+                        public void onDownloadStart(String url) {
+                            Log.d(TAG, "onDownloadStart----url---" + url);
+                            downloading.add(url);
+                        }
+
+                        @Override
+                        public void onDownloadFailed(String url, String error) {
+                            downloading.remove(url);
+                            Log.d(TAG, "onDownloadFailed----url---" + url);
+
+                        }
+
+                        @Override
+                        public void onDownloadSuccess(String url, File file) {
+                            Log.d(TAG, "onDownloadSuccess----url---" + url);
+                            downloading.remove(url);
+
+                            downloadFinish.add(url);
+                        }
+
+                        @Override
+                        public void onDownloading(String url, int progress) {
+//                            Log.d("downLoadResouse", "onDownloadStart----url---" + url);
+                        }
+                    });
+                }
+            }
+        }
+
+        // 删除已经下载好的资源
+        if (downloadFinish != null) {
+            for (String url : downloadFinish) {
+                resourseMap.remove(url);
+            }
+            downloadFinish.clear();
+        }
+
+//        Log.d("downLoadResouse", "-----------------------------------");
+
+    }
+
+    //正在下载的资源
+    private List<String> downloading = new ArrayList<>();
+    //已经下载的资源
+    private List<String> downloadFinish = new ArrayList<>();
+
+    private ComponentManger componentManger;
+
+
+    /**
      * 处理协议
      */
     private void dealwithProtocol(long currentPosition) {
+
+//        Log.d("dealwithProtocol", new Gson().toJson(resourseMap));
+
         if (videoProtocolInfo == null)
             return;
 
@@ -211,6 +379,10 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         //事件轨道
         for (VideoProtocolInfo.EventRail eventRail : eventRails) {
 
+            // 隐藏轨道
+            if (eventRail.hide_track) {
+                continue;
+            }
             List<VideoProtocolInfo.EventComponent> eventComponents = eventRail.obj_list;
             if (eventComponents != null && !eventComponents.isEmpty()) {
                 //事件组件
@@ -222,26 +394,34 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 //                    Log.d(TAG, "startTime=" + startTime + "---endTime=" + endTime);
 
 
-                    if (currentPosition >= startTime && currentPosition <= endTime) {
+//                    float startFrame = startTime / 40;
+//                    float endFrame = endTime / 40;
+//                    Log.d(TAG, "startFrame=" + startFrame + "---endFrame=" + endFrame);
 
 
-                        View view = findViewWithTag(eventComponent.event_id);
-                        if (view == null) {
-                            SelectedComponent selectedComponent = new SelectedComponent(getContext());
-                            selectedComponent.initParmas(videoParams.width,videoParams.height,getMeasuredWidth(),getMeasuredHeight());
-                            selectedComponent.initEventComponent(eventComponent);
-//                            selectedComponent.setBackgroundColor(Color.parseColor("#D81B60"));
-                            selectedComponent.setTag(eventComponent.event_id);
-                            LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-//                            Log.d(TAG, "addView");
-                            addView(selectedComponent, layoutParams);
-                        }
+                    //事件触发
+                    if (currentPosition >= startTime && currentPosition < endTime) {
+
+
+                        componentManger.initComponent(eventComponent);
+
                     } else {
-                        View view = findViewWithTag(eventComponent.event_id);
-                        if (view != null) {
+
+                        componentManger.componentEnd(eventComponent);
+
+                        // 跳出事件范围
+//                        SelectedComponent view = findViewWithTag(eventComponent.event_id);
+//                        if (view != null) {
 //                            Log.d(TAG, "removeView");
-                            removeView(view);
-                        }
+////                            removeView(view);
+//
+//
+////                            boolean end = false;
+////                            if (currentPosition >= (endTime - 0.25) && currentPosition < endTime) {
+////                                end = true;
+////                            }
+//                            view.eventComponentEnd(true);
+//                        }
                     }
                 }
 
@@ -271,6 +451,30 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         Log.d(TAG, "onDestroy");
 
         getHandler().removeCallbacks(mTicker);
+
+
+    }
+
+    /**
+     * 组件回调
+     *
+     * @param position
+     */
+    @Override
+    public void onComponentSeek(long position) {
+        if (listener != null) {
+            listener.seekToTime(position);
+        }
+    }
+
+    /**
+     * 事件真正结束
+     *
+     * @param eventComponentId
+     */
+    @Override
+    public void onComponentEnd(String eventComponentId) {
+
 
     }
 }

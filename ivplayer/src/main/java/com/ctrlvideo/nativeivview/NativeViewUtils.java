@@ -1,6 +1,9 @@
 package com.ctrlvideo.nativeivview;
 
-import android.util.Log;
+import android.os.Environment;
+import android.text.TextUtils;
+
+import java.io.File;
 
 public class NativeViewUtils {
 
@@ -35,9 +38,35 @@ public class NativeViewUtils {
             }
         }
 
-        Log.d("transformColor", "rgba=" + rgba + "----strColor=" + strColor);
+//        Log.d("transformColor", "rgba=" + rgba + "----strColor=" + strColor);
         return "#" + strColor;
 
     }
 
+    /**
+     * 获取本地资源文件路径
+     *
+     * @return
+     */
+    public static String getDowmloadFilePath() {
+        return new File(Environment.getExternalStorageDirectory(), "ivsdk").getAbsolutePath();
+    }
+
+    /**
+     * 根据url 生成本地文件名字
+     *
+     * @param url
+     * @return
+     */
+    public static String getFileName(String url) {
+//        String url="https://res-1300249927.file.myqcloud.com/media/3/103/image/3103483810874634/source.png";
+        return url.substring(url.indexOf("//") + 2).replace("/", "-");
+    }
+
+
+    public static boolean isNullOrEmptyString(String str) {
+
+        return (str == null || TextUtils.isEmpty(str));
+
+    }
 }
