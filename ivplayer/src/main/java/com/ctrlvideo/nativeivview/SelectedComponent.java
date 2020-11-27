@@ -97,6 +97,14 @@ public class SelectedComponent extends RelativeLayout {
                     }
 
                 }
+
+                @Override
+                public void onTriggerCancel() {
+
+                    Log.d("SelectedComponent", "onTriggerCancel");
+
+                    optionView.setOption(OptionView.STATUS_DEFAULT, option);
+                }
             });
 
 
@@ -206,8 +214,6 @@ public class SelectedComponent extends RelativeLayout {
                 containerParmas.leftMargin = (int) left;
                 containerParmas.topMargin = (int) top;
                 addView(optionView, containerParmas);
-
-
 
 
                 Message message = new Message();

@@ -49,6 +49,12 @@ public class VideoProtocolInfo {
         public float duration;
         public String event_id;
         public boolean time_limit;
+        //默认选中
+        public int default_skip_option;
+
+
+        //事件结束点
+        public boolean endIsActive;
 
 
     }
@@ -63,6 +69,7 @@ public class VideoProtocolInfo {
         public EventOptionStyle layout_style;
         public boolean align_screen;
         public boolean hide_option;
+        public float skip_start_time;
     }
 
     /**
@@ -119,6 +126,8 @@ public class VideoProtocolInfo {
     public class EventOptionFilter {
 
         public float opacity;
+        //饱和度
+        public String saturate;
     }
 
 

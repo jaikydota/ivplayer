@@ -338,6 +338,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
             downloadFinish.clear();
         }
 
+
 //        Log.d("downLoadResouse", "-----------------------------------");
 
     }
@@ -385,6 +386,8 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
             }
             List<VideoProtocolInfo.EventComponent> eventComponents = eventRail.obj_list;
             if (eventComponents != null && !eventComponents.isEmpty()) {
+
+
                 //事件组件
                 for (VideoProtocolInfo.EventComponent eventComponent : eventComponents) {
 
@@ -401,27 +404,20 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
                     //事件触发
                     if (currentPosition >= startTime && currentPosition < endTime) {
-
-
-                        componentManger.initComponent(eventComponent);
-
+                        componentManger.eventTrigger(eventComponent);
                     } else {
+                        componentManger.eventJumpout(eventComponent);
+                    }
 
+                    if (eventComponent.endIsActive && (currentPosition < (endTime - 40) || currentPosition >= endTime)) {
+                        eventComponent.endIsActive = false;
+                    }
+
+                    if (!eventComponent.endIsActive && currentPosition >= (endTime - 40) && currentPosition < endTime) {
+
+                        Log.d(TAG, "事件结束----" + currentPosition);
+                        eventComponent.endIsActive = true;
                         componentManger.componentEnd(eventComponent);
-
-                        // 跳出事件范围
-//                        SelectedComponent view = findViewWithTag(eventComponent.event_id);
-//                        if (view != null) {
-//                            Log.d(TAG, "removeView");
-////                            removeView(view);
-//
-//
-////                            boolean end = false;
-////                            if (currentPosition >= (endTime - 0.25) && currentPosition < endTime) {
-////                                end = true;
-////                            }
-//                            view.eventComponentEnd(true);
-//                        }
                     }
                 }
 

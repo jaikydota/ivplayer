@@ -6,6 +6,8 @@ import android.widget.RelativeLayout;
 
 import com.ctrlvideo.comment.net.VideoProtocolInfo;
 
+import java.util.List;
+
 public class ComponentManger {
 
     private Context mContext;
@@ -56,7 +58,12 @@ public class ComponentManger {
     }
 
 
-    public void initComponent(VideoProtocolInfo.EventComponent eventComponent) {
+    /**
+     * 事件触发
+     *
+     * @param eventComponent
+     */
+    public void eventTrigger(VideoProtocolInfo.EventComponent eventComponent) {
 
         String classify = eventComponent.classify;
         String type = eventComponent.type;
@@ -68,14 +75,35 @@ public class ComponentManger {
         }
     }
 
-    public void componentEnd(VideoProtocolInfo.EventComponent eventComponent) {
 
+    /**
+     * 跳出事件范围
+     *
+     * @param eventComponent
+     */
+    public void eventJumpout(VideoProtocolInfo.EventComponent eventComponent) {
         SelectedComponent selectedComponent = rootView.findViewWithTag(eventComponent.event_id);
         if (selectedComponent != null) {
             rootView.removeView(selectedComponent);
         }
     }
 
+    /**
+     * 事件结束点
+     *
+     * @param eventComponent
+     */
+    public void componentEnd(VideoProtocolInfo.EventComponent eventComponent) {
+
+
+        String classify = eventComponent.classify;
+        String type = eventComponent.type;
+        if ("TE".equals(classify)) {
+            if ("select".equals(type)) {
+                endSelectedComponent(eventComponent);
+            }
+        }
+    }
 
     private void initSelectedComponent(VideoProtocolInfo.EventComponent eventComponent) {
 
@@ -90,7 +118,7 @@ public class ComponentManger {
                 @Override
                 public void onOptionSelected(int option) {
 
-                    Log.d("ComponentManger","onOptionSelected==="+option);
+                    Log.d("ComponentManger", "onOptionSelected===" + option);
 
                     setSelectedComponentResult(eventComponent, option);
                 }
@@ -99,20 +127,34 @@ public class ComponentManger {
         }
     }
 
+    private void endSelectedComponent(VideoProtocolInfo.EventComponent eventComponent) {
+
+        if (!eventComponent.time_limit) {
+
+            if (iComponentListener != null) {
+                iComponentListener.onComponentSeek((long) (eventComponent.start_time * 1000));
+
+            }
+        } else {
+            setSelectedComponentResult(eventComponent, eventComponent.default_skip_option);
+        }
+
+    }
+
 
     /**
      * 选中组件
      *
      * @param eventComponent
-     * @param option
+     * @param optionIndex
      */
-    private void setSelectedComponentResult(VideoProtocolInfo.EventComponent eventComponent, int option) {
+    private void setSelectedComponentResult(VideoProtocolInfo.EventComponent eventComponent, int optionIndex) {
 
         SelectedComponent selectedComponentResult = rootView.findViewWithTag(createId(eventComponent.event_id));
         if (selectedComponentResult == null) {
             selectedComponentResult = new SelectedComponent(mContext);
             selectedComponentResult.setTag(createId(eventComponent.event_id));
-            selectedComponentResult.setComponentOption(option, eventComponent, parentWidth, parentHeight, videoWidth, videoHeight);
+            selectedComponentResult.setComponentOption(optionIndex, eventComponent, parentWidth, parentHeight, videoWidth, videoHeight);
             selectedComponentResult.setOnShowResultListener(new SelectedComponent.OnShowResultListener() {
                 @Override
                 public void onShowResultFinish(String enent_id) {
@@ -127,6 +169,27 @@ public class ComponentManger {
 
             rootView.addView(selectedComponentResult, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
         }
+
+
+
+
+        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
+        if (options != null) {
+
+
+            VideoProtocolInfo.EventOption option = options.get(optionIndex);
+
+            Log.d("ComponentResult","optionIndex="+optionIndex+"---"+option.skip_start_time);
+
+            if (option.skip_start_time >= 0) {
+                if (iComponentListener != null) {
+                    iComponentListener.onComponentSeek((long) (option.skip_start_time * 1000));
+                }
+            }
+
+
+        }
+
 
     }
 
