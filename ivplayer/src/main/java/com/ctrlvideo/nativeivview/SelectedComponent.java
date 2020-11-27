@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 
 import com.ctrlvideo.comment.net.VideoProtocolInfo;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -84,6 +85,19 @@ public class SelectedComponent extends RelativeLayout {
                     Log.d("SelectedComponent", "onTrigger");
 
                     optionView.setOption(OptionView.STATUS_CLICK_ON, option);
+
+
+                    if (option.custom != null && option.custom.click_on != null) {
+
+                        String audioUrl = option.custom.click_on.audio_url;
+                        if (!NativeViewUtils.isNullOrEmptyString(audioUrl)) {
+
+                            File localFile = new File(NativeViewUtils.getDowmloadFilePath(), NativeViewUtils.getFileName(audioUrl));
+                            if (localFile.exists()) {
+                                SoundManager.getInstance().play(localFile.getAbsolutePath());
+                            }
+                        }
+                    }
                 }
 
                 @Override
@@ -95,6 +109,9 @@ public class SelectedComponent extends RelativeLayout {
                     if (listener != null) {
                         listener.onOptionSelected(finalI);
                     }
+
+
+
 
                 }
 

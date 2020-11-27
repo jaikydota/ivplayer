@@ -161,6 +161,8 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         nowViewStatus = ViewState.STATE_READIED;
         listener.onIVViewStateChanged(nowViewStatus, videoProtocolInfo.release_info.url);
 
+
+        SoundManager.getInstance().release();
         rlWVContainer.removeAllViews();
         componentManger = new ComponentManger();
         componentManger.initParmas(rlWVContainer, videoProtocolInfo, this);
@@ -447,6 +449,9 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         Log.d(TAG, "onDestroy");
 
         getHandler().removeCallbacks(mTicker);
+
+        SoundManager.getInstance().release();
+
 
 
     }
