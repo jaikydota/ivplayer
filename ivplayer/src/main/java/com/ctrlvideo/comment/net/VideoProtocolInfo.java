@@ -128,6 +128,10 @@ public class VideoProtocolInfo {
         public float opacity;
         //饱和度
         public String saturate;
+        //对比度
+        public String contrast;
+        //亮度
+        public String brightness;
     }
 
 

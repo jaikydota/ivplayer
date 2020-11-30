@@ -3,8 +3,6 @@ package com.ctrlvideo.nativeivview;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -185,28 +183,82 @@ public class OptionView extends RelativeLayout {
                             imageView.setImageBitmap(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
 
 
-                            VideoProtocolInfo.EventOptionFilter optionFilter = optionStyle.filter;
-
-                            if (optionFilter != null) {
-                                //饱和度
-                                String saturate = optionFilter.saturate;
-                                if (saturate != null) {
-                                    saturate = saturate.replace("%", "").trim();
-                                    try {
-                                        float floatSaturate = Float.parseFloat(saturate) / 100;
-                                        ColorMatrix cm = new ColorMatrix();
-                                        cm.setSaturation(floatSaturate); // 设置饱和度:0为纯黑白，饱和度为0；1为饱和度为100，即原图；
-
-                                        ColorMatrixColorFilter mGrayColorFilter = new ColorMatrixColorFilter(cm);
-
-
-                                        imageView.setColorFilter(mGrayColorFilter);
-
-                                    } catch (Exception e) {
-
-                                    }
-                                }
-                            }
+//                            VideoProtocolInfo.EventOptionFilter optionFilter = optionStyle.filter;
+//
+//                            if (optionFilter != null) {
+//                                //饱和度
+//                                String saturate = optionFilter.saturate;
+//                                String contrast = optionFilter.contrast;
+//                                String brightness = optionFilter.brightness;
+//                                if (saturate != null) {
+//
+////                                    imageView.setBackgroundColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.base_color)));
+//
+//
+//                                    Bitmap backgroundBitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+//
+//
+//                                    Bitmap bitmap = Bitmap.createBitmap(backgroundBitmap.getWidth(), backgroundBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+//                                    bitmap.eraseColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.base_color)));
+//
+//                                    Canvas canvas = new Canvas(bitmap);
+//                                    Paint paint = new Paint();
+////                                    paint.setColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.base_color)));
+//
+//                                    Rect mSrcRect = new Rect(0, 0, backgroundBitmap.getWidth(), backgroundBitmap.getHeight());
+//                                    Rect mDestRect = new Rect(0, 0, backgroundBitmap.getWidth(), backgroundBitmap.getHeight());
+//
+//
+//                                    canvas.drawBitmap(backgroundBitmap, mSrcRect, mDestRect, paint);
+//
+//
+//                                    imageView.setImageBitmap(bitmap);
+//
+//
+////                                    imageView.setBackgroundColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.base_color)));
+//
+//                                    saturate = saturate.replace("%", "").trim();
+//                                    contrast = contrast.replace("%", "").trim();
+//                                    brightness = brightness.replace("%", "").trim();
+//                                    try {
+//                                        float floatSaturate = Float.parseFloat(saturate) / 100;
+//                                        float floatContrast = Float.parseFloat(contrast) / 100;
+//                                        float floatBrightness = Float.parseFloat(brightness) / 100;
+//
+//                                        ColorMatrix imageMatrix = new ColorMatrix();
+//                                        imageMatrix.postConcat(hueMatrix);
+//
+//
+//                                        ColorMatrix saturationMatrix = new ColorMatrix();
+//                                        saturationMatrix.setSaturation(floatSaturate);
+//                                        imageMatrix.postConcat(saturationMatrix);
+//
+//                                        ColorMatrix lumMatrix = new ColorMatrix();
+//                                        lumMatrix.setScale(floatBrightness, floatBrightness, floatBrightness, 1);
+//
+//                                        imageMatrix.postConcat(lumMatrix);
+//
+//
+////                                        float value = (float) ((floatSontrast + 64) / 128.0 );
+////                                        float value = floatContrast;
+////                                        cm.set(new float[]{
+////                                                value, 0, 0, 0, 0,
+////                                                0, value, 0, 0, 0,
+////                                                0, 0, value, 0, 0, 0,
+////                                                0, 0, 1, 0
+////                                        });
+////                                        cm.setSaturation(floatSaturate); // 设置饱和度:0为纯黑白，饱和度为0；1为饱和度为100，即原图；
+//
+//                                        ColorMatrixColorFilter mGrayColorFilter = new ColorMatrixColorFilter(imageMatrix);
+//
+//
+//                                        imageView.setColorFilter(mGrayColorFilter);
+//
+//                                    } catch (Exception e) {
+//
+//                                    }
+//                                }
+//                            }
 
                         }
 
