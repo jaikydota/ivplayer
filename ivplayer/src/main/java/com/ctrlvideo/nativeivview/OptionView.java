@@ -130,7 +130,9 @@ public class OptionView extends RelativeLayout {
             textView.setTextColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.color)));
 
             if ("vertical-lr".equals(optionStyle.writing_mode)) {
-                textView.setRotation(90);
+                textView.setEms(1);
+            } else {
+                textView.setSingleLine();
             }
         }
 
