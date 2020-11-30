@@ -44,7 +44,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     protected String TAG = "NativeIVView";
 
     //轮询间隔
-    private long delay = 40;
+    private long delay = 36;
 
     //当前视图状态
     private String nowViewStatus = ViewState.STATE_LOADING;
@@ -125,7 +125,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
      */
     private void initData() {
         nowViewStatus = ViewState.STATE_GET_IV_INFO;
-        HttpClient.getInstanse().getIVideoInfo(new GetIVideoInfoCallback() {
+        HttpClient.getInstanse().getIVideoInfo(mPid, new GetIVideoInfoCallback() {
 
             @Override
             protected void onFailure(String error) {
@@ -429,12 +429,15 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
     }
 
+
+    private boolean videoPlaying;
+
     @Override
     public void onPlayerStateChanged(String status) {
 
 
         if (nowViewStatus.equals(ViewState.STATE_READIED)) {
-
+            videoPlaying = "onplay".equals(status);
         }
     }
 
@@ -453,7 +456,6 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         SoundManager.getInstance().release();
 
 
-
     }
 
     /**
@@ -468,14 +470,31 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         }
     }
 
-    /**
-     * 事件真正结束
-     *
-     * @param eventComponentId
-     */
     @Override
-    public void onComponentEnd(String eventComponentId) {
-
-
+    public boolean isVideoPlaying() {
+        return videoPlaying;
     }
+
+    @Override
+    public void ctrlPlayer(boolean play) {
+        if (listener != null) {
+            listener.ctrlPlayer(play ? "play" : "pause");
+        }
+    }
+
+    @Override
+    public void callPhone(String call_phone) {
+
+        if (listener != null) {
+            listener.onHrefUrl("tel:" + call_phone);
+        }
+    }
+
+    @Override
+    public void hrefUrl(String href_url) {
+        if (listener != null) {
+            listener.onHrefUrl(href_url);
+        }
+    }
+
 }

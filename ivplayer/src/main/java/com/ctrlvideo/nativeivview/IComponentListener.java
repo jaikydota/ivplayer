@@ -1,7 +1,15 @@
 package com.ctrlvideo.nativeivview;
 
 public interface IComponentListener {
+
     void onComponentSeek(long position);
 
-    void onComponentEnd(String eventComponentId);
+    boolean isVideoPlaying();
+
+    void ctrlPlayer(boolean play);
+
+    void hrefUrl(String href_url);
+
+    void callPhone(String call_phone);
+
 }

@@ -17,29 +17,28 @@ import java.util.List;
 
 
 /**
- * 选择类事件组件
+ * 单击类事件组件
  */
-public class SelectedComponent extends RelativeLayout {
+public class ClickComponent extends RelativeLayout {
 
-    private String TAG="SelectedComponent";
+    private String TAG = "ClickComponent";
 
 
     private VideoProtocolInfo.EventComponent eventComponent;
 
-    public SelectedComponent(Context context) {
+    public ClickComponent(Context context) {
         this(context, null);
     }
 
-    public SelectedComponent(Context context, AttributeSet attrs) {
+    public ClickComponent(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public SelectedComponent(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ClickComponent(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public void setOnSelectedListener(OnSelectedListener listener) {
-
+    public void setOnOptionClickListener(OnOptionClickListener listener) {
         this.listener = listener;
     }
 
@@ -48,13 +47,12 @@ public class SelectedComponent extends RelativeLayout {
         this.showResultListener = listener;
     }
 
-    private OnSelectedListener listener;
+    private OnOptionClickListener listener;
     private OnComponentResultListener showResultListener;
 
-    public interface OnSelectedListener {
-        void onOptionSelected(int option);
+    public interface OnOptionClickListener {
+        void onOptionClick(int option);
     }
-
 
 
     public void initComponent(int status, VideoProtocolInfo.EventComponent eventComponent, float parentWidth, float parentHeight, float videoWidth, float videoHeight) {
@@ -82,7 +80,7 @@ public class SelectedComponent extends RelativeLayout {
                 @Override
                 public void onTrigger() {
 
-                    Log.d("SelectedComponent", "onTrigger");
+                    Log.d(TAG, "onTrigger");
 
                     optionView.setOption(OptionView.STATUS_CLICK_ON, option);
 
@@ -102,15 +100,13 @@ public class SelectedComponent extends RelativeLayout {
 
                 @Override
                 public void onTriggerAfter() {
-                    Log.d("SelectedComponent", "onTriggerAfter");
+                    Log.d(TAG, "onTriggerAfter");
 
                     optionView.setOption(OptionView.STATUS_DEFAULT, option);
 
                     if (listener != null) {
-                        listener.onOptionSelected(finalI);
+                        listener.onOptionClick(finalI);
                     }
-
-
 
 
                 }
@@ -118,7 +114,7 @@ public class SelectedComponent extends RelativeLayout {
                 @Override
                 public void onTriggerCancel() {
 
-                    Log.d("SelectedComponent", "onTriggerCancel");
+                    Log.d(TAG, "onTriggerCancel");
 
                     optionView.setOption(OptionView.STATUS_DEFAULT, option);
                 }
@@ -157,7 +153,7 @@ public class SelectedComponent extends RelativeLayout {
     }
 
 
-    public void setComponentOption(int optionIndex, VideoProtocolInfo.EventComponent eventComponent, float parentWidth, float parentHeight, float videoWidth, float videoHeight) {
+    public void setComponentOption(boolean result, VideoProtocolInfo.EventComponent eventComponent, float parentWidth, float parentHeight, float videoWidth, float videoHeight) {
 
         this.eventComponent = eventComponent;
         List<VideoProtocolInfo.EventOption> options = eventComponent.options;
@@ -182,7 +178,8 @@ public class SelectedComponent extends RelativeLayout {
 
                 int displayTime;
 
-                if (i == optionIndex) {
+
+                if (result) {
                     optionView.setOption(OptionView.STATUS_CLICK_ENDED, option);
 
                     if (option.custom == null || option.custom.click_ended == null || NativeViewUtils.isNullOrEmptyString(option.custom.click_ended.image_url)) {
@@ -191,8 +188,8 @@ public class SelectedComponent extends RelativeLayout {
                         displayTime = option.custom.click_ended.display_time;
                     }
 
-
                 } else {
+
                     optionView.setOption(OptionView.STATUS_CLICK_FAILED, option);
 
                     if (option.custom == null || option.custom.click_failed == null || NativeViewUtils.isNullOrEmptyString(option.custom.click_failed.image_url)) {
@@ -200,11 +197,10 @@ public class SelectedComponent extends RelativeLayout {
                     } else {
                         displayTime = option.custom.click_failed.display_time;
                     }
+
                 }
 
-
                 boolean align_screen = option.align_screen;
-
 
                 float width = 0;
                 float height = 0;

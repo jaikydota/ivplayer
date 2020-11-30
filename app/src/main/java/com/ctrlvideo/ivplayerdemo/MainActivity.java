@@ -7,10 +7,10 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.fragment.app.FragmentActivity;
+
 import com.ctrlvideo.ivplayer.IVPlayer;
 import com.ctrlvideo.ivplayer.IVPlayerListener;
-
-import androidx.fragment.app.FragmentActivity;
 
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
@@ -27,6 +27,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private FrameLayout fl_chapterThree;
     private FrameLayout fl_chapterFour;
     private FrameLayout fl_chapterFive;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,32 +46,32 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         fl_chapterFour.setOnClickListener(this);
         fl_chapterFive.setOnClickListener(this);
 
-        ivPlayer.loadIVideo("5100013351026235", new PlayerListener());
+        ivPlayer.loadIVideo("5165902802815866", new PlayerListener());
+//        ivPlayer.loadIVideo("5926378841048816", new PlayerListener());
     }
 
 
     @Override
     public void onClick(View v) {
-        if (v == fl_chapterOne){
-            ivPlayer.loadIVideo("5100013351026235", new PlayerListener());
-        }
-        else if (v == fl_chapterTwo){
-            ivPlayer.loadIVideo("5101650494325990", new PlayerListener());
-        }
-        else if (v == fl_chapterThree){
-            ivPlayer.loadIVideo("5101658424164661", new PlayerListener());
-        }
-        else if (v == fl_chapterFour){
-            ivPlayer.loadIVideo("5100016302721417", new PlayerListener());
-        }
-        else if (v == fl_chapterFive){
-            ivPlayer.loadIVideo("5186806079378924", new PlayerListener());
+        if (v == fl_chapterOne) {
+            ivPlayer.loadIVideo("5165902802815866", new PlayerListener());
+//            ivPlayer.loadIVideo("5926378841048816", new PlayerListener());
+        } else if (v == fl_chapterTwo) {
+            ivPlayer.loadIVideo("5926287290839770", new PlayerListener());
+
+        } else if (v == fl_chapterThree) {
+            ivPlayer.loadIVideo("5925315322305659", new PlayerListener());
+        } else if (v == fl_chapterFour) {
+            ivPlayer.loadIVideo("5923934015831592", new PlayerListener());
+        } else if (v == fl_chapterFive) {
+            ivPlayer.loadIVideo("5924969871991882", new PlayerListener());
         }
     }
 
 
     //是否因生命周期导致的暂停
     private boolean isLifeToPause = false;
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -80,6 +81,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             ivPlayer.play();
         }
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -141,15 +143,19 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         /**
          * 当IVView收到自定义通知
+         *
          * @param msg 通知内容
          */
         @Override
         public void onCustomNotify(String msg) {
-            Toast.makeText(MainActivity.this,"收到通知： " + msg, Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "收到通知： " + msg, Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onHrefUrl(String url) {
+            Toast.makeText(MainActivity.this, "跳转链接： " + url, Toast.LENGTH_LONG).show();
         }
     }
-
-
 
 
 }

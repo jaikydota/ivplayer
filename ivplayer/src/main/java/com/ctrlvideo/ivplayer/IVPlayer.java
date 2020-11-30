@@ -222,6 +222,10 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
             pListener.onCustomNotify(msg);
         }
 
+        @Override
+        public void onHrefUrl(String url) {
+            pListener.onHrefUrl(url);
+        }
     }
 
 

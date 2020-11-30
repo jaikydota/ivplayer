@@ -29,12 +29,12 @@ public class HttpClient {
         return client;
     }
 
-    public void getIVideoInfo(GetIVideoInfoCallback callback) {
+    public void getIVideoInfo(String pid, GetIVideoInfoCallback callback) {
 
 
         Request request = new Request.Builder()
                 .get()
-                .url("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866")
+                .url("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=" + pid)
 //                .url("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/")
                 .build();
         Call call = okHttpClient.newCall(request);
@@ -44,9 +44,6 @@ public class HttpClient {
     }
 
     public void download(String url, String destFileDir, String destFileName, DownloadCallback downloadCallback) {
-
-
-
 
 
         downloadCallback.onDownloadStart(url);

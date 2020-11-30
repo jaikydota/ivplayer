@@ -39,7 +39,6 @@ public class NativeViewUtils {
             }
         }
 
-//        Log.d("transformColor", "rgba=" + rgba + "----strColor=" + strColor);
         return "#" + strColor;
 
     }

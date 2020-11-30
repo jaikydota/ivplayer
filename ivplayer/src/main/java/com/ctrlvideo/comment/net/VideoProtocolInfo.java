@@ -51,10 +51,28 @@ public class VideoProtocolInfo {
         public boolean time_limit;
         //默认选中
         public int default_skip_option;
+        public EventFeature feature;
+
+        public float active_skip_time;//点击跳转
+        public float ended_skip_time;//未点击跳转
 
 
         //事件结束点
         public boolean endIsActive;
+
+
+    }
+
+    /**
+     * 事件功能
+     */
+    public class EventFeature {
+
+        public String call_phone;
+        public String href_url;
+        public String choice;
+        public String miniprogram;
+        public String miniprogram_path;
 
 
     }
