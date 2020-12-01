@@ -10,9 +10,9 @@ import com.ctrlvideo.comment.net.VideoProtocolInfo;
 import java.io.File;
 import java.util.List;
 
-public class ComponentManger {
+public class ComponentManager {
 
-    private String TAG = "ComponentManger";
+    private String TAG = "ComponentManager";
 
     private Context mContext;
 
@@ -217,7 +217,7 @@ public class ComponentManger {
             clickComponent.setOnOptionClickListener(new ClickComponent.OnOptionClickListener() {
                 @Override
                 public void onOptionClick(int option) {
-                    Log.d(TAG, "option===" + option);
+//                    Log.d(TAG, "option===" + option);
 
                     setClickComponentResult(eventComponent, true);
                 }
@@ -311,15 +311,13 @@ public class ComponentManger {
     private void setClickComponentResult(VideoProtocolInfo.EventComponent eventComponent, boolean result) {
 
 
-        Log.d("setClickComponentResult", "result=" + result);
+        Log.d(TAG, "单击选择-----" + result);
 
         if ((result && hasTriggersucceedSuStyle(eventComponent)) || (!result && hasTriggerFailStyle(eventComponent))) {
 
-            Log.d("setClickComponentResult", "result=" + result + "-------hasTriggersucceedSuStyle || hasTriggerFailStyle");
 
             ClickComponent clickComponent = rootView.findViewWithTag(createId(eventComponent.event_id));
             if (clickComponent == null) {
-                Log.d("setClickComponentResult", "result=" + result + "-------new ClickComponent(mContext)");
 
                 clickComponent = new ClickComponent(mContext);
                 clickComponent.setTag(createId(eventComponent.event_id));

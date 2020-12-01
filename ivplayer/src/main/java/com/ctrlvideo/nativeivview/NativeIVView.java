@@ -164,8 +164,8 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
         SoundManager.getInstance().release();
         rlWVContainer.removeAllViews();
-        componentManger = new ComponentManger();
-        componentManger.initParmas(rlWVContainer, videoProtocolInfo, this);
+        componentManager = new ComponentManager();
+        componentManager.initParmas(rlWVContainer, videoProtocolInfo, this);
 
 //        Log.d(TAG, "currentTime=" + current);
 
@@ -347,7 +347,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     //已经下载的资源
     private List<String> downloadFinish = new ArrayList<>();
 
-    private ComponentManger componentManger;
+    private ComponentManager componentManager;
 
 
     /**
@@ -403,9 +403,9 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
                     //事件触发 UI渲染
                     if (currentPosition >= startTime && currentPosition < endTime) {
-                        componentManger.eventScopeIn(eventComponent);
+                        componentManager.eventScopeIn(eventComponent);
                     } else {
-                        componentManger.eventScopeOut(eventComponent);
+                        componentManager.eventScopeOut(eventComponent);
                     }
 
 
@@ -429,7 +429,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
                         Log.d(TAG, "事件结束----" + currentPosition + "----------" + eventComponent.event_id);
                         eventComponent.endIsActive = true;
-                        componentManger.eventEnd(eventComponent);
+                        componentManager.eventEnd(eventComponent);
                     }
 
                     //事件范围内
@@ -437,7 +437,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                         eventComponent.eventIsActive = true;
 
                         Log.d(TAG, "事件范围内----" + currentPosition + "----------" + eventComponent.event_id);
-                        componentManger.eventIn(eventComponent);
+                        componentManager.eventIn(eventComponent);
 //                        if (eventComponent.type === 'passivity'){
 //                            if (protocolUtils.numvalItemShow(this.event_numvals, eventObj)) {
 //                                this.passivity_trigger(eventObj);
