@@ -8,6 +8,8 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.RelativeLayout;
 
 import com.ctrlvideo.comment.net.VideoProtocolInfo;
@@ -74,6 +76,15 @@ public class ClickComponent extends RelativeLayout {
 
             OptionView optionView = new OptionView(getContext());
             optionView.setOption(status, option);
+
+            if (option.blink) {
+                AlphaAnimation alphaAnimation1 = new AlphaAnimation(0.1f, 1.0f);
+                alphaAnimation1.setDuration(1000);
+                alphaAnimation1.setRepeatCount(Animation.INFINITE);
+                alphaAnimation1.setRepeatMode(Animation.RESTART);
+                optionView.setAnimation(alphaAnimation1);
+                alphaAnimation1.start();
+            }
 
             int finalI = i;
             optionView.setOnOptionViewListener(new OptionView.OnOptionViewListener() {
@@ -174,6 +185,15 @@ public class ClickComponent extends RelativeLayout {
 
                 OptionView optionView = new OptionView(getContext());
                 optionView.setTag(option.option_id);
+
+                if (option.blink) {
+                    AlphaAnimation alphaAnimation1 = new AlphaAnimation(0.1f, 1.0f);
+                    alphaAnimation1.setDuration(1000);
+                    alphaAnimation1.setRepeatCount(Animation.INFINITE);
+                    alphaAnimation1.setRepeatMode(Animation.RESTART);
+                    optionView.setAnimation(alphaAnimation1);
+                    alphaAnimation1.start();
+                }
 
 
                 int displayTime;

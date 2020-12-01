@@ -265,12 +265,9 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
             long currentPosition = listener.getPlayerCurrentTime();
 
 
-            long newTime = System.currentTimeMillis();
-
-
-            Log.d(TAG, "currentTime=" + currentPosition + "---------------offst=" + (newTime - systemTime));
-
-            systemTime = newTime;
+//            long newTime = System.currentTimeMillis();
+//            Log.d(TAG, "currentTime=" + currentPosition + "---------------offst=" + (newTime - systemTime));
+//            systemTime = newTime;
 
             downLoadResouse(currentPosition);
             dealwithProtocol(currentPosition);
@@ -404,22 +401,48 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 //                    Log.d(TAG, "startFrame=" + startFrame + "---endFrame=" + endFrame);
 
 
-                    //事件触发
+                    //事件触发 UI渲染
                     if (currentPosition >= startTime && currentPosition < endTime) {
-                        componentManger.eventTrigger(eventComponent);
+                        componentManger.eventScopeIn(eventComponent);
                     } else {
-                        componentManger.eventJumpout(eventComponent);
+                        componentManger.eventScopeOut(eventComponent);
                     }
 
-                    if (eventComponent.endIsActive && (currentPosition < (endTime - 40) || currentPosition >= endTime)) {
+
+                    if (eventComponent.startIsActive && (currentPosition < startTime || currentPosition >= (startTime + 40))) {//事件开始点
+                        eventComponent.startIsActive = false;
+                    } else if (eventComponent.endIsActive && (currentPosition < (endTime - 40) || currentPosition >= endTime)) {//事件结束点
                         eventComponent.endIsActive = false;
                     }
 
-                    if (!eventComponent.endIsActive && currentPosition >= (endTime - 40) && currentPosition < endTime) {
 
-                        Log.d(TAG, "事件结束----" + currentPosition);
+                    if (eventComponent.eventIsActive && (currentPosition < startTime || currentPosition >= endTime)) {//事件范围内
+                        eventComponent.eventIsActive = false;
+                    }
+
+
+                    if (!eventComponent.startIsActive && currentPosition >= startTime && currentPosition < (startTime + 40)) {
+                        Log.d(TAG, "事件开始----" + currentPosition + "----------" + eventComponent.event_id);
+                        eventComponent.startIsActive = true;
+
+                    } else if (!eventComponent.endIsActive && currentPosition >= (endTime - 40) && currentPosition < endTime) {
+
+                        Log.d(TAG, "事件结束----" + currentPosition + "----------" + eventComponent.event_id);
                         eventComponent.endIsActive = true;
-                        componentManger.componentEnd(eventComponent);
+                        componentManger.eventEnd(eventComponent);
+                    }
+
+                    //事件范围内
+                    if (!eventComponent.eventIsActive && currentPosition >= startTime && currentPosition < endTime && currentPosition > 0) {
+                        eventComponent.eventIsActive = true;
+
+                        Log.d(TAG, "事件范围内----" + currentPosition + "----------" + eventComponent.event_id);
+                        componentManger.eventIn(eventComponent);
+//                        if (eventComponent.type === 'passivity'){
+//                            if (protocolUtils.numvalItemShow(this.event_numvals, eventObj)) {
+//                                this.passivity_trigger(eventObj);
+//                            }
+//                        }
                     }
                 }
 

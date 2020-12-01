@@ -57,8 +57,12 @@ public class VideoProtocolInfo {
         public float ended_skip_time;//未点击跳转
 
 
+        //事件开始
+        public boolean startIsActive;
         //事件结束点
         public boolean endIsActive;
+        //事件范围内
+        public boolean eventIsActive;
 
 
     }
@@ -88,6 +92,7 @@ public class VideoProtocolInfo {
         public boolean align_screen;
         public boolean hide_option;
         public float skip_start_time;
+        public boolean blink;//闪烁;
     }
 
     /**

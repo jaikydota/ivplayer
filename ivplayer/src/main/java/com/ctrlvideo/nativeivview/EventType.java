@@ -3,7 +3,8 @@ package com.ctrlvideo.nativeivview;
 public enum EventType {
 
     SELECT("select"),
-    CLICK("click");
+    CLICK("click"),
+    PASSIVITY("passivity");
 
     private String type;
 
