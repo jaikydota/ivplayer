@@ -155,6 +155,8 @@ public class VideoProtocolInfo {
         public String contrast;
         //亮度
         public String brightness;
+        //模糊度
+        public float blur;
     }
 
 

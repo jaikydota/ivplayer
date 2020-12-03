@@ -1,13 +1,21 @@
 package com.ctrlvideo.nativeivview;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -30,6 +38,10 @@ public class OptionView extends RelativeLayout {
 
     private ImageView imageView;
     private TextView textView;
+    private View mRootView;
+
+
+    private ImageView optionImage;
 
     public OnOptionViewListener listener;
 
@@ -59,12 +71,15 @@ public class OptionView extends RelativeLayout {
     public OptionView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        LayoutInflater.from(getContext()).inflate(R.layout.view_option, this);
+        mRootView = LayoutInflater.from(getContext()).inflate(R.layout.view_option, null, false);
 
-        imageView = findViewById(R.id.view_image);
-        textView = findViewById(R.id.view_text);
+        imageView = mRootView.findViewById(R.id.view_image);
+        textView = mRootView.findViewById(R.id.view_text);
 
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+
+        optionImage = new ImageView(getContext());
+
+        addView(optionImage, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
 
@@ -103,36 +118,126 @@ public class OptionView extends RelativeLayout {
 
     }
 
-
     public void setOption(int status, VideoProtocolInfo.EventOption option) {
-
         this.status = status;
+        post(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bitmap = getBitmap(status, option);
+                if (bitmap != null) {
+                    optionImage.setImageBitmap(bitmap);
+                }
+            }
+        });
 
-        VideoProtocolInfo.EventOptionStyle optionStyle = option.layout_style;
+        if (option.layout_style != null && option.layout_style.filter != null) {
 
-        if (optionStyle != null) {
+            VideoProtocolInfo.EventOptionFilter optionFilter = option.layout_style.filter;
 
-            VideoProtocolInfo.EventOptionFilter optionFilter = optionStyle.filter;
+            ColorMatrix imageMatrix = new ColorMatrix();
 
-            // 设置背景
-            imageView.setBackgroundColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.base_color)));
+            //饱和度
+            try {
+                float saturate = Float.parseFloat(optionFilter.saturate.replace("%", "").trim()) / 100;
+                ColorMatrix saturateMatrix = new ColorMatrix();
+                saturateMatrix.setSaturation(saturate);
+                imageMatrix.postConcat(saturateMatrix);
 
-            //设置透明度
-            if (optionFilter != null) {
-                setAlpha(optionFilter.opacity / 100);
+            } catch (Exception e) {
+
             }
 
+
+            //对比度
+
+            try {
+
+                float contrast = (Float.parseFloat(optionFilter.contrast.replace("%", "").trim()) / 100) - 1.0f;
+//                Log.d("OptionView", "contrast=" + contrast);
+//                contrast = 1.1f;
+                // -1 --- 1   0 原图
+                ColorMatrix contrastMatrix = new ColorMatrix();
+                float scale = contrast + 1.f;
+                float translate = (-.5f * scale + .5f) * 255.f;
+//                Log.d("OptionView", "contrast=" + contrast + "----scale=" + scale + "----translate=" + translate);
+                contrastMatrix.set(new float[]{
+                        scale, 0, 0, 0, translate,
+                        0, scale, 0, 0, translate,
+                        0, 0, scale, 0, translate,
+                        0, 0, 0, 1, 0});
+                imageMatrix.postConcat(contrastMatrix);
+
+            } catch (Exception e) {
+
+            }
+
+
+            optionImage.setColorFilter(new ColorMatrixColorFilter(imageMatrix));
+        }
+
+    }
+
+
+    private Bitmap getBitmap(int status, VideoProtocolInfo.EventOption option) {
+
+
+        initData(status, option);
+
+
+        mRootView.measure(View.MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(getHeight(), View.MeasureSpec.EXACTLY));
+        mRootView.layout(0, 0, getMeasuredWidth(), getMeasuredHeight());
+
+
+        int w = mRootView.getMeasuredWidth();
+        int h = mRootView.getMeasuredHeight();
+
+
+        Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bmp);
+
+        c.drawColor(Color.TRANSPARENT);
+        /** 如果不设置canvas画布为白色，则生成透明 */
+
+        mRootView.layout(0, 0, w, h);
+        mRootView.draw(c);
+
+
+        if (option.layout_style != null && option.layout_style.filter != null) {
+
+            VideoProtocolInfo.EventOptionFilter optionFilter = option.layout_style.filter;
+
+            float blur = optionFilter.blur;
+            if (blur != 0) {
+                return blurBitmap(bmp, blur * 2.5f);
+            }
+        }
+        return bmp;
+    }
+
+    private void initData(int status, VideoProtocolInfo.EventOption option) {
+
+        VideoProtocolInfo.EventOptionStyle optionStyle = option.layout_style;
+        if (optionStyle != null) {
+
+            mRootView.setBackgroundColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.base_color)));
             //设置旋转角度
             setRotation(optionStyle.rotate);
 
+            VideoProtocolInfo.EventOptionFilter optionFilter = optionStyle.filter;
+
+
+            if (optionFilter != null) {
+                setAlpha(optionFilter.opacity / 100);
+            }
             //设置文字样式
             textView.setText(optionStyle.text);
             textView.setTextColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.color)));
 
+
             if ("vertical-lr".equals(optionStyle.writing_mode)) {
                 textView.setEms(1);
             } else {
-                textView.setSingleLine();
+                textView.setMaxLines(1);
             }
         }
 
@@ -154,121 +259,65 @@ public class OptionView extends RelativeLayout {
                     File localFile = new File(NativeViewUtils.getDowmloadFilePath(), NativeViewUtils.getFileName(defaultImage));
                     if (localFile.exists()) {
 
-
                         String path = localFile.getAbsolutePath();
                         if (path.endsWith("svg")) {
 
-                            Drawable drawable = BitmapDrawable.createFromPath(path);
-
-                            imageView.setImageDrawable(drawable);
-
-//                            try {
-//                                //获取assets目录下的svg图片的相对路径
-////                                String replaceUrl = url.replace("file:///android_asset/", "");
-//                                imageView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-//
-//                                SVG svg = new SVGBuilder().readFromInputStream(new FileInputStream(path)).build();
-//
-////                                Canvas canvas=new Canvas();
-////                                canvas.drawPicture(svg.getPicture());
-//                                //github上的svg.createDrawable()没有了,现在只有这个方法
-//                                PictureDrawable drawable = svg.getDrawable();
-////                                drawable.draw(canvas);
-//                                imageView.setImageDrawable(drawable);
-//
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-
-
                         } else {
-                            imageView.setImageBitmap(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
-
-
-//                            VideoProtocolInfo.EventOptionFilter optionFilter = optionStyle.filter;
-//
-//                            if (optionFilter != null) {
-//                                //饱和度
-//                                String saturate = optionFilter.saturate;
-//                                String contrast = optionFilter.contrast;
-//                                String brightness = optionFilter.brightness;
-//                                if (saturate != null) {
-//
-////                                    imageView.setBackgroundColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.base_color)));
-//
-//
-//                                    Bitmap backgroundBitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-//
-//
-//                                    Bitmap bitmap = Bitmap.createBitmap(backgroundBitmap.getWidth(), backgroundBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-//                                    bitmap.eraseColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.base_color)));
-//
-//                                    Canvas canvas = new Canvas(bitmap);
-//                                    Paint paint = new Paint();
-////                                    paint.setColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.base_color)));
-//
-//                                    Rect mSrcRect = new Rect(0, 0, backgroundBitmap.getWidth(), backgroundBitmap.getHeight());
-//                                    Rect mDestRect = new Rect(0, 0, backgroundBitmap.getWidth(), backgroundBitmap.getHeight());
-//
-//
-//                                    canvas.drawBitmap(backgroundBitmap, mSrcRect, mDestRect, paint);
-//
-//
-//                                    imageView.setImageBitmap(bitmap);
-//
-//
-////                                    imageView.setBackgroundColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.base_color)));
-//
-//                                    saturate = saturate.replace("%", "").trim();
-//                                    contrast = contrast.replace("%", "").trim();
-//                                    brightness = brightness.replace("%", "").trim();
-//                                    try {
-//                                        float floatSaturate = Float.parseFloat(saturate) / 100;
-//                                        float floatContrast = Float.parseFloat(contrast) / 100;
-//                                        float floatBrightness = Float.parseFloat(brightness) / 100;
-//
-//                                        ColorMatrix imageMatrix = new ColorMatrix();
-//                                        imageMatrix.postConcat(hueMatrix);
-//
-//
-//                                        ColorMatrix saturationMatrix = new ColorMatrix();
-//                                        saturationMatrix.setSaturation(floatSaturate);
-//                                        imageMatrix.postConcat(saturationMatrix);
-//
-//                                        ColorMatrix lumMatrix = new ColorMatrix();
-//                                        lumMatrix.setScale(floatBrightness, floatBrightness, floatBrightness, 1);
-//
-//                                        imageMatrix.postConcat(lumMatrix);
-//
-//
-////                                        float value = (float) ((floatSontrast + 64) / 128.0 );
-////                                        float value = floatContrast;
-////                                        cm.set(new float[]{
-////                                                value, 0, 0, 0, 0,
-////                                                0, value, 0, 0, 0,
-////                                                0, 0, value, 0, 0, 0,
-////                                                0, 0, 1, 0
-////                                        });
-////                                        cm.setSaturation(floatSaturate); // 设置饱和度:0为纯黑白，饱和度为0；1为饱和度为100，即原图；
-//
-//                                        ColorMatrixColorFilter mGrayColorFilter = new ColorMatrixColorFilter(imageMatrix);
-//
-//
-//                                        imageView.setColorFilter(mGrayColorFilter);
-//
-//                                    } catch (Exception e) {
-//
-//                                    }
-//                                }
-//                            }
+                            Bitmap backgroundBitmap = BitmapFactory.decodeFile(path);
+                            imageView.setImageBitmap(backgroundBitmap);
 
                         }
-
                     }
                 }
             }
+
         }
 
 
     }
+
+    /**
+     * 模糊图片
+     *
+     * @param bitmap
+     * @param radius
+     * @return
+     */
+    private Bitmap blurBitmap(Bitmap bitmap, float radius) {
+
+        // Let's create an empty bitmap with the same size of the bitmap we want
+        // to blur
+        Bitmap outBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(),
+                Bitmap.Config.ARGB_8888);
+
+        // Instantiate a new Renderscript
+        RenderScript rs = RenderScript.create(getContext());//RenderScript是Android在API 11之后增加的
+
+        // Create an Intrinsic Blur Script using the Renderscript
+        ScriptIntrinsicBlur blurScript = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+
+        // Create the Allocations (in/out) with the Renderscript and the in/out
+        // bitmaps
+        Allocation allIn = Allocation.createFromBitmap(rs, bitmap);
+        Allocation allOut = Allocation.createFromBitmap(rs, outBitmap);
+
+        // Set the radius of the blur
+        blurScript.setRadius(radius);
+
+        // Perform the Renderscript
+        blurScript.setInput(allIn);
+        blurScript.forEach(allOut);
+
+        // Copy the final bitmap created by the out Allocation to the outBitmap
+        allOut.copyTo(outBitmap);
+
+        // recycle the original bitmap
+        bitmap.recycle();
+
+        // After finishing everything, we destroy the Renderscript.
+        rs.destroy();
+        return outBitmap;
+    }
+
+
 }

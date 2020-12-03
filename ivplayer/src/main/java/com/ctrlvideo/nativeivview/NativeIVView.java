@@ -146,7 +146,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                 post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("onResponse", videoProtocolInfo.protocol.auto_indent + "");
+//                        Log.d("onResponse", videoProtocolInfo.protocol.auto_indent + "");
                         onLoadVideoInfoFinish(videoProtocolInfo);
                     }
                 });
