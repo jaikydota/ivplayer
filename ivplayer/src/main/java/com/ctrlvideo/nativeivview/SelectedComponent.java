@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class SelectedComponent extends RelativeLayout {
 
-    private String TAG="SelectedComponent";
+    private String TAG = "SelectedComponent";
 
 
     private VideoProtocolInfo.EventComponent eventComponent;
@@ -54,7 +54,6 @@ public class SelectedComponent extends RelativeLayout {
     public interface OnSelectedListener {
         void onOptionSelected(int option);
     }
-
 
 
     public void initComponent(int status, VideoProtocolInfo.EventComponent eventComponent, float parentWidth, float parentHeight, float videoWidth, float videoHeight) {
@@ -92,7 +91,7 @@ public class SelectedComponent extends RelativeLayout {
                         String audioUrl = option.custom.click_on.audio_url;
                         if (!NativeViewUtils.isNullOrEmptyString(audioUrl)) {
 
-                            File localFile = new File(NativeViewUtils.getDowmloadFilePath(), NativeViewUtils.getFileName(audioUrl));
+                            File localFile = new File(NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(audioUrl));
                             if (localFile.exists()) {
                                 SoundManager.getInstance().play(localFile.getAbsolutePath());
                             }
@@ -109,8 +108,6 @@ public class SelectedComponent extends RelativeLayout {
                     if (listener != null) {
                         listener.onOptionSelected(finalI);
                     }
-
-
 
 
                 }

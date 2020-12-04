@@ -245,7 +245,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
      * @param time
      */
     private void addResourseMap(String url, long time) {
-        if (!NativeViewUtils.isNullOrEmptyString(url) && !new File(NativeViewUtils.getDowmloadFilePath(), NativeViewUtils.getFileName(url)).exists()) {
+        if (!NativeViewUtils.isNullOrEmptyString(url) && !new File(NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(url)).exists()) {
             if (!resourseMap.containsKey(url) || time < resourseMap.get(url)) {
                 resourseMap.put(url, time);
             }
@@ -296,9 +296,9 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 //                Log.d("downLoadResouse", "下载文件---" + key);
 
 
-                File file = new File(NativeViewUtils.getDowmloadFilePath(), NativeViewUtils.getFileName(key));
+                File file = new File(NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(key));
                 if (!file.exists() && !downloading.contains(key)) {
-                    HttpClient.getInstanse().download(key, NativeViewUtils.getDowmloadFilePath(), NativeViewUtils.getFileName(key), new DownloadCallback() {
+                    HttpClient.getInstanse().download(key, NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(key), new DownloadCallback() {
                         @Override
                         public void onDownloadStart(String url) {
                             Log.d(TAG, "onDownloadStart----url---" + url);

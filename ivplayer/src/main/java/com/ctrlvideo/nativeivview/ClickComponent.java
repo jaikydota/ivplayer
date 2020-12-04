@@ -101,7 +101,7 @@ public class ClickComponent extends RelativeLayout {
                         String audioUrl = option.custom.click_on.audio_url;
                         if (!NativeViewUtils.isNullOrEmptyString(audioUrl)) {
 
-                            File localFile = new File(NativeViewUtils.getDowmloadFilePath(), NativeViewUtils.getFileName(audioUrl));
+                            File localFile = new File(NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(audioUrl));
                             if (localFile.exists()) {
                                 SoundManager.getInstance().play(localFile.getAbsolutePath());
                             }

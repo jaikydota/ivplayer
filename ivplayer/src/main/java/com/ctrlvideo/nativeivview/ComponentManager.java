@@ -403,7 +403,7 @@ public class ComponentManager {
                     String audioUrl = status.audio_url;
                     if (!NativeViewUtils.isNullOrEmptyString(audioUrl)) {
 
-                        File localFile = new File(NativeViewUtils.getDowmloadFilePath(), NativeViewUtils.getFileName(audioUrl));
+                        File localFile = new File(NativeViewUtils.getDowmloadFilePath(mContext), NativeViewUtils.getFileName(audioUrl));
                         if (localFile.exists()) {
                             SoundManager.getInstance().play(localFile.getAbsolutePath());
                         }
@@ -490,7 +490,7 @@ public class ComponentManager {
                 String audioUrl = option.custom.click_ended.audio_url;
                 if (!NativeViewUtils.isNullOrEmptyString(audioUrl)) {
 
-                    File localFile = new File(NativeViewUtils.getDowmloadFilePath(), NativeViewUtils.getFileName(audioUrl));
+                    File localFile = new File(NativeViewUtils.getDowmloadFilePath(mContext), NativeViewUtils.getFileName(audioUrl));
                     if (localFile.exists()) {
                         SoundManager.getInstance().play(localFile.getAbsolutePath());
                     }

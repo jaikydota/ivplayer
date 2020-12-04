@@ -7,11 +7,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Picture;
+import android.graphics.drawable.PictureDrawable;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.ctrlvideo.androidsvg.SVG;
 import com.ctrlvideo.comment.net.VideoProtocolInfo;
 import com.ctrlvideo.ivplayer.R;
 
@@ -256,13 +260,45 @@ public class OptionView extends RelativeLayout {
             if (eventOptionStatus != null) {
                 String defaultImage = eventOptionStatus.image_url;
                 if (!NativeViewUtils.isNullOrEmptyString(defaultImage)) {
-                    File localFile = new File(NativeViewUtils.getDowmloadFilePath(), NativeViewUtils.getFileName(defaultImage));
+                    File localFile = new File(NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(defaultImage));
                     if (localFile.exists()) {
 
                         String path = localFile.getAbsolutePath();
                         if (path.endsWith("svg")) {
 
+                            try {
+                                SVG svg = SVG.getFromFile(getContext(), path);
+//                                imageView.setImageDrawable(new PictureDrawable(svg.renderToPicture()));
+
+//                                post(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        Log.d("OptionView", "getMeasuredWidth=" + getMeasuredWidth() + "----getMeasuredHeight=" + getMeasuredHeight());
+//                                    }
+//                                });
+
+//                                Log.d("OptionView", "getMeasuredWidth=" + getMeasuredWidth() + "----getMeasuredHeight=" + getMeasuredHeight());
+
+                                Picture picture = svg.renderToPicture(getMeasuredWidth(),getMeasuredHeight());
+
+                                int width = picture.getWidth();
+                                int height =picture.getHeight();
+
+
+                                Log.d("OptionView", "width=" + width + "----height=" + height);
+
+                                PictureDrawable drawable = new PictureDrawable(picture);
+
+                                imageView.setImageDrawable(drawable);
+
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+
                         } else {
+
                             Bitmap backgroundBitmap = BitmapFactory.decodeFile(path);
                             imageView.setImageBitmap(backgroundBitmap);
 
