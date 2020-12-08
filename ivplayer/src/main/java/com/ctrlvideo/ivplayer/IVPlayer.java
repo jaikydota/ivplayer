@@ -61,7 +61,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
     private void initView(Context context) {
         mContext = context;
-        if (isInEditMode()){
+        if (isInEditMode()) {
             return;
         }
         RelativeLayout inflate = (RelativeLayout) LayoutInflater.from(context).inflate(R.layout.view_player, this, true);
@@ -69,7 +69,9 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         ivView = findViewById(R.id.ivViewContainer);
 
         initializePlayer();
-    };
+    }
+
+    ;
 
 
     private void initializePlayer() {
@@ -133,7 +135,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
             if (state.equals(ViewState.STATE_READIED)) {
 
                 // 创建资源
-                DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(mContext, Util.getUserAgent(mContext,"Ivsdk"),null);
+                DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(mContext, Util.getUserAgent(mContext, "Ivsdk"), null);
                 //播放器使用vid的视频
                 Uri mp4VideoUri = Uri.parse(data);
                 MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mp4VideoUri);
@@ -144,6 +146,11 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
                 pListener.onStateChanged(PlayerState.STATE_LOADED);
             }
+        }
+
+        @Override
+        public void onEventCallback(String result) {
+            Log.d(TAG, "onEventCallback--- " + result);
         }
 
         /**
@@ -175,8 +182,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         public void ctrlPlayer(String state) {
             if (state.equals("play")) {
                 player.setPlayWhenReady(true);
-            }
-            else if (state.equals("pause")) {
+            } else if (state.equals("pause")) {
                 player.setPlayWhenReady(false);
             }
         }
@@ -193,9 +199,10 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
         /**
          * 当事件状态改变时
+         *
          * @param eType 事件类型，IVEvent.EVENT_SPEECHRECOGN 语音识别事件，IVEvent.EVENT_GESTURE 手势事件
          * @param state 状态，"prepare" 事件即将开始，"start" 事件开始，"end" 事件结束, "succeed" 触发成功跳帧
-         * @param time long类型，毫秒
+         * @param time  long类型，毫秒
          */
         @Override
         public void onEventStateChanged(String eType, String state, long time) {
@@ -215,6 +222,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
         /**
          * 当IVView收到自定义通知
+         *
          * @param msg 通知内容
          */
         @Override
@@ -229,13 +237,13 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
     }
 
 
-
     //对外开放接口
 
     //普通接口
 
     /**
      * 加载互动视频
+     *
      * @param pid 智令互动编辑器制作的互动视频项目id
      */
     public void loadIVideo(@NonNull String pid, @NonNull IVPlayerListener playerListener) {
@@ -244,8 +252,8 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
     }
 
 
-
     //播控接口
+
     /**
      * 播放互动视频
      */
@@ -269,6 +277,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
     /**
      * 当前是否正在播放
+     *
      * @return true 正在播放，false未播放
      */
     public boolean isPlaying() {
@@ -277,14 +286,12 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
     /**
      * 设置当前播放位置，单位是毫秒，此函数请慎用
+     *
      * @param msec 时间，毫秒
      */
     public void seekTo(int msec) {
         player.seekTo(msec);
     }
-
-
-
 
 
 }

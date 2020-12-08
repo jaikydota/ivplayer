@@ -2,6 +2,8 @@ package com.ctrlvideo.nativeivview;
 
 public interface IComponentListener {
 
+    void onEventCallback(String action);
+
     void onComponentSeek(long position);
 
     boolean isVideoPlaying();

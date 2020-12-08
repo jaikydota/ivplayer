@@ -19,6 +19,7 @@ public class VideoProtocolInfo {
 
         public boolean auto_indent;
         public List<EventRail> event_list;//事件轨
+        public String project_id;//项目ID
     }
 
     /**
@@ -41,6 +42,7 @@ public class VideoProtocolInfo {
         public String type;
         //控件
         public List<EventOption> options;
+        public String name;
 
 
         public String classify;
@@ -93,6 +95,7 @@ public class VideoProtocolInfo {
         public boolean hide_option;
         public float skip_start_time;
         public boolean blink;//闪烁;
+        public String option_name;
     }
 
     /**

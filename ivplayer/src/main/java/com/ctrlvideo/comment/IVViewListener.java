@@ -54,6 +54,14 @@ public interface IVViewListener {
 
 
     /**
+     * 互动事件信息状态回调（互动点信息、互动曝光信息、互动操作信息）
+     *
+     * @param result 互动信息json字符串数据
+     */
+    void onEventCallback(String result);
+
+
+    /**
      * 当IVView发生错误时
      *
      * @param errorType 错误信息

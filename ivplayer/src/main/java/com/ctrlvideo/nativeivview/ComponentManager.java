@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import com.ctrlvideo.comment.net.EventActionInfoCallback;
+import com.ctrlvideo.comment.net.EventPresentInfoCallback;
 import com.ctrlvideo.comment.net.VideoProtocolInfo;
 
 import java.io.File;
@@ -123,10 +125,14 @@ public class ComponentManager {
         String classify = eventComponent.classify;
         String type = eventComponent.type;
         if (EventClassify.TE.getClassify().equals(classify)) {
-            if (EventType.PASSIVITY.getType().equals(type)) {//被动触发
+            if (EventType.SELECT.getType().equals(type) || EventType.CLICK.getType().equals(type)) {
+                iComponentListener.onEventCallback(new EventPresentInfoCallback(eventComponent).toJson());
+            } else if (EventType.PASSIVITY.getType().equals(type)) {//被动触发
                 passiveTrigger(eventComponent);
             }
         }
+
+//        listener.onEventCallback(new EventPresentInfoCallback(eventComponent).toJson());
     }
 
     /**
@@ -146,27 +152,36 @@ public class ComponentManager {
                 long skip_time = (long) (eventComponent.active_skip_time * 1000);
                 if (skip_time >= 0 && iComponentListener != null) {
                     iComponentListener.onComponentSeek(skip_time);
+                    iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                 }
             } else if ("play".equals(choice)) {//播放
                 if (iComponentListener != null) {
                     if (!iComponentListener.isVideoPlaying()) {
                         iComponentListener.ctrlPlayer(true);
+
                     }
+                    iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                 }
             } else if ("pause".equals(choice)) {//暂停
                 if (iComponentListener != null) {
                     if (iComponentListener.isVideoPlaying()) {
                         iComponentListener.ctrlPlayer(false);
+                        passivePause = true;
                     }
+                    iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                 }
             } else if ("href_url".equals(choice)) {//跳转链接
                 if (iComponentListener != null) {
                     iComponentListener.hrefUrl(eventFeature.href_url);
+                    iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                 }
             }
         }
 
     }
+
+    //被动暂停
+    private boolean passivePause;
 
 
     /**
@@ -178,7 +193,6 @@ public class ComponentManager {
 
 
         SelectedComponent selectedComponent = rootView.findViewWithTag(eventComponent.event_id);
-
 
         if (selectedComponent == null) {
 
@@ -309,7 +323,7 @@ public class ComponentManager {
      * @param result
      */
     private void setClickComponentResult(VideoProtocolInfo.EventComponent eventComponent, boolean result) {
-
+//        iComponentListener.onEventActionCallback(new EventActionInfoCallback(eventComponent, result).toJson());
 
         Log.d(TAG, "单击选择-----" + result);
 
@@ -347,6 +361,7 @@ public class ComponentManager {
                     long ended_skip_time = (long) (eventComponent.active_skip_time * 1000);
                     if (ended_skip_time >= 0 && iComponentListener != null) {
                         iComponentListener.onComponentSeek(ended_skip_time);
+                        iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                     }
                 } else if ("toggle_playpause".equals(choice)) {//播放或者暂停
                     if (iComponentListener != null) {
@@ -355,27 +370,35 @@ public class ComponentManager {
                         } else {
                             iComponentListener.ctrlPlayer(true);
                         }
+                        iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
+
                     }
                 } else if ("play".equals(choice)) {//播放
                     if (iComponentListener != null) {
                         if (!iComponentListener.isVideoPlaying()) {
                             iComponentListener.ctrlPlayer(true);
                         }
+                        iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                     }
                 } else if ("pause".equals(choice)) {//暂停
                     if (iComponentListener != null) {
                         if (iComponentListener.isVideoPlaying()) {
                             iComponentListener.ctrlPlayer(false);
                         }
+                        iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                     }
                 } else if ("href_url".equals(choice)) {//跳转链接
                     if (iComponentListener != null) {
                         iComponentListener.hrefUrl(eventFeature.href_url);
+                        iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                     }
+
                 } else if ("call_phone".equals(choice)) {//打电话
                     if (iComponentListener != null) {
                         iComponentListener.callPhone(eventFeature.call_phone);
+                        iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                     }
+
                 }
             }
 
@@ -383,6 +406,7 @@ public class ComponentManager {
             long ended_skip_time = (long) (eventComponent.ended_skip_time * 1000);
             if (ended_skip_time >= 0) {
                 iComponentListener.onComponentSeek(ended_skip_time);
+                iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, false).toJson());
             }
         }
 
@@ -481,7 +505,10 @@ public class ComponentManager {
             if (option.skip_start_time >= 0) {
                 if (iComponentListener != null) {
                     iComponentListener.onComponentSeek((long) (option.skip_start_time * 1000));
+                    iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, optionIndex).toJson());
                 }
+
+
             }
 
             //触发音效

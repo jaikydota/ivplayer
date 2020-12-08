@@ -20,6 +20,7 @@ import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
 import com.ctrlvideo.comment.net.DownloadCallback;
+import com.ctrlvideo.comment.net.EventIntractInfoCallback;
 import com.ctrlvideo.comment.net.GetIVideoInfoCallback;
 import com.ctrlvideo.comment.net.HttpClient;
 import com.ctrlvideo.comment.net.VideoProtocolInfo;
@@ -160,6 +161,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         this.videoProtocolInfo = videoProtocolInfo;
         nowViewStatus = ViewState.STATE_READIED;
         listener.onIVViewStateChanged(nowViewStatus, videoProtocolInfo.release_info.url);
+        listener.onEventCallback(new EventIntractInfoCallback(videoProtocolInfo).toJson());
 
 
         SoundManager.getInstance().release();
@@ -438,6 +440,8 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
                         Log.d(TAG, "事件范围内----" + currentPosition + "----------" + eventComponent.event_id);
                         componentManager.eventIn(eventComponent);
+
+
 //                        if (eventComponent.type === 'passivity'){
 //                            if (protocolUtils.numvalItemShow(this.event_numvals, eventObj)) {
 //                                this.passivity_trigger(eventObj);
@@ -453,11 +457,12 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     }
 
 
+    // 视频播放状态
     private boolean videoPlaying;
 
     @Override
     public void onPlayerStateChanged(String status) {
-
+        Log.d(TAG, "onPlayerStateChanged----status=" + status);
 
         if (nowViewStatus.equals(ViewState.STATE_READIED)) {
             videoPlaying = "onplay".equals(status);
@@ -479,6 +484,14 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         SoundManager.getInstance().release();
 
 
+    }
+
+
+    @Override
+    public void onEventCallback(String action) {
+        if (listener != null) {
+            listener.onEventCallback(action);
+        }
     }
 
     /**

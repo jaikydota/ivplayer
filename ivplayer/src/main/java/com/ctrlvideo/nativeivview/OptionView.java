@@ -127,15 +127,17 @@ public class OptionView extends RelativeLayout {
         post(new Runnable() {
             @Override
             public void run() {
+
+
                 Bitmap bitmap = getBitmap(status, option);
                 if (bitmap != null) {
                     optionImage.setImageBitmap(bitmap);
                 }
+
             }
         });
 
         if (option.layout_style != null && option.layout_style.filter != null) {
-
             VideoProtocolInfo.EventOptionFilter optionFilter = option.layout_style.filter;
 
             ColorMatrix imageMatrix = new ColorMatrix();
@@ -175,8 +177,8 @@ public class OptionView extends RelativeLayout {
 
             }
 
-
             optionImage.setColorFilter(new ColorMatrixColorFilter(imageMatrix));
+
         }
 
     }
