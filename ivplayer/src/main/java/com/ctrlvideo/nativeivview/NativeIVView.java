@@ -457,15 +457,16 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     }
 
 
-    // 视频播放状态
-    private boolean videoPlaying;
+//    // 视频播放状态
+//    private boolean videoPlaying;
 
     @Override
     public void onPlayerStateChanged(String status) {
         Log.d(TAG, "onPlayerStateChanged----status=" + status);
 
         if (nowViewStatus.equals(ViewState.STATE_READIED)) {
-            videoPlaying = "onplay".equals(status);
+//            videoPlaying = "onplay".equals(status);
+            componentManager.setVideoPlaying( "onplay".equals(status));
         }
     }
 
@@ -506,13 +507,22 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         }
     }
 
-    @Override
-    public boolean isVideoPlaying() {
-        return videoPlaying;
-    }
+//    @Override
+//    public boolean isVideoPlaying() {
+//        return videoPlaying;
+//    }
 
     @Override
     public void ctrlPlayer(boolean play) {
+
+//        if (play && videoPlaying) {
+//            return;
+//        }
+//
+//        if (!play && !videoPlaying) {
+//            return;
+//        }
+
         if (listener != null) {
             listener.ctrlPlayer(play ? "play" : "pause");
         }

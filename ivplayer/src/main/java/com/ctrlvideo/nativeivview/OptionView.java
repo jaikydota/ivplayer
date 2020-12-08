@@ -159,7 +159,7 @@ public class OptionView extends RelativeLayout {
             try {
 
                 float contrast = (Float.parseFloat(optionFilter.contrast.replace("%", "").trim()) / 100) - 1.0f;
-//                Log.d("OptionView", "contrast=" + contrast);
+                Log.d("OptionView", "contrast=" + contrast);
 //                contrast = 1.1f;
                 // -1 --- 1   0 原图
                 ColorMatrix contrastMatrix = new ColorMatrix();

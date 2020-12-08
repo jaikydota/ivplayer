@@ -6,7 +6,7 @@ public interface IComponentListener {
 
     void onComponentSeek(long position);
 
-    boolean isVideoPlaying();
+//    boolean isVideoPlaying();
 
     void ctrlPlayer(boolean play);
 
