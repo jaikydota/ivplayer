@@ -6,16 +6,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.RelativeLayout;
 
+import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
 import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
+import com.ctrlvideo.nativeivview.utils.LogUtils;
 import com.ctrlvideo.nativeivview.utils.NativeViewUtils;
 import com.ctrlvideo.nativeivview.widget.OptionView;
-import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
 
 import java.io.File;
 import java.util.List;
@@ -94,7 +94,7 @@ public class ClickComponent extends RelativeLayout {
                 @Override
                 public void onTrigger() {
 
-                    Log.d(TAG, "onTrigger");
+                    LogUtils.d(TAG, "onTrigger");
 
                     optionView.setOption(OptionView.STATUS_CLICK_ON, option);
 
@@ -114,7 +114,7 @@ public class ClickComponent extends RelativeLayout {
 
                 @Override
                 public void onTriggerAfter() {
-                    Log.d(TAG, "onTriggerAfter");
+                    LogUtils.d(TAG, "onTriggerAfter");
 
                     optionView.setOption(OptionView.STATUS_DEFAULT, option);
 
@@ -128,7 +128,7 @@ public class ClickComponent extends RelativeLayout {
                 @Override
                 public void onTriggerCancel() {
 
-                    Log.d(TAG, "onTriggerCancel");
+                    LogUtils.d(TAG, "onTriggerCancel");
 
                     optionView.setOption(OptionView.STATUS_DEFAULT, option);
                 }

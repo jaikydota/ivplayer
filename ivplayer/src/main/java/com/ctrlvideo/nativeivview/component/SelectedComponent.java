@@ -6,14 +6,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
 import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
+import com.ctrlvideo.nativeivview.utils.LogUtils;
 import com.ctrlvideo.nativeivview.utils.NativeViewUtils;
 import com.ctrlvideo.nativeivview.widget.OptionView;
-import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
 
 import java.io.File;
 import java.util.List;
@@ -84,7 +84,7 @@ public class SelectedComponent extends RelativeLayout {
                 @Override
                 public void onTrigger() {
 
-                    Log.d("SelectedComponent", "onTrigger");
+                    LogUtils.d("SelectedComponent", "onTrigger");
 
                     optionView.setOption(OptionView.STATUS_CLICK_ON, option);
 
@@ -104,7 +104,7 @@ public class SelectedComponent extends RelativeLayout {
 
                 @Override
                 public void onTriggerAfter() {
-                    Log.d("SelectedComponent", "onTriggerAfter");
+                    LogUtils.d("SelectedComponent", "onTriggerAfter");
 
                     optionView.setOption(OptionView.STATUS_DEFAULT, option);
 
@@ -118,7 +118,7 @@ public class SelectedComponent extends RelativeLayout {
                 @Override
                 public void onTriggerCancel() {
 
-                    Log.d("SelectedComponent", "onTriggerCancel");
+                    LogUtils.d("SelectedComponent", "onTriggerCancel");
 
                     optionView.setOption(OptionView.STATUS_DEFAULT, option);
                 }

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.SystemClock;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -19,15 +18,16 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
-import com.ctrlvideo.nativeivview.net.callback.DownloadCallback;
-import com.ctrlvideo.nativeivview.model.EventIntractInfoCallback;
-import com.ctrlvideo.nativeivview.net.callback.GetIVideoInfoCallback;
-import com.ctrlvideo.nativeivview.net.HttpClient;
-import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
 import com.ctrlvideo.ivplayer.R;
-import com.ctrlvideo.nativeivview.component.ComponentManager;
 import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
+import com.ctrlvideo.nativeivview.component.ComponentManager;
 import com.ctrlvideo.nativeivview.component.IComponentListener;
+import com.ctrlvideo.nativeivview.model.EventIntractInfoCallback;
+import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
+import com.ctrlvideo.nativeivview.net.HttpClient;
+import com.ctrlvideo.nativeivview.net.callback.DownloadCallback;
+import com.ctrlvideo.nativeivview.net.callback.GetIVideoInfoCallback;
+import com.ctrlvideo.nativeivview.utils.LogUtils;
 import com.ctrlvideo.nativeivview.utils.NativeViewUtils;
 
 import java.io.File;
@@ -136,7 +136,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
             @Override
             protected void onFailure(String error) {
-                Log.d("onFailure", error);
+                LogUtils.d("onFailure", error);
 
 
                 post(new Runnable() {
@@ -153,7 +153,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                 post(new Runnable() {
                     @Override
                     public void run() {
-//                        Log.d("onResponse", videoProtocolInfo.protocol.auto_indent + "");
+//                        LogUtils.d("onResponse", videoProtocolInfo.protocol.auto_indent + "");
                         onLoadVideoInfoFinish(videoProtocolInfo);
                     }
                 });
@@ -175,11 +175,11 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         componentManager = new ComponentManager();
         componentManager.initParmas(rlWVContainer, videoProtocolInfo, this);
 
-//        Log.d(TAG, "currentTime=" + current);
+//        LogUtils.d(TAG, "currentTime=" + current);
 
 //        String url = videoProtocolInfo.protocol.event_list.get(2).obj_list.get(0).options.get(0).custom.click_default.image_url;
 
-//        Log.d(TAG, "url=" + url);
+//        LogUtils.d(TAG, "url=" + url);
         preloadResouse();
 
         getHandler().removeCallbacks(mTicker);
@@ -274,7 +274,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
 
 //            long newTime = System.currentTimeMillis();
-//            Log.d(TAG, "currentTime=" + currentPosition + "---------------offst=" + (newTime - systemTime));
+//            LogUtils.d(TAG, "currentTime=" + currentPosition + "---------------offst=" + (newTime - systemTime));
 //            systemTime = newTime;
 
             downLoadResouse(currentPosition);
@@ -301,7 +301,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         for (String key : keys) {
             Long time = resourseMap.get(key);
             if (currentPosition > time) {
-//                Log.d("downLoadResouse", "下载文件---" + key);
+//                LogUtils.d("downLoadResouse", "下载文件---" + key);
 
 
                 File file = new File(NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(key));
@@ -309,20 +309,20 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                     HttpClient.getInstanse().download(key, NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(key), new DownloadCallback() {
                         @Override
                         public void onDownloadStart(String url) {
-                            Log.d(TAG, "onDownloadStart----url---" + url);
+                            LogUtils.d(TAG, "onDownloadStart----url---" + url);
                             downloading.add(url);
                         }
 
                         @Override
                         public void onDownloadFailed(String url, String error) {
                             downloading.remove(url);
-                            Log.d(TAG, "onDownloadFailed----url---" + url);
+                            LogUtils.d(TAG, "onDownloadFailed----url---" + url);
 
                         }
 
                         @Override
                         public void onDownloadSuccess(String url, File file) {
-                            Log.d(TAG, "onDownloadSuccess----url---" + url);
+                            LogUtils.d(TAG, "onDownloadSuccess----url---" + url);
                             downloading.remove(url);
 
                             downloadFinish.add(url);
@@ -330,7 +330,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
                         @Override
                         public void onDownloading(String url, int progress) {
-//                            Log.d("downLoadResouse", "onDownloadStart----url---" + url);
+//                            LogUtils.d("downLoadResouse", "onDownloadStart----url---" + url);
                         }
                     });
                 }
@@ -346,7 +346,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         }
 
 
-//        Log.d("downLoadResouse", "-----------------------------------");
+//        LogUtils.d("downLoadResouse", "-----------------------------------");
 
     }
 
@@ -363,7 +363,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
      */
     private void dealwithProtocol(long currentPosition) {
 
-//        Log.d("dealwithProtocol", new Gson().toJson(resourseMap));
+//        LogUtils.d("dealwithProtocol", new Gson().toJson(resourseMap));
 
         if (videoProtocolInfo == null)
             return;
@@ -401,12 +401,12 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                     long startTime = (long) (eventComponent.start_time * 1000);
                     long endTime = (long) (eventComponent.end_time * 1000);
 
-//                    Log.d(TAG, "startTime=" + startTime + "---endTime=" + endTime);
+//                    LogUtils.d(TAG, "startTime=" + startTime + "---endTime=" + endTime);
 
 
 //                    float startFrame = startTime / 40;
 //                    float endFrame = endTime / 40;
-//                    Log.d(TAG, "startFrame=" + startFrame + "---endFrame=" + endFrame);
+//                    LogUtils.d(TAG, "startFrame=" + startFrame + "---endFrame=" + endFrame);
 
 
                     //事件触发 UI渲染
@@ -430,12 +430,12 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
 
                     if (!eventComponent.startIsActive && currentPosition >= startTime && currentPosition < (startTime + 40)) {
-                        Log.d(TAG, "事件开始----" + currentPosition + "----------" + eventComponent.event_id);
+                        LogUtils.d(TAG, "事件开始----" + currentPosition + "----------" + eventComponent.event_id);
                         eventComponent.startIsActive = true;
 
                     } else if (!eventComponent.endIsActive && currentPosition >= (endTime - 40) && currentPosition < endTime) {
 
-                        Log.d(TAG, "事件结束----" + currentPosition + "----------" + eventComponent.event_id);
+                        LogUtils.d(TAG, "事件结束----" + currentPosition + "----------" + eventComponent.event_id);
                         eventComponent.endIsActive = true;
                         componentManager.eventEnd(eventComponent);
                     }
@@ -444,7 +444,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                     if (!eventComponent.eventIsActive && currentPosition >= startTime && currentPosition < endTime && currentPosition > 0) {
                         eventComponent.eventIsActive = true;
 
-                        Log.d(TAG, "事件范围内----" + currentPosition + "----------" + eventComponent.event_id);
+                        LogUtils.d(TAG, "事件范围内----" + currentPosition + "----------" + eventComponent.event_id);
                         componentManager.eventIn(eventComponent);
 
 
@@ -468,7 +468,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
     @Override
     public void onPlayerStateChanged(String status) {
-        Log.d(TAG, "onPlayerStateChanged----status=" + status);
+        LogUtils.d(TAG, "onPlayerStateChanged----status=" + status);
 
         if (nowViewStatus.equals(ViewState.STATE_READIED)) {
 //            videoPlaying = "onplay".equals(status);
@@ -479,12 +479,12 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onResume() {
         //重置后恢复
-        Log.d(TAG, "onResume");
+        LogUtils.d(TAG, "onResume");
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     public void onDestroy() {
-        Log.d(TAG, "onDestroy");
+        LogUtils.d(TAG, "onDestroy");
 
         getHandler().removeCallbacks(mTicker);
 

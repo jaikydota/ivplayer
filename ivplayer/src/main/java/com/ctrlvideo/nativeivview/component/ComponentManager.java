@@ -1,18 +1,18 @@
 package com.ctrlvideo.nativeivview.component;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
+import com.ctrlvideo.nativeivview.constant.EventClassify;
+import com.ctrlvideo.nativeivview.constant.EventType;
 import com.ctrlvideo.nativeivview.model.EventActionInfoCallback;
 import com.ctrlvideo.nativeivview.model.EventPresentInfoCallback;
 import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
-import com.ctrlvideo.nativeivview.constant.EventClassify;
-import com.ctrlvideo.nativeivview.constant.EventType;
-import com.ctrlvideo.nativeivview.widget.OptionView;
-import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
+import com.ctrlvideo.nativeivview.utils.LogUtils;
 import com.ctrlvideo.nativeivview.utils.NativeViewUtils;
+import com.ctrlvideo.nativeivview.widget.OptionView;
 
 import java.io.File;
 import java.util.List;
@@ -153,7 +153,7 @@ public class ComponentManager {
      */
     private void passiveTrigger(VideoProtocolInfo.EventComponent eventComponent) {
 
-        Log.d(TAG, "被动触发-------" + eventComponent.event_id);
+        LogUtils.d(TAG, "被动触发-------" + eventComponent.event_id);
 
 
         VideoProtocolInfo.EventFeature eventFeature = eventComponent.feature;
@@ -215,7 +215,7 @@ public class ComponentManager {
                 @Override
                 public void onOptionSelected(int option) {
 
-                    Log.d("ComponentManger", "onOptionSelected===" + option);
+                    LogUtils.d("ComponentManger", "onOptionSelected===" + option);
 
                     setSelectedComponentResult(eventComponent, option);
                 }
@@ -242,7 +242,7 @@ public class ComponentManager {
             clickComponent.setOnOptionClickListener(new ClickComponent.OnOptionClickListener() {
                 @Override
                 public void onOptionClick(int option) {
-//                    Log.d(TAG, "option===" + option);
+//                    LogUtils.d(TAG, "option===" + option);
 
                     setClickComponentResult(eventComponent, true);
                 }
@@ -336,7 +336,7 @@ public class ComponentManager {
     private void setClickComponentResult(VideoProtocolInfo.EventComponent eventComponent, boolean result) {
 //        iComponentListener.onEventActionCallback(new EventActionInfoCallback(eventComponent, result).toJson());
 
-        Log.d(TAG, "单击选择-----" + result);
+        LogUtils.d(TAG, "单击选择-----" + result);
 
         if ((result && hasTriggersucceedSuStyle(eventComponent)) || (!result && hasTriggerFailStyle(eventComponent))) {
 
@@ -511,7 +511,7 @@ public class ComponentManager {
         if (options != null) {
             VideoProtocolInfo.EventOption option = options.get(optionIndex);
 
-            Log.d("ComponentResult", "optionIndex=" + optionIndex + "---" + option.skip_start_time);
+            LogUtils.d("ComponentResult", "optionIndex=" + optionIndex + "---" + option.skip_start_time);
 
             //跳转帧
             if (option.skip_start_time >= 0) {

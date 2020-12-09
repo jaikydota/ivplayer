@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
 
@@ -15,6 +14,7 @@ import androidx.lifecycle.LifecycleObserver;
 import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
+import com.ctrlvideo.nativeivview.utils.LogUtils;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -97,7 +97,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             if (playWhenReady && playbackState == Player.STATE_READY) {
-                Log.d(TAG, "onPlayerStateChanged: playing media");
+                LogUtils.d(TAG, "onPlayerStateChanged: playing media");
             }
             switch (playbackState) {
                 case Player.STATE_IDLE:
@@ -150,7 +150,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
         @Override
         public void onEventCallback(String result) {
-            Log.d(TAG, "onEventCallback--- " + result);
+            LogUtils.d(TAG, "onEventCallback--- " + result);
         }
 
         /**
@@ -206,7 +206,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
          */
         @Override
         public void onEventStateChanged(String eType, String state, long time) {
-            Log.d(TAG, "onEventStateChanged eventType:" + eType + "  state:" + state + "  time:" + time);
+            LogUtils.d(TAG, "onEventStateChanged eventType:" + eType + "  state:" + state + "  time:" + time);
         }
 
         /**
@@ -216,7 +216,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
          */
         @Override
         public void onError(String errorType) {
-            Log.d(TAG, "onIvViewError " + errorType);
+            LogUtils.d(TAG, "onIvViewError " + errorType);
             pListener.onError(errorType);
         }
 

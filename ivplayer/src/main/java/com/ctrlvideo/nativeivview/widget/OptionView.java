@@ -14,7 +14,6 @@ import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,9 +22,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.ctrlvideo.nativeivview.svgloader.SVG;
-import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
 import com.ctrlvideo.ivplayer.R;
+import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
+import com.ctrlvideo.nativeivview.svgloader.SVG;
+import com.ctrlvideo.nativeivview.utils.LogUtils;
 import com.ctrlvideo.nativeivview.utils.NativeViewUtils;
 
 import java.io.File;
@@ -160,13 +160,13 @@ public class OptionView extends RelativeLayout {
             try {
 
                 float contrast = (Float.parseFloat(optionFilter.contrast.replace("%", "").trim()) / 100) - 1.0f;
-                Log.d("OptionView", "contrast=" + contrast);
+                LogUtils.d("OptionView", "contrast=" + contrast);
 //                contrast = 1.1f;
                 // -1 --- 1   0 原图
                 ColorMatrix contrastMatrix = new ColorMatrix();
                 float scale = contrast + 1.f;
                 float translate = (-.5f * scale + .5f) * 255.f;
-//                Log.d("OptionView", "contrast=" + contrast + "----scale=" + scale + "----translate=" + translate);
+//                LogUtils.d("OptionView", "contrast=" + contrast + "----scale=" + scale + "----translate=" + translate);
                 contrastMatrix.set(new float[]{
                         scale, 0, 0, 0, translate,
                         0, scale, 0, 0, translate,
@@ -276,11 +276,11 @@ public class OptionView extends RelativeLayout {
 //                                post(new Runnable() {
 //                                    @Override
 //                                    public void run() {
-//                                        Log.d("OptionView", "getMeasuredWidth=" + getMeasuredWidth() + "----getMeasuredHeight=" + getMeasuredHeight());
+//                                        LogUtils.d("OptionView", "getMeasuredWidth=" + getMeasuredWidth() + "----getMeasuredHeight=" + getMeasuredHeight());
 //                                    }
 //                                });
 
-//                                Log.d("OptionView", "getMeasuredWidth=" + getMeasuredWidth() + "----getMeasuredHeight=" + getMeasuredHeight());
+//                                LogUtils.d("OptionView", "getMeasuredWidth=" + getMeasuredWidth() + "----getMeasuredHeight=" + getMeasuredHeight());
 
                                 Picture picture = svg.renderToPicture(getMeasuredWidth(),getMeasuredHeight());
 
@@ -288,7 +288,7 @@ public class OptionView extends RelativeLayout {
                                 int height =picture.getHeight();
 
 
-                                Log.d("OptionView", "width=" + width + "----height=" + height);
+                                LogUtils.d("OptionView", "width=" + width + "----height=" + height);
 
                                 PictureDrawable drawable = new PictureDrawable(picture);
 
