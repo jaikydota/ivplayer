@@ -19,12 +19,16 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
-import com.ctrlvideo.comment.net.DownloadCallback;
-import com.ctrlvideo.comment.net.EventIntractInfoCallback;
-import com.ctrlvideo.comment.net.GetIVideoInfoCallback;
-import com.ctrlvideo.comment.net.HttpClient;
-import com.ctrlvideo.comment.net.VideoProtocolInfo;
+import com.ctrlvideo.nativeivview.net.callback.DownloadCallback;
+import com.ctrlvideo.nativeivview.model.EventIntractInfoCallback;
+import com.ctrlvideo.nativeivview.net.callback.GetIVideoInfoCallback;
+import com.ctrlvideo.nativeivview.net.HttpClient;
+import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
 import com.ctrlvideo.ivplayer.R;
+import com.ctrlvideo.nativeivview.component.ComponentManager;
+import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
+import com.ctrlvideo.nativeivview.component.IComponentListener;
+import com.ctrlvideo.nativeivview.utils.NativeViewUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -98,6 +102,8 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
             }
         });
     }
+
+
 
     @Override
     public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext) {
