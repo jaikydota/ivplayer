@@ -90,29 +90,47 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         ivView.initIVView(pid, null, new IVListener(), (Activity) mContext);
     }
 
+    private String playerStatus;
+
 
     //播放器状态改变listener
     private class ComponentListener implements Player.EventListener {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            if (playWhenReady && playbackState == Player.STATE_READY) {
-                LogUtils.d(TAG, "onPlayerStateChanged: playing media");
-            }
+
+
+//            if (playWhenReady && playbackState == Player.STATE_READY) {
+//                LogUtils.d(TAG, "onPlayerStateChanged: playing media");
+//            }
             switch (playbackState) {
                 case Player.STATE_IDLE:
+
+                    LogUtils.d(TAG, "onPlayerStateChanged: playing media---STATE_IDLE");
+
                     break;
                 case Player.STATE_BUFFERING:
+
+                    playerStatus = PlayerState.STATE_LOADED;
+
+                    ivView.onPlayerStateChanged(playerStatus);
+                    LogUtils.d(TAG, "onPlayerStateChanged: playing media---STATE_BUFFERING");
+
                     break;
                 //当播放器播放或暂停时
                 case Player.STATE_READY:
-                    String playStatus = playWhenReady ? "onplay" : "onpause";
-                    ivView.onPlayerStateChanged(playStatus);
+                    LogUtils.d(TAG, "onPlayerStateChanged: playing media---STATE_READY---" + playWhenReady);
 
-                    pListener.onStateChanged(playStatus);
+                    playerStatus = playWhenReady ? PlayerState.STATE_ONPLAY : PlayerState.STATE_ONPAUSE;
+                    ivView.onPlayerStateChanged(playerStatus);
+                    pListener.onStateChanged(playerStatus);
                     break;
                 //当播放器 播放结束[到视频结尾]时
                 case Player.STATE_ENDED:
+                    playerStatus = PlayerState.STATE_END;
+                    ivView.onPlayerStateChanged(playerStatus);
+                    LogUtils.d(TAG, "onPlayerStateChanged: playing media---STATE_ENDED");
+
                     break;
                 default:
                     break;
@@ -150,7 +168,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
         @Override
         public void onEventCallback(String result) {
-            LogUtils.d(TAG, "onEventCallback--- " + result);
+//            LogUtils.d(TAG, "onEventCallback--- " + result);
         }
 
         /**
@@ -181,7 +199,12 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         @Override
         public void ctrlPlayer(String state) {
             if (state.equals("play")) {
-                player.setPlayWhenReady(true);
+                if (PlayerState.STATE_END.equals(playerStatus)) {
+                    player.seekTo(0);
+                } else {
+                    player.setPlayWhenReady(true);
+                }
+
             } else if (state.equals("pause")) {
                 player.setPlayWhenReady(false);
             }
@@ -231,8 +254,10 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         }
 
         @Override
-        public void onHrefUrl(String url) {
+        public boolean onHrefUrl(String url) {
             pListener.onHrefUrl(url);
+            return false;
+
         }
     }
 

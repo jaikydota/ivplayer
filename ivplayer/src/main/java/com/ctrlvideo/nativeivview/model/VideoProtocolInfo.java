@@ -1,5 +1,6 @@
 package com.ctrlvideo.nativeivview.model;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -171,6 +172,24 @@ public class VideoProtocolInfo {
         public String url;
 
         public VideoParams v_params;
+        public String player_controller;
+
+        public PlayerController getPlayerController() {
+            if (player_controller != null) {
+                return new Gson().fromJson(player_controller, PlayerController.class);
+            }
+            return new PlayerController();
+        }
+    }
+
+    public class PlayerController {
+
+        public boolean show_start_btn;
+        public boolean show_playPause_btn;
+
+        public boolean isShowContrller() {
+            return show_start_btn || show_playPause_btn;
+        }
     }
 
     public class VideoParams {

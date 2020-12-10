@@ -2,6 +2,9 @@ package com.ctrlvideo.nativeivview;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -18,6 +21,7 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
+import com.ctrlvideo.ivplayer.PlayerState;
 import com.ctrlvideo.ivplayer.R;
 import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
 import com.ctrlvideo.nativeivview.component.ComponentManager;
@@ -29,6 +33,7 @@ import com.ctrlvideo.nativeivview.net.callback.DownloadCallback;
 import com.ctrlvideo.nativeivview.net.callback.GetIVideoInfoCallback;
 import com.ctrlvideo.nativeivview.utils.LogUtils;
 import com.ctrlvideo.nativeivview.utils.NativeViewUtils;
+import com.ctrlvideo.nativeivview.widget.ControllerView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,6 +55,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
     //轮询间隔
     private long delay = 36;
+    private long hideControllerViewDelay = 5000;
 
     //当前视图状态
     private String nowViewStatus = ViewState.STATE_LOADING;
@@ -95,14 +101,90 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         LayoutInflater.from(context).inflate(R.layout.view_native, this, true);
 
         rlWVContainer = findViewById(R.id.rlWVContainer);
-        rlWVContainer.setOnClickListener(new OnClickListener() {
+        setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 listener.onIVViewClick("");
+                if (mControllerView != null) {
+                    showControllerView(mControllerView.getVisibility() == View.GONE);
+                }
+
+
+//                showControllerView(mControllerView.getVisibility() == View.GONE);
             }
         });
+
     }
 
+
+    private void showControllerView(boolean show) {
+
+        if (mControllerView != null) {
+            if (show) {
+
+                mControllerView.setVisibility(View.VISIBLE);
+                handler.removeMessages(MES_HIDEVIEW);
+                handler.sendEmptyMessageDelayed(MES_HIDEVIEW, hideControllerViewDelay);
+
+            } else {
+
+                mControllerView.setVisibility(View.GONE);
+                handler.removeMessages(MES_HIDEVIEW);
+            }
+        }
+    }
+
+    Handler handler = new Handler(Looper.getMainLooper()) {
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            showControllerView(false);
+        }
+    };
+
+
+    /**
+     * 初始化播控
+     *
+     * @param releaseInfo
+     */
+    private void initControlView(VideoProtocolInfo.ReleaseInfo releaseInfo) {
+        if (mControllerView != null) {
+            removeView(mControllerView);
+            mControllerView = null;
+        }
+
+        if (releaseInfo != null) {
+            VideoProtocolInfo.PlayerController playerController = releaseInfo.getPlayerController();
+            if (playerController.isShowContrller()) {
+                mControllerView = new ControllerView(getContext());
+                mControllerView.setOnControllerListener(new ControllerView.OnControllerListener() {
+
+                    @Override
+                    public void onPlayOrPause(boolean play) {
+
+                        ctrlPlayer(play);
+                    }
+
+                    @Override
+                    public void onRestart() {
+//                        onComponentSeek(0);
+                        ctrlPlayer(true);
+                    }
+                });
+                mControllerView.initController(playerController);
+                addView(mControllerView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+
+                showControllerView(true);
+            }
+        }
+    }
+
+
+    private ControllerView mControllerView;
 
 
     @Override
@@ -165,14 +247,18 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     private void onLoadVideoInfoFinish(VideoProtocolInfo videoProtocolInfo) {
 
         this.videoProtocolInfo = videoProtocolInfo;
+        componentManager = new ComponentManager();
         nowViewStatus = ViewState.STATE_READIED;
+
+        initControlView(videoProtocolInfo.release_info);
+
         listener.onIVViewStateChanged(nowViewStatus, videoProtocolInfo.release_info.url);
         listener.onEventCallback(new EventIntractInfoCallback(videoProtocolInfo).toJson());
 
 
         SoundManager.getInstance().release();
         rlWVContainer.removeAllViews();
-        componentManager = new ComponentManager();
+
         componentManager.initParmas(rlWVContainer, videoProtocolInfo, this);
 
 //        LogUtils.d(TAG, "currentTime=" + current);
@@ -265,6 +351,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
 
     private long systemTime;
+
 
     private final Runnable mTicker = new Runnable() {
         public void run() {
@@ -447,12 +534,6 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                         LogUtils.d(TAG, "事件范围内----" + currentPosition + "----------" + eventComponent.event_id);
                         componentManager.eventIn(eventComponent);
 
-
-//                        if (eventComponent.type === 'passivity'){
-//                            if (protocolUtils.numvalItemShow(this.event_numvals, eventObj)) {
-//                                this.passivity_trigger(eventObj);
-//                            }
-//                        }
                     }
                 }
 
@@ -463,16 +544,20 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     }
 
 
-//    // 视频播放状态
-//    private boolean videoPlaying;
+    // 视频播放状态
+    private String playerState;
 
     @Override
     public void onPlayerStateChanged(String status) {
         LogUtils.d(TAG, "onPlayerStateChanged----status=" + status);
 
+        this.playerState = status;
         if (nowViewStatus.equals(ViewState.STATE_READIED)) {
 //            videoPlaying = "onplay".equals(status);
-            componentManager.setVideoPlaying( "onplay".equals(status));
+            componentManager.setVideoPlayerStatus(status);
+            if (mControllerView != null) {
+                mControllerView.setVideoPlayerStatus(status);
+            }
         }
     }
 
@@ -487,17 +572,32 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         LogUtils.d(TAG, "onDestroy");
 
         getHandler().removeCallbacks(mTicker);
+        if (handler != null) {
+            handler.removeMessages(MES_HIDEVIEW);
+            handler = null;
+        }
+
 
         SoundManager.getInstance().release();
 
 
     }
 
+    private int MES_HIDEVIEW = 1000;
+
 
     @Override
     public void onEventCallback(String action) {
         if (listener != null) {
             listener.onEventCallback(action);
+        }
+    }
+
+    @Override
+    public void onShowBottomControllerView(boolean show) {
+
+        if (mControllerView != null) {
+            mControllerView.setBottomViewShowable(show);
         }
     }
 
@@ -521,15 +621,14 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     @Override
     public void ctrlPlayer(boolean play) {
 
-//        if (play && videoPlaying) {
-//            return;
-//        }
-//
-//        if (!play && !videoPlaying) {
-//            return;
-//        }
+        if (play && PlayerState.STATE_ONPLAY.equals(playerState))
+            return;
+
+        if (!play && !PlayerState.STATE_ONPLAY.equals(playerState))
+            return;
 
         if (listener != null) {
+
             listener.ctrlPlayer(play ? "play" : "pause");
         }
     }
@@ -545,7 +644,10 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     @Override
     public void hrefUrl(String href_url) {
         if (listener != null) {
-            listener.onHrefUrl(href_url);
+            boolean impl = listener.onHrefUrl(href_url);
+            if (!impl) {
+
+            }
         }
     }
 

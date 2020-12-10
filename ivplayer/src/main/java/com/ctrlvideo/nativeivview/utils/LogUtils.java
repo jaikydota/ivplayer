@@ -5,7 +5,7 @@ import android.util.Log;
 public class LogUtils {
 
 
-    private static boolean open = false;
+    private static boolean open = true;
 
     public static void v(String tag, String msg) {
         if (open) {

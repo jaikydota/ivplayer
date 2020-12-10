@@ -5,7 +5,6 @@ android {
     compileSdkVersion 28
 
 
-
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 28
@@ -52,4 +51,3 @@ publish {
     desc = 'ctrlvideo interaction video player for android'//描述，不重要
     website = 'https://www.ctrlvideo.com'//网站，不重要
 }
-

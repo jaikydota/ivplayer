@@ -6,6 +6,8 @@ public interface IComponentListener {
 
     void onComponentSeek(long position);
 
+    void onShowBottomControllerView(boolean show);
+
 //    boolean isVideoPlaying();
 
     void ctrlPlayer(boolean play);

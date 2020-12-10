@@ -224,7 +224,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
 //        webView.loadUrl("http://192.168.3.156:3102/");
         //如果是测试环境
         if (isTestEnv)
-            webView.loadUrl("https://ivetest.ctrlvideo.com/jssdk/native025.html");
+            webView.loadUrl("https://ivetest.ctrlvideo.com/jssdk/native024.html");
         else
             webView.loadUrl("https://ive.ctrlvideo.com/jssdk/native025.html");
 

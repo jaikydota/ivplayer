@@ -79,6 +79,7 @@ public interface IVViewListener {
      * 当IVView 跳转链接
      *
      * @param url 链接
+     * @return 当外部未实现时，由内部自己实现
      */
-    void onHrefUrl(String url);
+    boolean onHrefUrl(String url);
 }

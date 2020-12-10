@@ -7,4 +7,5 @@ public interface PlayerState {
     String STATE_LOADED = "loaded";
     String STATE_ONPAUSE = "onpause";
     String STATE_ONPLAY = "onplay";
+    String STATE_END = "end";
 }

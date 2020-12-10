@@ -47,6 +47,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         fl_chapterFive.setOnClickListener(this);
 
         ivPlayer.loadIVideo("5165902802815866", new PlayerListener());
+//        ivPlayer.loadIVideo("5159807693876375", new PlayerListener());
 //        ivPlayer.loadIVideo("5926378841048816", new PlayerListener());
     }
 
@@ -55,9 +56,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public void onClick(View v) {
         if (v == fl_chapterOne) {
             ivPlayer.loadIVideo("5165902802815866", new PlayerListener());
+//            ivPlayer.loadIVideo("5159807693876375", new PlayerListener());
 //            ivPlayer.loadIVideo("5926378841048816", new PlayerListener());
         } else if (v == fl_chapterTwo) {
             ivPlayer.loadIVideo("5926287290839770", new PlayerListener());
+//            ivPlayer.loadIVideo("5159815275197916", new PlayerListener());
 
         } else if (v == fl_chapterThree) {
             ivPlayer.loadIVideo("5925315322305659", new PlayerListener());
@@ -113,10 +116,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
          */
         @Override
         public void onViewClick(String info) {
-            if (ll_Control.getVisibility() == View.VISIBLE)
-                ll_Control.setVisibility(View.GONE);
-            else
-                ll_Control.setVisibility(View.VISIBLE);
+//            if (ll_Control.getVisibility() == View.VISIBLE)
+//                ll_Control.setVisibility(View.GONE);
+//            else
+//                ll_Control.setVisibility(View.VISIBLE);
         }
 
         /**
