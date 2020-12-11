@@ -21,14 +21,7 @@ public interface IVPlayerListener {
     void onViewClick(String info);
 
 
-    /**
-     * 当事件状态改变时
-     *
-     * @param eType 事件类型
-     * @param state 状态，"start" 事件开始，"end" 事件结束, "succeed" 触发成功跳帧
-     * @param time  long类型，毫秒
-     */
-    void onEventStateChanged(String eType, String state, long time);
+    void onEventCallback(String result);
 
 
     /**

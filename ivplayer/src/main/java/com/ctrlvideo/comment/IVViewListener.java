@@ -43,14 +43,14 @@ public interface IVViewListener {
     void onIVViewClick(String info);
 
 
-    /**
-     * 当事件状态改变时
-     *
-     * @param eType 事件类型，ViewState.EVENT_SPEECHRECOGN 语音识别事件，ViewState.EVENT_GESTURE 手势事件
-     * @param state 状态，"prepare" 事件即将开始，"start" 事件开始，"end" 事件结束, "succeed" 触发成功跳帧
-     * @param time  long类型，毫秒
-     */
-    void onEventStateChanged(String eType, String state, long time);
+//    /**
+//     * 当事件状态改变时
+//     *
+//     * @param eType 事件类型，ViewState.EVENT_SPEECHRECOGN 语音识别事件，ViewState.EVENT_GESTURE 手势事件
+//     * @param state 状态，"prepare" 事件即将开始，"start" 事件开始，"end" 事件结束, "succeed" 触发成功跳帧
+//     * @param time  long类型，毫秒
+//     */
+//    void onEventStateChanged(String eType, String state, long time);
 
 
     /**

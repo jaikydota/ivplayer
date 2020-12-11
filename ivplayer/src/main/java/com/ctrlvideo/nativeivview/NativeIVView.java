@@ -106,7 +106,9 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
             public void onClick(View v) {
                 listener.onIVViewClick("");
                 if (mControllerView != null) {
-                    showControllerView(mControllerView.getVisibility() == View.GONE);
+//                    showControllerView(mControllerView.getVisibility() == View.GONE);
+
+                    mControllerView.onClick();
                 }
 
 
@@ -117,22 +119,22 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     }
 
 
-    private void showControllerView(boolean show) {
-
-        if (mControllerView != null) {
-            if (show) {
-
-                mControllerView.setVisibility(View.VISIBLE);
-                handler.removeMessages(MES_HIDEVIEW);
-                handler.sendEmptyMessageDelayed(MES_HIDEVIEW, hideControllerViewDelay);
-
-            } else {
-
-                mControllerView.setVisibility(View.GONE);
-                handler.removeMessages(MES_HIDEVIEW);
-            }
-        }
-    }
+//    private void showControllerView(boolean show) {
+//
+//        if (mControllerView != null) {
+//            if (show) {
+//
+//                mControllerView.setVisibility(View.VISIBLE);
+//                handler.removeMessages(MES_HIDEVIEW);
+//                handler.sendEmptyMessageDelayed(MES_HIDEVIEW, hideControllerViewDelay);
+//
+//            } else {
+//
+//                mControllerView.setVisibility(View.GONE);
+//                handler.removeMessages(MES_HIDEVIEW);
+//            }
+//        }
+//    }
 
     Handler handler = new Handler(Looper.getMainLooper()) {
 
@@ -140,7 +142,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
 
-            showControllerView(false);
+//            showControllerView(false);
         }
     };
 
@@ -178,7 +180,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                 addView(mControllerView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
 
-                showControllerView(true);
+//                showControllerView(true);
             }
         }
     }
@@ -552,6 +554,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         LogUtils.d(TAG, "onPlayerStateChanged----status=" + status);
 
         this.playerState = status;
+
         if (nowViewStatus.equals(ViewState.STATE_READIED)) {
 //            videoPlaying = "onplay".equals(status);
             componentManager.setVideoPlayerStatus(status);

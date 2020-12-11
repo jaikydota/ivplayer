@@ -13,12 +13,11 @@
         android:visibility="gone" />
 
 
-    <ImageView
+    <ProgressBar
         android:id="@+id/iv_loading"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/ic_loadingcircle"
         android:visibility="gone" />
 
 
@@ -29,7 +28,7 @@
         android:layout_alignParentBottom="true"
         android:background="#33000000"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/iv_start_pause"
@@ -37,7 +36,7 @@
             android:layout_height="36dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_play_icon"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
     </LinearLayout>
 

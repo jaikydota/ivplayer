@@ -402,7 +402,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
                 lastEventState = state;
                 lastEventTime = mmTime;
 
-                listener.onEventStateChanged(IVEvent.EVENT_SPEECHRECOGN, state, mmTime);
+//                listener.onEventStateChanged(IVEvent.EVENT_SPEECHRECOGN, state, mmTime);
 
                 if (state.equals("prepare")) {
                     nowEventPrepareTime = mmTime;

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.ctrlvideo.ivplayer.PlayerState;
@@ -20,7 +21,7 @@ public class ControllerView extends RelativeLayout {
 
     private LinearLayout mBottomView;
 
-    private ImageView mIvLoading;
+    private ProgressBar mIvLoading;
 
     public ControllerView(Context context) {
         this(context, null);
@@ -51,7 +52,9 @@ public class ControllerView extends RelativeLayout {
 
                 if (listener != null) {
 
-                    if (status.equals(PlayerState.STATE_ONPLAY)) {
+                    if (status.equals(PlayerState.STATE_READY)) {
+                        listener.onPlayOrPause(true);
+                    } else if (status.equals(PlayerState.STATE_ONPLAY)) {
                         listener.onPlayOrPause(false);
                     } else if (status.equals(PlayerState.STATE_ONPAUSE)) {
                         listener.onPlayOrPause(true);
@@ -59,6 +62,14 @@ public class ControllerView extends RelativeLayout {
                         listener.onRestart();
                     }
                 }
+            }
+        });
+
+
+        mIvStart.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onPlayOrPause(true);
             }
         });
 
@@ -85,63 +96,70 @@ public class ControllerView extends RelativeLayout {
 
     }
 
+    private boolean firstReady = true;
+
     private String status;
 
     public void setVideoPlayerStatus(String status) {
         this.status = status;
 
-        if (status.equals(PlayerState.STATE_LOADED)) {
+        if (PlayerState.STATE_READY.equals(status)) {
 
-            mIvStart.setVisibility(GONE);
-            mIvLoading.setVisibility(VISIBLE);
-
-        } else if (status.equals(PlayerState.STATE_ONPLAY)) {
-
-            mIvLoading.setVisibility(GONE);
-            mIvStart.setVisibility(GONE);
-            if (playerController.show_playPause_btn) {
-                mIvStartOrPause.setVisibility(VISIBLE);
-                mIvStartOrPause.setImageResource(R.drawable.ic_stop_icon);
+            if (firstReady) {
+                if (playerController.show_start_btn) {
+                    mIvStart.setVisibility(View.VISIBLE);
+                }
+                mIvLoading.setVisibility(View.GONE);
+                firstReady = false;
             }
 
-        } else if (status.equals(PlayerState.STATE_ONPAUSE)) {
-            mIvLoading.setVisibility(GONE);
-            mIvStart.setVisibility(GONE);
-            if (playerController.show_playPause_btn) {
-                mIvStartOrPause.setVisibility(VISIBLE);
-                mIvStartOrPause.setImageResource(R.drawable.ic_play_icon);
-            }
 
-        } else if (status.equals(PlayerState.STATE_END)) {
-            mIvLoading.setVisibility(GONE);
-            mIvStart.setVisibility(GONE);
-            if (playerController.show_playPause_btn) {
-                mIvStartOrPause.setVisibility(VISIBLE);
-                mIvStartOrPause.setImageResource(R.drawable.ic_play_icon);
+            mIvStartOrPause.setImageResource(R.drawable.ic_play_icon);
 
-            }
 
+        } else if (PlayerState.STATE_LOADED.equals(status)) {
+
+            mIvStart.setVisibility(View.GONE);
+            mIvLoading.setVisibility(View.VISIBLE);
+
+
+        } else if (PlayerState.STATE_ONPLAY.equals(status)) {
+            mIvStart.setVisibility(View.GONE);
+            mIvLoading.setVisibility(View.GONE);
+
+            mIvStartOrPause.setImageResource(R.drawable.ic_stop_icon);
+
+        } else if (PlayerState.STATE_ONPAUSE.equals(status)) {
+//            mIvStart.setVisibility(View.GONE);
+            mIvLoading.setVisibility(View.GONE);
+
+            mIvStartOrPause.setImageResource(R.drawable.ic_play_icon);
+
+        } else if (PlayerState.STATE_END.equals(status)) {
+            mIvStart.setVisibility(View.GONE);
+            mIvLoading.setVisibility(View.GONE);
+
+            mIvStartOrPause.setImageResource(R.drawable.ic_play_icon);
         }
 
-
-//        if (playing) {
-//            mIvStart.setVisibility(View.GONE);
-//
-//            mIvStartOrPause.setImageResource(R.drawable.ic_stop_icon);
-//
-//        } else {
-//            mIvStartOrPause.setImageResource(R.drawable.ic_play_icon);
-//        }
     }
+
+    private boolean showable = true;
 
     /**
      * 当被动暂停时不可显示底部控制条
+     *
      * @param showable
      */
     public void setBottomViewShowable(boolean showable) {
         Log.d("ControllerView", "setBottomViewShowable---" + showable);
 
-        mBottomView.setVisibility(showable ? VISIBLE : GONE);
+        this.showable = showable;
+        if (!showable) {
+            mBottomView.setVisibility(GONE);
+        }
+
+//        mBottomView.setVisibility(showable ? VISIBLE : GONE);
     }
 
     private OnControllerListener listener;
@@ -155,5 +173,18 @@ public class ControllerView extends RelativeLayout {
         void onPlayOrPause(boolean play);
 
         void onRestart();
+    }
+
+    public void onClick() {
+
+        if (mBottomView.getVisibility() == View.VISIBLE) {
+            mBottomView.setVisibility(GONE);
+        } else {
+            if (showable) {
+                mBottomView.setVisibility(VISIBLE);
+            }
+        }
+
+
     }
 }

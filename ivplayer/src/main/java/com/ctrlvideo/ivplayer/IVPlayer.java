@@ -110,32 +110,44 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
                     break;
                 case Player.STATE_BUFFERING:
+                    LogUtils.d(TAG, "onPlayerStateChanged: playing media---STATE_BUFFERING");
 
                     playerStatus = PlayerState.STATE_LOADED;
-
                     ivView.onPlayerStateChanged(playerStatus);
-                    LogUtils.d(TAG, "onPlayerStateChanged: playing media---STATE_BUFFERING");
+                    if (pListener != null) {
+                        pListener.onStateChanged(playerStatus);
+                    }
+
 
                     break;
                 //当播放器播放或暂停时
                 case Player.STATE_READY:
                     LogUtils.d(TAG, "onPlayerStateChanged: playing media---STATE_READY---" + playWhenReady);
+                    ivView.onPlayerStateChanged(PlayerState.STATE_READY);
 
                     playerStatus = playWhenReady ? PlayerState.STATE_ONPLAY : PlayerState.STATE_ONPAUSE;
                     ivView.onPlayerStateChanged(playerStatus);
-                    pListener.onStateChanged(playerStatus);
+                    if (pListener != null) {
+                        pListener.onStateChanged(playerStatus);
+                    }
+
                     break;
                 //当播放器 播放结束[到视频结尾]时
                 case Player.STATE_ENDED:
+                    LogUtils.d(TAG, "onPlayerStateChanged: playing media---STATE_ENDED");
                     playerStatus = PlayerState.STATE_END;
                     ivView.onPlayerStateChanged(playerStatus);
-                    LogUtils.d(TAG, "onPlayerStateChanged: playing media---STATE_ENDED");
+                    if (pListener != null) {
+                        pListener.onStateChanged(playerStatus);
+                    }
+
 
                     break;
                 default:
                     break;
             }
         }
+
     }
 
 
@@ -162,13 +174,19 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
                 //开始播放
                 player.setPlayWhenReady(true);
 
-                pListener.onStateChanged(PlayerState.STATE_LOADED);
+
+                if (pListener != null) {
+                    pListener.onStateChanged(PlayerState.STATE_LOADED);
+                }
             }
         }
 
         @Override
         public void onEventCallback(String result) {
 //            LogUtils.d(TAG, "onEventCallback--- " + result);
+            if (pListener != null) {
+                pListener.onEventCallback(result);
+            }
         }
 
         /**
@@ -217,20 +235,11 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
          */
         @Override
         public void onIVViewClick(String info) {
-            pListener.onViewClick(info);
+            if (pListener != null) {
+                pListener.onViewClick(info);
+            }
         }
 
-        /**
-         * 当事件状态改变时
-         *
-         * @param eType 事件类型，IVEvent.EVENT_SPEECHRECOGN 语音识别事件，IVEvent.EVENT_GESTURE 手势事件
-         * @param state 状态，"prepare" 事件即将开始，"start" 事件开始，"end" 事件结束, "succeed" 触发成功跳帧
-         * @param time  long类型，毫秒
-         */
-        @Override
-        public void onEventStateChanged(String eType, String state, long time) {
-            LogUtils.d(TAG, "onEventStateChanged eventType:" + eType + "  state:" + state + "  time:" + time);
-        }
 
         /**
          * 当IVView发生错误时
@@ -240,7 +249,10 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         @Override
         public void onError(String errorType) {
             LogUtils.d(TAG, "onIvViewError " + errorType);
-            pListener.onError(errorType);
+            if (pListener != null) {
+                pListener.onError(errorType);
+            }
+
         }
 
         /**
@@ -250,12 +262,17 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
          */
         @Override
         public void onCustomNotify(String msg) {
-            pListener.onCustomNotify(msg);
+            if (pListener != null) {
+                pListener.onCustomNotify(msg);
+            }
+
         }
 
         @Override
         public boolean onHrefUrl(String url) {
-            pListener.onHrefUrl(url);
+            if (pListener != null) {
+                pListener.onHrefUrl(url);
+            }
             return false;
 
         }

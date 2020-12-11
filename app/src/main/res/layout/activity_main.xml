@@ -1,125 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <com.ctrlvideo.ivplayer.IVPlayer
-        android:id="@+id/iv_Player"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </com.ctrlvideo.ivplayer.IVPlayer>
 
-    <HorizontalScrollView
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/holo_green_light"
-        android:layout_gravity="top"
-        android:scrollbars="none">
-        <!-- 控制条 -->
-        <LinearLayout
-            android:id="@+id/ll_Control"
-            android:visibility="visible"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="100dp">
-            <FrameLayout
-                android:id="@+id/fl_chapterOne"
-                android:layout_width="120dp"
-                android:layout_height="match_parent"
-                android:padding="10dp">
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@mipmap/chapter_ep1"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textColor="@android:color/white"
-                    android:text="Demo样片1"
-                    android:textSize="14sp"/>
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/fl_chapterTwo"
-                android:layout_width="120dp"
-                android:layout_height="match_parent"
-                android:padding="10dp">
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@mipmap/chapter_ep1"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textColor="@android:color/white"
-                    android:text="Demo样片2"
-                    android:textSize="14sp"/>
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/fl_chapterThree"
-                android:layout_width="120dp"
-                android:layout_height="match_parent"
-                android:padding="10dp">
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@mipmap/chapter_ep1"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textColor="@android:color/white"
-                    android:text="Demo样片3"
-                    android:textSize="14sp"/>
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/fl_chapterFour"
-                android:layout_width="120dp"
-                android:layout_height="match_parent"
-                android:padding="10dp">
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@mipmap/chapter_ep1"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textColor="@android:color/white"
-                    android:text="Demo样片4"
-                    android:textSize="14sp"/>
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/fl_chapterFive"
-                android:layout_width="120dp"
-                android:layout_height="match_parent"
-                android:padding="10dp">
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@mipmap/chapter_ep1"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textColor="@android:color/white"
-                    android:text="自定义通知"
-                    android:textSize="14sp"/>
-            </FrameLayout>
-        </LinearLayout>
-    </HorizontalScrollView>
-</FrameLayout>
+        android:onClick="demo"
+        android:text="Demo" />
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="withPlayer"
+        android:text="带播放器" />
+  <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="Player"
+        android:text="不带播放器" />
+
+</LinearLayout>
