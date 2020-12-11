@@ -3,9 +3,6 @@ package com.ctrlvideo.nativeivview;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -138,15 +135,15 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 //        }
 //    }
 
-    Handler handler = new Handler(Looper.getMainLooper()) {
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-
-//            showControllerView(false);
-        }
-    };
+//    Handler handler = new Handler(Looper.getMainLooper()) {
+//
+//        @Override
+//        public void handleMessage(Message msg) {
+//            super.handleMessage(msg);
+//
+////            showControllerView(false);
+//        }
+//    };
 
 
     /**
@@ -566,21 +563,43 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         }
     }
 
+    private boolean playBackground = false;
+
+    /**
+     * 音效允许后台播放
+     *
+     * @param playBackground
+     */
+    public void playBackground(boolean playBackground) {
+        this.playBackground = playBackground;
+    }
+
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onResume() {
         //重置后恢复
         LogUtils.d(TAG, "onResume");
+
     }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    public void onPause() {
+        //重置后恢复
+        LogUtils.d(TAG, "onPause");
+        if (!playBackground) {
+            SoundManager.getInstance().release();
+        }
+    }
+
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     public void onDestroy() {
         LogUtils.d(TAG, "onDestroy");
 
         getHandler().removeCallbacks(mTicker);
-        if (handler != null) {
-            handler.removeMessages(MES_HIDEVIEW);
-            handler = null;
-        }
+//        if (handler != null) {
+//            handler.removeMessages(MES_HIDEVIEW);
+//            handler = null;
+//        }
 
 
         SoundManager.getInstance().release();
@@ -652,8 +671,8 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
             boolean impl = listener.onHrefUrl(href_url);
             if (!impl) {
 
-                Intent intent=new Intent(getContext(), WebActivity.class);
-                intent.putExtra("href_url",href_url);
+                Intent intent = new Intent(getContext(), WebActivity.class);
+                intent.putExtra("href_url", href_url);
                 getContext().startActivity(intent);
             }
         }
