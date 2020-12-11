@@ -2,6 +2,7 @@ package com.ctrlvideo.nativeivview;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -23,6 +24,7 @@ import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
 import com.ctrlvideo.ivplayer.PlayerState;
 import com.ctrlvideo.ivplayer.R;
+import com.ctrlvideo.nativeivview.activity.WebActivity;
 import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
 import com.ctrlvideo.nativeivview.component.ComponentManager;
 import com.ctrlvideo.nativeivview.component.IComponentListener;
@@ -650,6 +652,9 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
             boolean impl = listener.onHrefUrl(href_url);
             if (!impl) {
 
+                Intent intent=new Intent(getContext(), WebActivity.class);
+                intent.putExtra("href_url",href_url);
+                getContext().startActivity(intent);
             }
         }
     }
