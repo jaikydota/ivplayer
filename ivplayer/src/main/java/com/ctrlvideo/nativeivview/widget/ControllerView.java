@@ -14,6 +14,7 @@ import com.ctrlvideo.ivplayer.PlayerState;
 import com.ctrlvideo.ivplayer.R;
 import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
 
+
 public class ControllerView extends RelativeLayout {
 
     private ImageView mIvStart;
@@ -156,7 +157,8 @@ public class ControllerView extends RelativeLayout {
 
         this.showable = showable;
         if (!showable) {
-            mBottomView.setVisibility(GONE);
+//            mBottomView.setVisibility(GONE);
+            showBottomView(false);
         }
 
 //        mBottomView.setVisibility(showable ? VISIBLE : GONE);
@@ -178,13 +180,40 @@ public class ControllerView extends RelativeLayout {
     public void onClick() {
 
         if (mBottomView.getVisibility() == View.VISIBLE) {
-            mBottomView.setVisibility(GONE);
+            showBottomView(false);
         } else {
             if (showable) {
-                mBottomView.setVisibility(VISIBLE);
+                showBottomView(true);
             }
         }
 
-
     }
+
+    private long hideControllerViewDelay = 5000;
+
+    public void showBottomView(boolean show) {
+
+        if (show) {
+            if (mBottomView != null && getHandler() != null) {
+                mBottomView.setVisibility(VISIBLE);
+                getHandler().removeCallbacks(runnable);
+                getHandler().postDelayed(runnable, hideControllerViewDelay);
+            }
+
+        } else {
+            if (mBottomView != null && getHandler() != null) {
+                mBottomView.setVisibility(GONE);
+                getHandler().removeCallbacks(runnable);
+            }
+        }
+    }
+
+
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d("ControllerView", "runnable-----");
+            showBottomView(false);
+        }
+    };
 }
