@@ -31,6 +31,8 @@ public class ClickComponent extends RelativeLayout {
 
     private VideoProtocolInfo.EventComponent eventComponent;
 
+    private boolean loadFinish;
+
     public ClickComponent(Context context) {
         this(context, null);
     }
@@ -57,6 +59,33 @@ public class ClickComponent extends RelativeLayout {
 
     public interface OnOptionClickListener {
         void onOptionClick(int option);
+    }
+
+    /**
+     * 检查全部控件是否加载完成 主要针对控件在视频前面几秒
+     */
+    public void checkLoadFinish() {
+
+        if (loadFinish) {
+            return;
+        }
+
+
+        boolean finish = true;
+        int count = getChildCount();
+        for (int index = 0; index < count; index++) {
+
+            View view = getChildAt(index);
+            if (view instanceof OptionView) {
+                OptionView optionView = (OptionView) view;
+                if (!optionView.isLoadFinish()) {
+                    finish = false;
+                    optionView.reload();
+                }
+            }
+        }
+        loadFinish = finish;
+
     }
 
 

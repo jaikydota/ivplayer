@@ -49,9 +49,14 @@ public class OptionView extends RelativeLayout {
     private ImageView optionImage;
 
     public OnOptionViewListener listener;
+    private VideoProtocolInfo.EventOption option;
 
     public void setOnOptionViewListener(OnOptionViewListener listener) {
         this.listener = listener;
+    }
+
+    public void reload() {
+        load();
     }
 
     public interface OnOptionViewListener {
@@ -123,8 +128,7 @@ public class OptionView extends RelativeLayout {
 
     }
 
-    public void setOption(int status, VideoProtocolInfo.EventOption option) {
-        this.status = status;
+    private void load() {
         post(new Runnable() {
             @Override
             public void run() {
@@ -135,52 +139,61 @@ public class OptionView extends RelativeLayout {
                     optionImage.setImageBitmap(bitmap);
                 }
 
+
+                if (option.layout_style != null && option.layout_style.filter != null) {
+                    VideoProtocolInfo.EventOptionFilter optionFilter = option.layout_style.filter;
+
+                    ColorMatrix imageMatrix = new ColorMatrix();
+
+                    //饱和度
+                    try {
+                        float saturate = Float.parseFloat(optionFilter.saturate.replace("%", "").trim()) / 100;
+                        ColorMatrix saturateMatrix = new ColorMatrix();
+                        saturateMatrix.setSaturation(saturate);
+                        imageMatrix.postConcat(saturateMatrix);
+
+                    } catch (Exception e) {
+
+                    }
+
+
+                    //对比度
+
+                    try {
+
+                        float contrast = (Float.parseFloat(optionFilter.contrast.replace("%", "").trim()) / 100) - 1.0f;
+                        LogUtils.d("OptionView", "contrast=" + contrast);
+//                contrast = 1.1f;
+                        // -1 --- 1   0 原图
+                        ColorMatrix contrastMatrix = new ColorMatrix();
+                        float scale = contrast + 1.f;
+                        float translate = (-.5f * scale + .5f) * 255.f;
+//                LogUtils.d("OptionView", "contrast=" + contrast + "----scale=" + scale + "----translate=" + translate);
+                        contrastMatrix.set(new float[]{
+                                scale, 0, 0, 0, translate,
+                                0, scale, 0, 0, translate,
+                                0, 0, scale, 0, translate,
+                                0, 0, 0, 1, 0});
+                        imageMatrix.postConcat(contrastMatrix);
+
+                    } catch (Exception e) {
+
+                    }
+
+                    optionImage.setColorFilter(new ColorMatrixColorFilter(imageMatrix));
+
+                }
+
+
             }
         });
-
-        if (option.layout_style != null && option.layout_style.filter != null) {
-            VideoProtocolInfo.EventOptionFilter optionFilter = option.layout_style.filter;
-
-            ColorMatrix imageMatrix = new ColorMatrix();
-
-            //饱和度
-            try {
-                float saturate = Float.parseFloat(optionFilter.saturate.replace("%", "").trim()) / 100;
-                ColorMatrix saturateMatrix = new ColorMatrix();
-                saturateMatrix.setSaturation(saturate);
-                imageMatrix.postConcat(saturateMatrix);
-
-            } catch (Exception e) {
-
-            }
+    }
 
 
-            //对比度
-
-            try {
-
-                float contrast = (Float.parseFloat(optionFilter.contrast.replace("%", "").trim()) / 100) - 1.0f;
-                LogUtils.d("OptionView", "contrast=" + contrast);
-//                contrast = 1.1f;
-                // -1 --- 1   0 原图
-                ColorMatrix contrastMatrix = new ColorMatrix();
-                float scale = contrast + 1.f;
-                float translate = (-.5f * scale + .5f) * 255.f;
-//                LogUtils.d("OptionView", "contrast=" + contrast + "----scale=" + scale + "----translate=" + translate);
-                contrastMatrix.set(new float[]{
-                        scale, 0, 0, 0, translate,
-                        0, scale, 0, 0, translate,
-                        0, 0, scale, 0, translate,
-                        0, 0, 0, 1, 0});
-                imageMatrix.postConcat(contrastMatrix);
-
-            } catch (Exception e) {
-
-            }
-
-            optionImage.setColorFilter(new ColorMatrixColorFilter(imageMatrix));
-
-        }
+    public void setOption(int status, VideoProtocolInfo.EventOption option) {
+        this.status = status;
+        this.option = option;
+        reload();
 
     }
 
@@ -222,6 +235,7 @@ public class OptionView extends RelativeLayout {
     }
 
     private void initData(int status, VideoProtocolInfo.EventOption option) {
+        if (option == null) return;
 
         VideoProtocolInfo.EventOptionStyle optionStyle = option.layout_style;
         if (optionStyle != null) {
@@ -271,21 +285,11 @@ public class OptionView extends RelativeLayout {
 
                             try {
                                 SVG svg = SVG.getFromFile(getContext(), path);
-//                                imageView.setImageDrawable(new PictureDrawable(svg.renderToPicture()));
 
-//                                post(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        LogUtils.d("OptionView", "getMeasuredWidth=" + getMeasuredWidth() + "----getMeasuredHeight=" + getMeasuredHeight());
-//                                    }
-//                                });
-
-//                                LogUtils.d("OptionView", "getMeasuredWidth=" + getMeasuredWidth() + "----getMeasuredHeight=" + getMeasuredHeight());
-
-                                Picture picture = svg.renderToPicture(getMeasuredWidth(),getMeasuredHeight());
+                                Picture picture = svg.renderToPicture(getMeasuredWidth(), getMeasuredHeight());
 
                                 int width = picture.getWidth();
-                                int height =picture.getHeight();
+                                int height = picture.getHeight();
 
 
                                 LogUtils.d("OptionView", "width=" + width + "----height=" + height);
@@ -296,7 +300,7 @@ public class OptionView extends RelativeLayout {
 
 
                             } catch (Exception e) {
-                                e.printStackTrace();
+//                                e.printStackTrace();
                             }
 
 
@@ -306,6 +310,10 @@ public class OptionView extends RelativeLayout {
                             imageView.setImageBitmap(backgroundBitmap);
 
                         }
+
+                        loadFinish = true;
+                    } else {
+                        loadFinish = false;
                     }
                 }
             }
@@ -313,6 +321,12 @@ public class OptionView extends RelativeLayout {
         }
 
 
+    }
+
+    private boolean loadFinish = true;
+
+    public boolean isLoadFinish() {
+        return loadFinish;
     }
 
     /**

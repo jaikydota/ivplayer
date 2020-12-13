@@ -53,6 +53,35 @@ public class SelectedComponent extends RelativeLayout {
 
     private OnSelectedListener listener;
     private OnComponentResultListener showResultListener;
+    private boolean loadFinish;
+
+
+    /**
+     * 检查全部控件是否加载完成 主要针对控件在视频前面几秒
+     */
+    public void checkLoadFinish() {
+
+        if (loadFinish) {
+            return;
+        }
+
+
+        boolean finish = true;
+        int count = getChildCount();
+        for (int index = 0; index < count; index++) {
+
+            View view = getChildAt(index);
+            if (view instanceof OptionView) {
+                OptionView optionView = (OptionView) view;
+                if (!optionView.isLoadFinish()) {
+                    finish = false;
+                    optionView.reload();
+                }
+            }
+        }
+        loadFinish = finish;
+
+    }
 
     public interface OnSelectedListener {
         void onOptionSelected(int option);

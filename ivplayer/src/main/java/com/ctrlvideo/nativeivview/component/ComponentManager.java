@@ -274,6 +274,9 @@ public class ComponentManager {
                 }
             });
             rootView.addView(selectedComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+        }else {
+
+            selectedComponent.checkLoadFinish();
         }
     }
 
@@ -301,6 +304,9 @@ public class ComponentManager {
                 }
             });
             rootView.addView(clickComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+        }else {
+
+            clickComponent.checkLoadFinish();
         }
     }
 
