@@ -44,28 +44,27 @@ public class ComponentManager {
         this.iComponentListener = iComponentListener;
 
 
-        float videoWidth = 0;
-        float videoHeight = 0;
+        float p_videoWidth = 0;
+        float p_videoHeight = 0;
 
         VideoProtocolInfo.ReleaseInfo releaseInfo = videoProtocolInfo.release_info;
         if (releaseInfo != null) {
             VideoProtocolInfo.VideoParams params = releaseInfo.v_params;
             if (params != null) {
 
-                videoWidth = params.width;
-                videoHeight = params.height;
+                p_videoWidth = params.width;
+                p_videoHeight = params.height;
 
-                float ratio = videoWidth / videoHeight;
-                if (ratio >= parentWidth / parentHeight) {
+                float ratio = p_videoWidth / p_videoWidth;
+                if (ratio >= (parentWidth / parentHeight)) {
                     this.videoWidth = parentWidth;
-                    this.videoHeight = parentHeight / videoWidth * videoHeight;
+                    this.videoHeight = parentWidth / p_videoWidth * p_videoHeight;
                 } else {
-                    this.videoWidth = parentHeight / videoHeight * videoWidth;
+                    this.videoWidth = parentHeight / p_videoHeight * p_videoWidth;
                     this.videoHeight = parentHeight;
                 }
             }
         }
-
 
     }
 
@@ -74,6 +73,7 @@ public class ComponentManager {
 
     /**
      * 播放器状态
+     *
      * @param status
      */
     public void setVideoPlayerStatus(String status) {
@@ -217,7 +217,6 @@ public class ComponentManager {
                 iComponentListener.ctrlPlayer(false);
             }
             iComponentListener.onComponentSeek(position);
-
 
 
         }
