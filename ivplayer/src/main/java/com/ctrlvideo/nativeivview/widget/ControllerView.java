@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -78,13 +79,42 @@ public class ControllerView extends RelativeLayout {
 
     private VideoProtocolInfo.PlayerController playerController;
 
+    /**
+     * 设计图标准
+     */
+    private float startImageStandardSize = 82;
+    private float startOrPauseImageStandardSize = 35;
+    private float standardLine = 667;
+
 
     /**
      * 初始化播控配置
      *
+     * @param videoStandardSize 以父视图长的一边作为标准适配
      * @param playerController
      */
-    public void initController(VideoProtocolInfo.PlayerController playerController) {
+    public void initController(float videoStandardSize, VideoProtocolInfo.PlayerController playerController) {
+
+
+        int startImageSize = (int) (videoStandardSize * startImageStandardSize / standardLine);
+        ViewGroup.LayoutParams startParams = mIvStart.getLayoutParams();
+        startParams.width = startImageSize;
+        startParams.height = startImageSize;
+        mIvStart.setLayoutParams(startParams);
+
+
+        ViewGroup.LayoutParams loadingParams = mIvLoading.getLayoutParams();
+        loadingParams.width = startImageSize;
+        loadingParams.height = startImageSize;
+        mIvLoading.setLayoutParams(loadingParams);
+
+
+        int startOrPauseImageSize = (int) (videoStandardSize * startOrPauseImageStandardSize / standardLine);
+        ViewGroup.LayoutParams startOrPausParams = mIvStartOrPause.getLayoutParams();
+        startOrPausParams.width = startOrPauseImageSize;
+        startOrPausParams.height = startOrPauseImageSize;
+        mIvStartOrPause.setLayoutParams(startOrPausParams);
+
 
         this.playerController = playerController;
 

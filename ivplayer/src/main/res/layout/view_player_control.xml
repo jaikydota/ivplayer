@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#33000000"
+        android:background="@drawable/shape_player_controller_bg"
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -35,6 +35,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_gravity="center"
+            android:layout_margin="4dp"
             android:src="@drawable/ic_play_icon"
             android:visibility="visible" />
 

@@ -175,7 +175,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                         ctrlPlayer(true);
                     }
                 });
-                mControllerView.initController(playerController);
+                mControllerView.initController(Math.max(getMeasuredWidth(),getMeasuredHeight()),playerController);
                 addView(mControllerView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
 
