@@ -106,6 +106,7 @@ public class SelectedComponent extends RelativeLayout {
             }
 
             OptionView optionView = new OptionView(getContext());
+            optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight);
             optionView.setOption(status, option);
 
             int finalI = i;
@@ -206,6 +207,7 @@ public class SelectedComponent extends RelativeLayout {
                 }
 
                 OptionView optionView = new OptionView(getContext());
+                optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight);
                 optionView.setTag(option.option_id);
 
 

@@ -14,6 +14,7 @@ import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.ctrlvideo.nativeivview.utils.LogUtils;
 import com.ctrlvideo.nativeivview.utils.NativeViewUtils;
 
 import java.io.File;
+import java.math.BigDecimal;
 
 public class OptionView extends RelativeLayout {
 
@@ -51,12 +53,24 @@ public class OptionView extends RelativeLayout {
     public OnOptionViewListener listener;
     private VideoProtocolInfo.EventOption option;
 
+    private float parentWidth;
+    private float parentHeight;
+    private float videoWidth;
+    private float videoHeight;
+
     public void setOnOptionViewListener(OnOptionViewListener listener) {
         this.listener = listener;
     }
 
     public void reload() {
         load();
+    }
+
+    public void initParmas(float parentWidth, float parentHeight, float videoWidth, float videoHeight) {
+        this.parentWidth = parentWidth;
+        this.parentHeight = parentHeight;
+        this.videoWidth = videoWidth;
+        this.videoHeight = videoHeight;
     }
 
     public interface OnOptionViewListener {
@@ -254,9 +268,18 @@ public class OptionView extends RelativeLayout {
             textView.setText(optionStyle.text);
             textView.setTextColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.color)));
 
-//            float font_size = optionStyle.font_size;
-//            textView.setTextSize(font_size * 10);
+            float font_size = optionStyle.font_size;
 
+            float baseSize;
+
+//            option.align_screen
+            boolean align_screen = option.align_screen;
+            if (align_screen) {
+                baseSize = getTextBaseSize(parentWidth, parentHeight);
+            } else {
+                baseSize = getTextBaseSize(videoWidth, videoHeight);
+            }
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, font_size * baseSize);
 
 
             if ("vertical-lr".equals(optionStyle.writing_mode)) {
@@ -325,6 +348,12 @@ public class OptionView extends RelativeLayout {
         }
 
 
+    }
+
+    private float getTextBaseSize(float width, float height) {
+
+        BigDecimal bg = new BigDecimal((width + height) / 100);
+        return bg.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
     }
 
     private boolean loadFinish = true;

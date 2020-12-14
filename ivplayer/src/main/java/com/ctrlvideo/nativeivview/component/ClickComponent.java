@@ -107,6 +107,7 @@ public class ClickComponent extends RelativeLayout {
             }
 
             OptionView optionView = new OptionView(getContext());
+            optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight);
             optionView.setOption(status, option);
 
             if (option.blink) {
@@ -216,6 +217,7 @@ public class ClickComponent extends RelativeLayout {
                 }
 
                 OptionView optionView = new OptionView(getContext());
+                optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight);
                 optionView.setTag(option.option_id);
 
                 if (option.blink) {
