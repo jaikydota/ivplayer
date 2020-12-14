@@ -254,6 +254,10 @@ public class OptionView extends RelativeLayout {
             textView.setText(optionStyle.text);
             textView.setTextColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.color)));
 
+//            float font_size = optionStyle.font_size;
+//            textView.setTextSize(font_size * 10);
+
+
 
             if ("vertical-lr".equals(optionStyle.writing_mode)) {
                 textView.setEms(1);
