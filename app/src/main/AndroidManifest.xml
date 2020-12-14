@@ -18,8 +18,12 @@
             android:screenOrientation="landscape">
 
         </activity>
-        <activity android:name=".WithPlayerActivity"> </activity>
-        <activity android:name=".PlayerActivity"> </activity>
+        <activity android:name=".WithPlayerActivity">
+
+        </activity>
+        <activity android:name=".PlayerActivity">
+
+        </activity>
 
 
         <activity android:name=".MainActivity">

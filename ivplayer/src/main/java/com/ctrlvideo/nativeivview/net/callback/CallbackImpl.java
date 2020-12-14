@@ -29,22 +29,31 @@ public abstract class CallbackImpl implements Callback {
             return;
         }
 
-        String responseString = responseBody.string();
-        JsonObject jsonObject = new JsonParser().parse(responseString).getAsJsonObject();
-        String statue = jsonObject.get("status").getAsString();
+        try {
 
-        JsonElement jsonElement = jsonObject.get("result");
 
-        if ("fail".equals(statue)) {
+            String responseString = responseBody.string();
+            JsonObject jsonObject = new JsonParser().parse(responseString).getAsJsonObject();
+            String statue = jsonObject.get("status").getAsString();
 
-            onFailure(jsonElement.getAsString());
-            return;
+            JsonElement jsonElement = jsonObject.get("result");
+
+            if ("fail".equals(statue)) {
+
+                onFailure(jsonElement.getAsString());
+                return;
+            }
+            converData(jsonElement.toString());
+
+
+        } catch (Exception e) {
+            onFailure("协议解析错误");
         }
-        converData(jsonElement.toString());
+
 
     }
 
-    protected abstract void onFailure(String error) ;
+    protected abstract void onFailure(String error);
 
-    protected abstract void converData(String data) ;
+    protected abstract void converData(String data);
 }

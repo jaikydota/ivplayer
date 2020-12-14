@@ -85,9 +85,14 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         player.addListener(new ComponentListener());
     }
 
-    private void loadVideo(String pid) {
+    private void loadVideo(String config_url) {
+        //ivView初始化，此处传config_url
+        ivView.initIVView(config_url, null, new IVListener(), (Activity) mContext);
+    }
+
+    private void loadVidePid(String pid) {
         //ivView初始化，此处传pid
-        ivView.initIVView(pid, null, new IVListener(), (Activity) mContext);
+        ivView.initIVViewPid(pid, null, new IVListener(), (Activity) mContext);
     }
 
     private String playerStatus;
@@ -161,14 +166,16 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
          * @param state 状态，ViewState.STATE_READIED 初始化完成
          */
         @Override
-        public void onIVViewStateChanged(String state, String data) {
+        public void onIVViewStateChanged(String state, String videoUrl) {
             if (state.equals(ViewState.STATE_READIED)) {
 
                 // 创建资源
-                DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(mContext, Util.getUserAgent(mContext, "Ivsdk"), null);
+                DefaultDataSourceFactory dataSourceFactory =
+                        new DefaultDataSourceFactory(mContext, Util.getUserAgent(mContext, "Ivsdk"), null);
                 //播放器使用vid的视频
-                Uri mp4VideoUri = Uri.parse(data);
-                MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mp4VideoUri);
+                Uri mp4VideoUri = Uri.parse(videoUrl);
+                MediaSource videoSource =
+                        new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mp4VideoUri);
                 // 准备
                 player.prepare(videoSource);
                 //开始播放
@@ -286,10 +293,20 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
     /**
      * 加载互动视频
      *
+     * @param config_url 静态url 路径
+     */
+    public void loadIVideo(@NonNull String config_url, @NonNull IVPlayerListener playerListener) {
+        this.loadVideo(config_url);
+        this.pListener = playerListener;
+    }
+
+    /**
+     * 加载互动视频
+     *
      * @param pid 智令互动编辑器制作的互动视频项目id
      */
-    public void loadIVideo(@NonNull String pid, @NonNull IVPlayerListener playerListener) {
-        this.loadVideo(pid);
+    public void loadIVideoPid(@NonNull String pid, @NonNull IVPlayerListener playerListener) {
+        this.loadVidePid(pid);
         this.pListener = playerListener;
     }
 

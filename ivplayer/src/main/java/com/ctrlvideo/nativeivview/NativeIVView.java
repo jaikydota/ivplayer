@@ -54,21 +54,21 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
     //轮询间隔
     private long delay = 36;
-    private long hideControllerViewDelay = 5000;
 
     //当前视图状态
     private String nowViewStatus = ViewState.STATE_LOADING;
 
     //是否测试网环境
-    private boolean isTestEnv = false;
+    private boolean isTestEnv = true;
 
     //当前currentTime
     private String lastTime = "0";
 
-    //项目地址
-    private String mPid;
-    //播放配置的url
-    private String config_url = "";
+    // 播控页面
+    private ControllerView mControllerView;
+    // 请求协议路径
+    private String url;
+
 
     protected RelativeLayout rlWVContainer;
 
@@ -105,45 +105,12 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
             public void onClick(View v) {
                 listener.onIVViewClick("");
                 if (mControllerView != null) {
-//                    showControllerView(mControllerView.getVisibility() == View.GONE);
-
                     mControllerView.onClick();
                 }
-
-
-//                showControllerView(mControllerView.getVisibility() == View.GONE);
             }
         });
 
     }
-
-
-//    private void showControllerView(boolean show) {
-//
-//        if (mControllerView != null) {
-//            if (show) {
-//
-//                mControllerView.setVisibility(View.VISIBLE);
-//                handler.removeMessages(MES_HIDEVIEW);
-//                handler.sendEmptyMessageDelayed(MES_HIDEVIEW, hideControllerViewDelay);
-//
-//            } else {
-//
-//                mControllerView.setVisibility(View.GONE);
-//                handler.removeMessages(MES_HIDEVIEW);
-//            }
-//        }
-//    }
-
-//    Handler handler = new Handler(Looper.getMainLooper()) {
-//
-//        @Override
-//        public void handleMessage(Message msg) {
-//            super.handleMessage(msg);
-//
-////            showControllerView(false);
-//        }
-//    };
 
 
     /**
@@ -175,7 +142,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                         ctrlPlayer(true);
                     }
                 });
-                mControllerView.initController(Math.max(getMeasuredWidth(),getMeasuredHeight()),playerController);
+                mControllerView.initController(Math.max(getMeasuredWidth(), getMeasuredHeight()), playerController);
                 addView(mControllerView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
 
@@ -185,29 +152,26 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     }
 
 
-    private ControllerView mControllerView;
-
-
     @Override
-    public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext) {
-        this.initIVView(pid, config_url, ivViewListener, mContext, false);
+    public void initIVView(@Nullable String config_url, @Nullable String channel, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext) {
+        config_url = config_url == null ? "" : config_url;
+        url = config_url;
+        init(ivViewListener, mContext);
     }
 
     @Override
-    public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext, boolean openTestEnv) {
+    public void initIVViewPid(@Nullable String pid, @Nullable String channel, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext) {
+        pid = pid == null ? "" : pid;
+        url = isTestEnv ? "https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=" + pid : "https://apiive.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=" + pid;
 
+        init(ivViewListener, mContext);
+    }
 
-        isTestEnv = openTestEnv;
-        lastTime = "0";
-
-        this.mPid = pid == null ? "" : pid;
-        this.config_url = config_url == null ? "" : config_url;
+    private void init(IVViewListener ivViewListener, Activity mContext) {
         this.listener = ivViewListener;
-
         if (mContext instanceof LifecycleOwner)
             ((LifecycleOwner) mContext).getLifecycle().addObserver(this);
         initData();
-
     }
 
     /**
@@ -215,36 +179,46 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
      */
     private void initData() {
         nowViewStatus = ViewState.STATE_GET_IV_INFO;
-        HttpClient.getInstanse().getIVideoInfo(mPid, new GetIVideoInfoCallback() {
+        if (url.startsWith("http")) {
+            HttpClient.getInstanse().getIVideoInfo(url, new GetIVideoInfoCallback() {
 
-            @Override
-            protected void onFailure(String error) {
-                LogUtils.d("onFailure", error);
+                @Override
+                protected void onFailure(String error) {
+                    LogUtils.d("onFailure", error);
 
 
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        listener.onError("get_config_failed");
-                    }
-                });
-            }
+                    post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onError("get_config_failed");
+                        }
+                    });
+                }
 
-            @Override
-            protected void onResponse(VideoProtocolInfo videoProtocolInfo) {
+                @Override
+                protected void onResponse(VideoProtocolInfo videoProtocolInfo) {
 
-                post(new Runnable() {
-                    @Override
-                    public void run() {
+                    post(new Runnable() {
+                        @Override
+                        public void run() {
 //                        LogUtils.d("onResponse", videoProtocolInfo.protocol.auto_indent + "");
-                        onLoadVideoInfoFinish(videoProtocolInfo);
-                    }
-                });
-            }
-        });
+                            onLoadVideoInfoFinish(videoProtocolInfo);
+                        }
+                    });
+                }
+            });
+        } else {
+            listener.onError("get_config_failed");
+        }
+
     }
 
 
+    /**
+     * 请求数据完成
+     *
+     * @param videoProtocolInfo
+     */
     private void onLoadVideoInfoFinish(VideoProtocolInfo videoProtocolInfo) {
 
         this.videoProtocolInfo = videoProtocolInfo;
@@ -253,8 +227,10 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
         initControlView(videoProtocolInfo.release_info);
 
-        listener.onIVViewStateChanged(nowViewStatus, videoProtocolInfo.release_info.url);
-        listener.onEventCallback(new EventIntractInfoCallback(videoProtocolInfo).toJson());
+        if (listener != null) {
+            listener.onIVViewStateChanged(nowViewStatus, videoProtocolInfo.release_info.url);
+            listener.onEventCallback(new EventIntractInfoCallback(videoProtocolInfo).toJson());
+        }
 
 
         SoundManager.getInstance().release();
@@ -262,11 +238,6 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
         componentManager.initParmas(rlWVContainer, videoProtocolInfo, this);
 
-//        LogUtils.d(TAG, "currentTime=" + current);
-
-//        String url = videoProtocolInfo.protocol.event_list.get(2).obj_list.get(0).options.get(0).custom.click_default.image_url;
-
-//        LogUtils.d(TAG, "url=" + url);
         preloadResouse();
 
         getHandler().removeCallbacks(mTicker);
@@ -351,19 +322,12 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     private Map<String, Long> resourseMap = new HashMap<String, Long>();
 
 
-    private long systemTime;
-
-
     private final Runnable mTicker = new Runnable() {
         public void run() {
 
 
             long currentPosition = listener.getPlayerCurrentTime();
 
-
-//            long newTime = System.currentTimeMillis();
-//            LogUtils.d(TAG, "currentTime=" + currentPosition + "---------------offst=" + (newTime - systemTime));
-//            systemTime = newTime;
 
             downLoadResouse(currentPosition);
             dealwithProtocol(currentPosition);
@@ -563,6 +527,14 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         }
     }
 
+    /**
+     * @param isOpen
+     */
+    @Override
+    public void setPureMode(boolean isOpen) {
+
+    }
+
     private boolean playBackground = false;
 
     /**
@@ -570,7 +542,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
      *
      * @param playBackground
      */
-    public void playBackground(boolean playBackground) {
+    public void setPlaySoundBackground(boolean playBackground) {
         this.playBackground = playBackground;
     }
 
@@ -596,18 +568,8 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         LogUtils.d(TAG, "onDestroy");
 
         getHandler().removeCallbacks(mTicker);
-//        if (handler != null) {
-//            handler.removeMessages(MES_HIDEVIEW);
-//            handler = null;
-//        }
-
-
         SoundManager.getInstance().release();
-
-
     }
-
-    private int MES_HIDEVIEW = 1000;
 
 
     @Override
@@ -636,11 +598,6 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
             listener.seekToTime(position);
         }
     }
-
-//    @Override
-//    public boolean isVideoPlaying() {
-//        return videoPlaying;
-//    }
 
     @Override
     public void ctrlPlayer(boolean play) {

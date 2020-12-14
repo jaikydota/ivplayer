@@ -46,8 +46,8 @@ public class DemoActivity extends FragmentActivity implements View.OnClickListen
         fl_chapterFour.setOnClickListener(this);
         fl_chapterFive.setOnClickListener(this);
 
-        ivPlayer.loadIVideo("5165902802815866", new PlayerListener());
-//        ivPlayer.loadIVideo("5159807693876375", new PlayerListener());
+//        ivPlayer.loadIVideo("5165902802815866", new PlayerListener());
+        ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159807693876375", new PlayerListener());
 //        ivPlayer.loadIVideo("5926378841048816", new PlayerListener());
     }
 
@@ -55,19 +55,19 @@ public class DemoActivity extends FragmentActivity implements View.OnClickListen
     @Override
     public void onClick(View v) {
         if (v == fl_chapterOne) {
-            ivPlayer.loadIVideo("5165902802815866", new PlayerListener());
-//            ivPlayer.loadIVideo("5159807693876375", new PlayerListener());
+//            ivPlayer.loadIVideo("5165902802815866", new PlayerListener());
+            ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159807693876375", new PlayerListener());
 //            ivPlayer.loadIVideo("5926378841048816", new PlayerListener());
         } else if (v == fl_chapterTwo) {
-            ivPlayer.loadIVideo("5926287290839770", new PlayerListener());
+            ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5926287290839770", new PlayerListener());
 //            ivPlayer.loadIVideo("5159815275197916", new PlayerListener());
 
         } else if (v == fl_chapterThree) {
-            ivPlayer.loadIVideo("5925315322305659", new PlayerListener());
+            ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5925315322305659", new PlayerListener());
         } else if (v == fl_chapterFour) {
-            ivPlayer.loadIVideo("5923934015831592", new PlayerListener());
+            ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5923934015831592", new PlayerListener());
         } else if (v == fl_chapterFive) {
-            ivPlayer.loadIVideo("5924969871991882", new PlayerListener());
+            ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5924969871991882", new PlayerListener());
         }
     }
 
@@ -126,7 +126,6 @@ public class DemoActivity extends FragmentActivity implements View.OnClickListen
         public void onEventCallback(String result) {
 
         }
-
 
 
         /**

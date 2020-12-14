@@ -32,13 +32,12 @@ public class HttpClient {
         return client;
     }
 
-    public void getIVideoInfo(String pid, GetIVideoInfoCallback callback) {
+    public void getIVideoInfo(String url, GetIVideoInfoCallback callback) {
 
 
         Request request = new Request.Builder()
                 .get()
-                .url("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=" + pid)
-//                .url("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/")
+                .url(url)
                 .build();
         Call call = okHttpClient.newCall(request);
 

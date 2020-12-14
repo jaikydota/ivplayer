@@ -39,8 +39,8 @@ public class PlayerActivity extends FragmentActivity {
                 Log.d(TAG, "onPrepared");
 
 
-                mVideoView.start();
-                ivView.onPlayerStateChanged(PlayerState.STATE_ONPLAY);
+//                mVideoView.start();
+//                ivView.onPlayerStateChanged(PlayerState.STATE_ONPLAY);
 
             }
         });
@@ -65,7 +65,9 @@ public class PlayerActivity extends FragmentActivity {
         });
 
 
-        ivView.initIVView("5165902802815866", null, new IVViewListener() {
+//        ivView.initIVView("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159807693876375", null, new IVViewListener() {
+        ivView.initIVView("https://www.baidu.com/s?wd=android%20%E6%94%BE%E5%A4%A7%E6%96%87%E5%AD%97&pn=10&oq=android%20%E6%94%BE%E5%A4%A7%E6%96%87%E5%AD%97&ie=utf-8&rsv_pq=9760810400004339&rsv_t=44d0Hyw8HgSkPHQNXy6JKbz%2FZmhWIK2oG5RnKcgkcS2IZJuv%2BgX3YugDwrk", null, new IVViewListener() {
+            //        ivView.initIVView("5159807693876375", null, new IVViewListener() {
             @Override
             public void onIVViewStateChanged(String state, String data) {
 

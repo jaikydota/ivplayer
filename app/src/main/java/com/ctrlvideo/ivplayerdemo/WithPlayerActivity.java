@@ -1,5 +1,6 @@
 package com.ctrlvideo.ivplayerdemo;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -17,12 +18,13 @@ public class WithPlayerActivity extends FragmentActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("WithPlayerActivity","onCreate");
 
         setContentView(R.layout.activity_with_player);
 
         ivPlayer = findViewById(R.id.iv_Player);
 
-        ivPlayer.loadIVideo("5165902802815866", new IVPlayerListener() {
+        ivPlayer.loadIVideoPid("5159807693876375", new IVPlayerListener() {
             @Override
             public void onStateChanged(String state) {
 
@@ -82,5 +84,10 @@ public class WithPlayerActivity extends FragmentActivity {
             ivPlayer.pause();
             isLifeToPause = true;
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 }

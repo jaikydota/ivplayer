@@ -9,10 +9,10 @@ public interface IVViewListener {
     /**
      * 当IVView状态改变时调用
      *
-     * @param state 状态，ViewState.STATE_READIED 初始化完成
-     * @param data  下发的数据
+     * @param state    状态，ViewState.STATE_READIED 初始化完成
+     * @param videoUrl 视频播放地址
      */
-    void onIVViewStateChanged(String state, String data);
+    void onIVViewStateChanged(String state, String videoUrl);
 
     /**
      * 获取当前播放时间

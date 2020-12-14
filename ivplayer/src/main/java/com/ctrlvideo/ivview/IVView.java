@@ -146,26 +146,35 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
         return enableFeature;
     }
 
+//    @Override
+//    public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext) {
+//        this.initIVView(pid, config_url, ivViewListener, mContext, false);
+//    }
+
     @Override
-    public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext) {
-        this.initIVView(pid, config_url, ivViewListener, mContext, false);
+    public void initIVViewPid(@Nullable String pid, @Nullable String channel, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext) {
+        this.mPid = pid == null ? "" : pid;
+        init(ivViewListener, mContext);
     }
 
     @Override
-    public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext, boolean openTestEnv) {
-        Log.d(TAG, "initIVView: " + pid + " OpenTestEnv: " + openTestEnv);
+    public void initIVView(@Nullable String config_url, @Nullable String channel, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext) {
+        this.config_url = config_url == null ? "" : config_url;
+        init(ivViewListener, mContext);
+    }
+
+    private void init(IVViewListener ivViewListener, Activity mContext) {
         nowViewStatus = ViewState.STATE_LOADING;
 
         //设置测试环境
-        isTestEnv = openTestEnv;
+//        isTestEnv = openTestEnv;
         lastTime = "0";
         lastEventState = "";
         lastEventTime = 0L;
 
         interruptEvent();
 
-        this.mPid = pid == null ? "" : pid;
-        this.config_url = config_url == null ? "" : config_url;
+
         this.listener = ivViewListener;
 
         if (enableFeature) {
@@ -179,6 +188,35 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
             this.listener.onError("android_api_too_lower");
         }
     }
+
+//    @Override
+//    public void initIVView(@Nullable String pid, @Nullable String config_url, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext, boolean openTestEnv) {
+//        Log.d(TAG, "initIVView: " + pid + " OpenTestEnv: " + openTestEnv);
+//        nowViewStatus = ViewState.STATE_LOADING;
+//
+//        //设置测试环境
+//        isTestEnv = openTestEnv;
+//        lastTime = "0";
+//        lastEventState = "";
+//        lastEventTime = 0L;
+//
+//        interruptEvent();
+//
+//        this.mPid = pid == null ? "" : pid;
+//        this.config_url = config_url == null ? "" : config_url;
+//        this.listener = ivViewListener;
+//
+//        if (enableFeature) {
+//            //绑定生命周期
+//            if (mContext instanceof LifecycleOwner)
+//                ((LifecycleOwner) mContext).getLifecycle().addObserver(this);
+//
+//            initWebView();
+//        } else {
+//            //如果小于API 21,通知无法使用
+//            this.listener.onError("android_api_too_lower");
+//        }
+//    }
 
     @SuppressLint({"SetJavaScriptEnabled", "JavascriptInterface"})
     private void initWebView() {
@@ -264,6 +302,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
      *
      * @param isOpen 是否打开
      */
+    @Override
     public void setPureMode(boolean isOpen) {
         if (enableFeature) {
             Log.d(TAG, "setPureMode: " + isOpen);
