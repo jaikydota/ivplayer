@@ -23,10 +23,11 @@ public class AudioPlayer implements MediaPlayer.OnCompletionListener {
         try {
 
             mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+//            mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
             mediaPlayer.setDataSource(url);
             mediaPlayer.setLooping(loop);
             mediaPlayer.setOnCompletionListener(this);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.prepare();
             mediaPlayer.start();
         } catch (IOException e) {
