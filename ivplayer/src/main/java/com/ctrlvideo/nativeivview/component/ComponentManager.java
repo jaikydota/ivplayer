@@ -199,7 +199,7 @@ public class ComponentManager {
 
             } else if ("href_url".equals(choice)) {//跳转链接
                 if (iComponentListener != null) {
-                    iComponentListener.hrefUrl(eventFeature.href_url);
+                    iComponentListener.onHrefUrl(eventFeature.href_url);
                     iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                 }
             }
@@ -474,7 +474,7 @@ public class ComponentManager {
                     }
                 } else if ("href_url".equals(choice)) {//跳转链接
                     if (iComponentListener != null) {
-                        iComponentListener.hrefUrl(eventFeature.href_url);
+                        iComponentListener.onHrefUrl(eventFeature.href_url);
                         iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                     }
 

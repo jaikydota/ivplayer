@@ -44,4 +44,12 @@ public interface IVPlayerListener {
      * @param url
      */
     void onHrefUrl(String url);
+
+    /**
+     * 当IVView收到打电话通知
+     *
+     * @param phone
+     */
+    void onCallPhone(String phone);
+
 }

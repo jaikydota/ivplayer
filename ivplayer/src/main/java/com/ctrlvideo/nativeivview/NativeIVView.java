@@ -1,8 +1,12 @@
 package com.ctrlvideo.nativeivview;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -617,13 +621,24 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     @Override
     public void callPhone(String call_phone) {
 
+//        "tel:" +
+
         if (listener != null) {
-            listener.onHrefUrl("tel:" + call_phone);
+            boolean impl = listener.onCallPhone(call_phone);
+            if (!impl) {
+
+                if (Build.VERSION.SDK_INT < 23 || getContext().checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                    Intent mIntent = new Intent(Intent.ACTION_DIAL);
+                    mIntent.setData(Uri.parse("tel:" + call_phone));
+                    getContext().startActivity(mIntent);
+                }
+
+            }
         }
     }
 
     @Override
-    public void hrefUrl(String href_url) {
+    public void onHrefUrl(String href_url) {
         if (listener != null) {
             boolean impl = listener.onHrefUrl(href_url);
             if (!impl) {

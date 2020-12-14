@@ -275,6 +275,13 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
         }
 
+
+        /**
+         * 跳转网页链接回调
+         *
+         * @param url 链接
+         * @return true：实现网页跳转    false：sdk内部消耗，内部实现简单网页跳转
+         */
         @Override
         public boolean onHrefUrl(String url) {
             if (pListener != null) {
@@ -282,6 +289,14 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
             }
             return false;
 
+        }
+
+        @Override
+        public boolean onCallPhone(String phone) {
+            if (pListener != null) {
+                pListener.onCallPhone(phone);
+            }
+            return false;
         }
     }
 

@@ -12,7 +12,7 @@ public interface IComponentListener {
 
     void ctrlPlayer(boolean play);
 
-    void hrefUrl(String href_url);
+    void onHrefUrl(String href_url);
 
     void callPhone(String call_phone);
 

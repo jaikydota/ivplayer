@@ -76,10 +76,19 @@ public interface IVViewListener {
     void onCustomNotify(String msg);
 
     /**
-     * 当IVView 跳转链接
+     * 当IVView收到跳转网页链接回调
      *
      * @param url 链接
-     * @return 当外部未实现时，由内部自己实现
+     * @return true：实现网页跳转    false：sdk内部消耗，内部实现简单网页跳转
      */
     boolean onHrefUrl(String url);
+
+
+    /**
+     * 当IVView收到跳转网页链接回调
+     *
+     * @param phone 电话号码
+     * @return true：实现拨打电话    false：sdk内部消耗，如果APP 授权打电话权限，内部实现拨打电话
+     */
+    boolean onCallPhone(String phone);
 }

@@ -152,6 +152,11 @@ public class DemoActivity extends FragmentActivity implements View.OnClickListen
         public void onHrefUrl(String url) {
             Toast.makeText(DemoActivity.this, "跳转链接： " + url, Toast.LENGTH_LONG).show();
         }
+
+        @Override
+        public void onCallPhone(String phone) {
+            Toast.makeText(DemoActivity.this, "拨打电话： " + phone, Toast.LENGTH_LONG).show();
+        }
     }
 
 

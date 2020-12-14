@@ -24,7 +24,7 @@ public class WithPlayerActivity extends FragmentActivity {
 
         ivPlayer = findViewById(R.id.iv_Player);
 
-        ivPlayer.loadIVideoPid("5159807693876375", new IVPlayerListener() {
+        ivPlayer.loadIVideoPid("5165902802815866", new IVPlayerListener() {
             @Override
             public void onStateChanged(String state) {
 
@@ -51,11 +51,17 @@ public class WithPlayerActivity extends FragmentActivity {
             public void onHrefUrl(String url) {
                 Log.d(TAG, "onHrefUrl---");
             }
+            @Override
+            public void onCallPhone(String phone) {
+                Log.d(TAG, "onCallPhone---");
+            }
 
             @Override
             public void onEventCallback(String result) {
                 Log.d(TAG, "onEventCallback---");
             }
+
+
         });
     }
 
