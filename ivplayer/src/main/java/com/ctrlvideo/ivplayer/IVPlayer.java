@@ -76,6 +76,11 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
     private void initializePlayer() {
         //创建简单exo播放器
+
+        if (player != null) {
+            player.release();
+        }
+
         player = new SimpleExoPlayer.Builder(mContext).build();
         playerView.setPlayer(player);
 
@@ -90,7 +95,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 //            player.release();
 //        }
 
-        if (player!=null){
+        if (player != null) {
             player.release();
             playerView.setPlayer(null);
         }

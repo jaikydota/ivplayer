@@ -1,8 +1,8 @@
 package com.ctrlvideo.ivplayerdemo;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,17 +41,17 @@ public class ListActivity extends FragmentActivity {
     private void getData() {
 
         urlList = new ArrayList<>();
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5927353955133668");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159807693876375");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5139896425952907");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159815275197916");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159807693876375");
         urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5925315322305659");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5924969871991882");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5926287290839770");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5927353955133668");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5923934015831592");
     }
 
     private LinearLayoutManager layoutManager;
@@ -68,6 +68,9 @@ public class ListActivity extends FragmentActivity {
 
     }
 
+
+    private IVPlayer lastPlayer;
+
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -78,31 +81,19 @@ public class ListActivity extends FragmentActivity {
                         layoutManager.findFirstCompletelyVisibleItemPosition();
 
                 if (currentPosition != firstCompletelyVisibleItemPosition) {
-                    Log.d("LRM", "onScrollStateChanged-----firstCompletelyVisibleItemPosition=" + firstCompletelyVisibleItemPosition);
 
 
-                    View lastView = layoutManager.findViewByPosition(currentPosition);
-                    if (lastView != null) {
-                        ListPlayerAdapter.ListPlayerHoldet lastViewHolder =
-                                (ListPlayerAdapter.ListPlayerHoldet) recyclerView.getChildViewHolder(lastView);
-                        if (lastViewHolder != null) {
-                            IVPlayer lastIvPlayer = lastViewHolder.videoPlayerView;
-                            Log.d("LRM", "release-----currentPosition=--" + currentPosition);
-//                            lastIvPlayer.setBackgroundColor(Color.RED);
-                            lastIvPlayer.release();
-                        }
+                    if (lastPlayer != null) {
+                        lastPlayer.release();
                     }
 
 
                     View currentView = layoutManager.findViewByPosition(firstCompletelyVisibleItemPosition);
                     if (null != currentView) {
-
-
                         ListPlayerAdapter.ListPlayerHoldet viewHolder =
                                 (ListPlayerAdapter.ListPlayerHoldet) recyclerView.getChildViewHolder(currentView);
                         if (viewHolder != null) {
                             IVPlayer ivPlayer = viewHolder.videoPlayerView;
-                            Log.d("LRM", "onScrollStateChanged-----loadIVideo=--" + firstCompletelyVisibleItemPosition);
                             ivPlayer.loadIVideo(urlList.get(firstCompletelyVisibleItemPosition), new IVPlayerListener() {
                                 @Override
                                 public void onStateChanged(String state) {
@@ -122,6 +113,7 @@ public class ListActivity extends FragmentActivity {
                                 @Override
                                 public void onError(String errorType) {
 
+                                    Toast.makeText(ListActivity.this,errorType,Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override
@@ -139,6 +131,8 @@ public class ListActivity extends FragmentActivity {
 
                                 }
                             });
+
+                            lastPlayer = ivPlayer;
                         }
 
                     }
@@ -147,69 +141,6 @@ public class ListActivity extends FragmentActivity {
                 }
 
 
-//                Log.d("LRM", "onScrollStateChanged----currentPosition=" + currentPosition + "-----firstCompletelyVisibleItemPosition=" + firstCompletelyVisibleItemPosition);
-
-//                View currentView = layoutManager.findViewByPosition(firstCompletelyVisibleItemPosition);
-//
-//                if (null != currentView) {
-//                    if (currentPosition != firstCompletelyVisibleItemPosition) {
-//                        //如果当前position 和 上一次固定后的position 相同, 说明是同一个, 只不过滑动了一点点, 然后又释放了
-////                        JzvdStd.releaseAllVideos();
-//
-//                        View lastView = layoutManager.findViewByPosition(currentPosition);
-//                        if (lastView != null) {
-//                            ListPlayerAdapter.ListPlayerHoldet lastViewHolder =
-//                                    (ListPlayerAdapter.ListPlayerHoldet) recyclerView.getChildViewHolder(lastView);
-//                            if (lastViewHolder != null) {
-//                                IVPlayer lastIvPlayer = lastViewHolder.ivPlayer;
-//                                lastIvPlayer.release();
-//                            }
-//                        }
-//
-//
-//                        ListPlayerAdapter.ListPlayerHoldet viewHolder =
-//                                (ListPlayerAdapter.ListPlayerHoldet) recyclerView.getChildViewHolder(currentView);
-//                        IVPlayer ivPlayer = viewHolder.ivPlayer;
-//                        ivPlayer.loadIVideo(urlList.get(firstCompletelyVisibleItemPosition), new IVPlayerListener() {
-//                            @Override
-//                            public void onStateChanged(String state) {
-//
-//                            }
-//
-//                            @Override
-//                            public void onViewClick(String info) {
-//
-//                            }
-//
-//                            @Override
-//                            public void onEventCallback(String result) {
-//
-//                            }
-//
-//                            @Override
-//                            public void onError(String errorType) {
-//
-//                            }
-//
-//                            @Override
-//                            public void onCustomNotify(String msg) {
-//
-//                            }
-//
-//                            @Override
-//                            public void onHrefUrl(String url) {
-//
-//                            }
-//
-//                            @Override
-//                            public void onCallPhone(String phone) {
-//
-//                            }
-//                        });
-//
-//                    }
-//
-//                }
                 currentPosition = firstCompletelyVisibleItemPosition;
 
 
@@ -219,31 +150,12 @@ public class ListActivity extends FragmentActivity {
 
     private int currentPosition = 0;
 
-    private boolean isLifeToPause = false;
-
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onDestroy() {
+        super.onDestroy();
 
-
-//        if (isLifeToPause) {
-//            isLifeToPause = false;
-//            //继续播放
-//            mVideoView.start();
-//            ivView.onPlayerStateChanged(PlayerState.STATE_ONPLAY);
-//        }
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-//        if (mVideoView.isPlaying()) {
-//            //暂停视频
-//            mVideoView.pause();
-//            ivView.onPlayerStateChanged(PlayerState.STATE_ONPAUSE);
-//            isLifeToPause = true;
-//        }
+        if (lastPlayer != null) {
+            lastPlayer.release();
+        }
     }
 }

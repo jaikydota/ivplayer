@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -355,16 +354,16 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     private Map<String, Long> resourseMap = new HashMap<String, Long>();
 
 
-     long time;
+//     long time;
     private final Runnable mTicker = new Runnable() {
         public void run() {
 
 
             if (listener != null) {
 
-                long newTime=System.currentTimeMillis();
-                Log.d("LRM", "currentPosition=" +( newTime-time));
-                time=newTime;
+//                long newTime=System.currentTimeMillis();
+//                Log.d("LRM", "currentPosition=" +( newTime-time));
+//                time=newTime;
 
                 long currentPosition = listener.getPlayerCurrentTime();
 
