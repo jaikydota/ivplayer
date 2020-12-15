@@ -316,6 +316,11 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
         }
     }
 
+    @Override
+    public void release() {
+
+    }
+
     //使用本地录音模式
     public void useSelfRecord(boolean isOpen) {
         isSelfRecord = isOpen;

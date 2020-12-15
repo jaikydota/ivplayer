@@ -65,7 +65,7 @@ public class PlayerActivity extends FragmentActivity {
         });
 
 
-        ivView.initIVView("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866", null, new IVViewListener() {
+        ivView.initIVView("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159807693876375", null, new IVViewListener() {
             //        ivView.initIVView("5159807693876375", null, new IVViewListener() {
             @Override
             public void onIVViewStateChanged(String state, String data) {

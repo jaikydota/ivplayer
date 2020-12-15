@@ -34,9 +34,9 @@ public class ComponentManager {
     private RelativeLayout rootView;
 
 
-    public void initParmas(RelativeLayout rootView, VideoProtocolInfo videoProtocolInfo, IComponentListener iComponentListener) {
+    public void initParmas(Context context,RelativeLayout rootView, VideoProtocolInfo videoProtocolInfo, IComponentListener iComponentListener) {
         this.rootView = rootView;
-        this.mContext = rootView.getContext();
+        this.mContext = context;
 
 
         this.parentWidth = rootView.getMeasuredWidth();
@@ -634,4 +634,7 @@ public class ComponentManager {
         return id + "_result";
     }
 
+//    public void release() {
+//        rootView.removeAllViews();
+//    }
 }

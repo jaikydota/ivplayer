@@ -67,8 +67,8 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         RelativeLayout inflate = (RelativeLayout) LayoutInflater.from(context).inflate(R.layout.view_player, this, true);
         playerView = findViewById(R.id.video_view);
         ivView = findViewById(R.id.ivViewContainer);
+//
 
-        initializePlayer();
     }
 
     ;
@@ -83,6 +83,19 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         playerView.setUseController(false);
         //监听播放器状态事件
         player.addListener(new ComponentListener());
+    }
+
+    public void release() {
+//        if (player != null) {
+//            player.release();
+//        }
+
+        if (player!=null){
+            player.release();
+            playerView.setPlayer(null);
+        }
+
+        ivView.release();
     }
 
     private void loadVideo(String config_url) {
@@ -168,7 +181,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         @Override
         public void onIVViewStateChanged(String state, String videoUrl) {
             if (state.equals(ViewState.STATE_READIED)) {
-
+                initializePlayer();
                 // 创建资源
                 DefaultDataSourceFactory dataSourceFactory =
                         new DefaultDataSourceFactory(mContext, Util.getUserAgent(mContext, "Ivsdk"), null);

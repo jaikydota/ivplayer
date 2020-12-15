@@ -50,4 +50,5 @@ dependencies {
     //引入sdk
 //    implementation 'com.ctrlvideo.ivplayer:ivplayer:0.1.2'
     api project(':ivplayer')
+    implementation 'androidx.recyclerview:recyclerview:1.2.0-beta01'
 }

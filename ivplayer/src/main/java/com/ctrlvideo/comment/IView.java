@@ -40,4 +40,5 @@ public interface IView {
      */
     void setPureMode(boolean isOpen);
 
+    void release();
 }

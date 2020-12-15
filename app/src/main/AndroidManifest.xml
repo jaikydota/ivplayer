@@ -25,6 +25,9 @@
         <activity android:name=".PlayerActivity">
 
         </activity>
+        <activity android:name=".ListActivity">
+
+        </activity>
 
 
         <activity android:name=".MainActivity">

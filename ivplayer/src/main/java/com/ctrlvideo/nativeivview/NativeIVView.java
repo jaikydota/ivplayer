@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -49,10 +51,6 @@ import java.util.Set;
 public class NativeIVView extends RelativeLayout implements LifecycleObserver, IView, IComponentListener {
 
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
 
     protected String TAG = "NativeIVView";
 
@@ -81,6 +79,8 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
     protected VideoProtocolInfo videoProtocolInfo;
 
+    private Handler handler = new Handler();
+
 
     public NativeIVView(Context context) {
         super(context);
@@ -107,7 +107,10 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onIVViewClick("");
+                if (listener != null) {
+                    listener.onIVViewClick("");
+                }
+
                 if (mControllerView != null) {
                     mControllerView.onClick();
                 }
@@ -217,6 +220,28 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
     }
 
+    @Override
+    public void release() {
+
+
+        if (handler != null) {
+            handler.removeCallbacks(mTicker);
+        }
+
+        if (mControllerView != null) {
+            removeView(mControllerView);
+            mControllerView = null;
+        }
+        SoundManager.getInstance().release();
+
+
+//        if (componentManager!=null){
+//            componentManager.release();
+//        }
+        rlWVContainer.removeAllViews();
+
+
+    }
 
     /**
      * 请求数据完成
@@ -240,12 +265,16 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         SoundManager.getInstance().release();
         rlWVContainer.removeAllViews();
 
-        componentManager.initParmas(rlWVContainer, videoProtocolInfo, this);
+        componentManager.initParmas(getContext(), rlWVContainer, videoProtocolInfo, this);
 
         preloadResouse();
 
-        getHandler().removeCallbacks(mTicker);
-        getHandler().post(mTicker);
+        if (handler != null) {
+            handler.removeCallbacks(mTicker);
+            handler.post(mTicker);
+        }
+
+
     }
 
     /**
@@ -326,20 +355,34 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     private Map<String, Long> resourseMap = new HashMap<String, Long>();
 
 
+     long time;
     private final Runnable mTicker = new Runnable() {
         public void run() {
 
 
-            long currentPosition = listener.getPlayerCurrentTime();
+            if (listener != null) {
+
+                long newTime=System.currentTimeMillis();
+                Log.d("LRM", "currentPosition=" +( newTime-time));
+                time=newTime;
+
+                long currentPosition = listener.getPlayerCurrentTime();
 
 
-            downLoadResouse(currentPosition);
-            dealwithProtocol(currentPosition);
 
-            long now = SystemClock.uptimeMillis();
-            long next = now + (delay - now % delay);
-            getHandler().removeCallbacks(mTicker);
-            getHandler().postAtTime(mTicker, next);
+
+                downLoadResouse(currentPosition);
+                dealwithProtocol(currentPosition);
+
+                long now = SystemClock.uptimeMillis();
+                long next = now + (delay - now % delay);
+
+                if (handler != null) {
+                    handler.removeCallbacks(mTicker);
+                    handler.postAtTime(mTicker, next);
+                }
+            }
+
 
         }
     };
@@ -571,7 +614,11 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     public void onDestroy() {
         LogUtils.d(TAG, "onDestroy");
 
-        getHandler().removeCallbacks(mTicker);
+        if (handler != null) {
+            handler.removeCallbacks(mTicker);
+            handler=null;
+        }
+
         SoundManager.getInstance().release();
     }
 

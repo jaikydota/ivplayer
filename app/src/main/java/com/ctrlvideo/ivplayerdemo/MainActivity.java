@@ -28,4 +28,9 @@ public class MainActivity extends FragmentActivity {
 
         startActivity(new Intent(this, PlayerActivity.class));
     }
+
+    public void list(View view) {
+
+        startActivity(new Intent(this, ListActivity.class));
+    }
 }

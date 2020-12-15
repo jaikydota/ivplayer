@@ -24,7 +24,7 @@ public class WithPlayerActivity extends FragmentActivity {
 
         ivPlayer = findViewById(R.id.iv_Player);
 
-        ivPlayer.loadIVideoPid("5165902802815866", new IVPlayerListener() {
+        ivPlayer.loadIVideoPid("5159807693876375", new IVPlayerListener() {
             @Override
             public void onStateChanged(String state) {
 
