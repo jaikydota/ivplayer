@@ -100,11 +100,11 @@ public class PlayerActivity extends FragmentActivity {
 
             }
 
-            @Override
-            public void onIVViewClick(String info) {
-
-                Log.d(TAG, "onIVViewClick--" + info);
-            }
+//            @Override
+//            public void onIVViewClick(String info) {
+//
+//                Log.d(TAG, "onIVViewClick--" + info);
+//            }
 
             @Override
             public void onEventCallback(String result) {

@@ -106,9 +106,9 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listener != null) {
-                    listener.onIVViewClick("");
-                }
+//                if (listener != null) {
+////                    listener.onIVViewClick("");
+////                }
 
                 if (mControllerView != null) {
                     mControllerView.onClick();

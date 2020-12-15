@@ -551,12 +551,12 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
     public void ivViewOnClick(final String info) {
         Log.d(TAG, "ivViewOnClick " + info);
 
-        this.post(new Runnable() {
-            @Override
-            public void run() {
-                listener.onIVViewClick(info);
-            }
-        });
+//        this.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                listener.onIVViewClick(info);
+//            }
+//        });
     }
 
     /**

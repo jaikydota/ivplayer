@@ -253,17 +253,17 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
             }
         }
 
-        /**
-         * 当IvView点击时 [如点击IvView中控件将阻止向上冒泡，不会调用此方法]
-         *
-         * @param info 点击信息
-         */
-        @Override
-        public void onIVViewClick(String info) {
-            if (pListener != null) {
-                pListener.onViewClick(info);
-            }
-        }
+//        /**
+//         * 当IvView点击时 [如点击IvView中控件将阻止向上冒泡，不会调用此方法]
+//         *
+//         * @param info 点击信息
+//         */
+//        @Override
+//        public void onIVViewClick(String info) {
+//            if (pListener != null) {
+//                pListener.onViewClick(info);
+//            }
+//        }
 
 
         /**
