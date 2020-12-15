@@ -41,17 +41,21 @@ public class ListActivity extends FragmentActivity {
     private void getData() {
 
         urlList = new ArrayList<>();
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5927353955133668");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159807693876375");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5139896425952907");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159815275197916");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159807693876375");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866");
         urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5925315322305659");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5924969871991882");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5926287290839770");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5927353955133668");
-        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5923934015831592");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028427201742");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028436931666");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5853226980321223");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5925315322305659");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028427201742");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028436931666");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5853226980321223");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5925315322305659");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028427201742");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028436931666");
+        urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5853226980321223");
+
+
+
     }
 
     private LinearLayoutManager layoutManager;

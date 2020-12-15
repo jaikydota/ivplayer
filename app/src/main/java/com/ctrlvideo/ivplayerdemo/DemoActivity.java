@@ -52,20 +52,20 @@ public class DemoActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        if (v == fl_chapterOne) {
+        if (v == fl_chapterOne) {//三国
 //            ivPlayer.loadIVideo("5165902802815866", new PlayerListener());
             ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5925315322305659", new PlayerListener());
 //            ivPlayer.loadIVideo("5926378841048816", new PlayerListener());
-        } else if (v == fl_chapterTwo) {
+        } else if (v == fl_chapterTwo) {//驾照
             ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028427201742", new PlayerListener());
 //            ivPlayer.loadIVideo("5159815275197916", new PlayerListener());
 
-        } else if (v == fl_chapterThree) {
+        } else if (v == fl_chapterThree) {//路虎
             ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028436931666", new PlayerListener());
-        } else if (v == fl_chapterFour) {
+        } else if (v == fl_chapterFour) {//刘岩
             ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5853226980321223", new PlayerListener());
         } else if (v == fl_chapterFive) {
-            ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5924969871991882", new PlayerListener());
+
         }
     }
 

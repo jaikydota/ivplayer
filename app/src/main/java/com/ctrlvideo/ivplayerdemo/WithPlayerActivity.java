@@ -24,7 +24,7 @@ public class WithPlayerActivity extends FragmentActivity {
 
         ivPlayer = findViewById(R.id.iv_Player);
 
-        ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5925315322305659", new IVPlayerListener() {
+        ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028427201742", new IVPlayerListener() {
             @Override
             public void onStateChanged(String state) {
 
