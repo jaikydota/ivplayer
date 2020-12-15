@@ -102,6 +102,7 @@
                     android:textSize="14sp"/>
             </FrameLayout>
             <FrameLayout
+                android:visibility="gone"
                 android:id="@+id/fl_chapterFive"
                 android:layout_width="120dp"
                 android:layout_height="match_parent"
