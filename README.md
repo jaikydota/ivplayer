@@ -1,8 +1,8 @@
 # ivplayer
 An open source Interaction Video Player for Android.
 
-### UsingV6U3FnZ05lZnVD
+### Using
 
-参考 https://docs.qq.com/doc/DTW
+参考 https://docs.qq.com/doc/DTWV6U3FnZ05lZnVD
 
 ### *Enjoy it!*
