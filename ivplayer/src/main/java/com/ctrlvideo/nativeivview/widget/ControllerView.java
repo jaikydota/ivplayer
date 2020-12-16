@@ -124,6 +124,11 @@ public class ControllerView extends RelativeLayout {
         } else {
             mIvStart.setVisibility(GONE);
         }
+        if (playerController.show_playPause_btn) {
+            mIvStartOrPause.setVisibility(VISIBLE);
+        } else {
+            mIvStartOrPause.setVisibility(GONE);
+        }
 
     }
 

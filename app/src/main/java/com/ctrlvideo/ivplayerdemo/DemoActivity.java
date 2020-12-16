@@ -63,7 +63,7 @@ public class DemoActivity extends FragmentActivity implements View.OnClickListen
         } else if (v == fl_chapterThree) {//路虎
             ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028436931666", new PlayerListener());
         } else if (v == fl_chapterFour) {//刘岩
-            ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5853226980321223", new PlayerListener());
+            ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5858022109443231", new PlayerListener());
         } else if (v == fl_chapterFive) {
 
         }

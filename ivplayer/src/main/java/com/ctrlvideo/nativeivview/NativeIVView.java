@@ -49,114 +49,81 @@ import java.util.Set;
 
 public class NativeIVView extends RelativeLayout implements LifecycleObserver, IView, IComponentListener {
 
+    private String TAG = "NativeIVView";
 
 
-    protected String TAG = "NativeIVView";
+    //事件控件层
+    protected RelativeLayout rlWVContainer;
 
-    //轮询间隔
-    private long delay = 36;
-
-    //当前视图状态
-    private String nowViewStatus = ViewState.STATE_LOADING;
+    // 请求协议路径
+    private String url;
 
     //是否测试网环境
     private boolean isTestEnv = true;
 
-    //当前currentTime
-    private String lastTime = "0";
-
-    // 播控页面
-    private ControllerView mControllerView;
-    // 请求协议路径
-    private String url;
-
-
-    protected RelativeLayout rlWVContainer;
-
-    //事件监听器
-    private IVViewListener listener = null;
-
-    protected VideoProtocolInfo videoProtocolInfo;
+    private IVViewListener listener;
 
     private Handler handler = new Handler();
 
+    //当前视图状态
+    private String nowViewStatus = ViewState.STATE_LOADING;
+
+    //协议
+    protected VideoProtocolInfo videoProtocolInfo;
+
+    private ComponentManager componentManager;
+
+    // 播控页面
+    private ControllerView mControllerView;
+
+    //需要下载的资源
+    private Map<String, Long> resourseMap = new HashMap<String, Long>();
+    //正在下载的资源
+    private List<String> downloading = new ArrayList<>();
+    //已经下载的资源
+    private List<String> downloadFinish = new ArrayList<>();
+
+    //轮询间隔
+    private long delay = 36;
+
+    // 视频播放状态
+    private String playerState;
+
+    //后台播放音效
+    private boolean playBackground = false;
 
     public NativeIVView(Context context) {
-        super(context);
-        initView(context);
+        this(context, null);
     }
 
     public NativeIVView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initView(context);
+        this(context, attrs, 0);
     }
 
     public NativeIVView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initView(context);
+
+        initView();
     }
 
-    private void initView(Context context) {
+    private void initView() {
         if (isInEditMode()) {
             return;
         }
-        LayoutInflater.from(context).inflate(R.layout.view_native, this, true);
+
+        LayoutInflater.from(getContext()).inflate(R.layout.view_native, this);
 
         rlWVContainer = findViewById(R.id.rlWVContainer);
+
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (listener != null) {
-////                    listener.onIVViewClick("");
-////                }
-
                 if (mControllerView != null) {
                     mControllerView.onClick();
                 }
             }
         });
-
     }
-
-
-    /**
-     * 初始化播控
-     *
-     * @param releaseInfo
-     */
-    private void initControlView(VideoProtocolInfo.ReleaseInfo releaseInfo) {
-        if (mControllerView != null) {
-            removeView(mControllerView);
-            mControllerView = null;
-        }
-
-        if (releaseInfo != null) {
-            VideoProtocolInfo.PlayerController playerController = releaseInfo.getPlayerController();
-            if (playerController.isShowContrller()) {
-                mControllerView = new ControllerView(getContext());
-                mControllerView.setOnControllerListener(new ControllerView.OnControllerListener() {
-
-                    @Override
-                    public void onPlayOrPause(boolean play) {
-
-                        ctrlPlayer(play);
-                    }
-
-                    @Override
-                    public void onRestart() {
-//                        onComponentSeek(0);
-                        ctrlPlayer(true);
-                    }
-                });
-                mControllerView.initController(Math.max(getMeasuredWidth(), getMeasuredHeight()), playerController);
-                addView(mControllerView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-
-
-//                showControllerView(true);
-            }
-        }
-    }
-
 
     @Override
     public void initIVView(@Nullable String config_url, @Nullable String channel, @NonNull IVViewListener ivViewListener, @NonNull Activity mContext) {
@@ -173,18 +140,76 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         init(ivViewListener, mContext);
     }
 
+    /**
+     * 播放器状态
+     *
+     * @param status
+     */
+    @Override
+    public void onPlayerStateChanged(String status) {
+
+        this.playerState = status;
+
+        if (nowViewStatus.equals(ViewState.STATE_READIED)) {
+            if (componentManager != null) {
+                componentManager.setVideoPlayerStatus(status);
+            }
+            if (mControllerView != null) {
+                mControllerView.setVideoPlayerStatus(status);
+            }
+        }
+    }
+
+    @Override
+    public void setPureMode(boolean isOpen) {
+
+    }
+
+    /**
+     * 音效允许后台播放
+     *
+     * @param playBackground
+     */
+    public void setPlaySoundBackground(boolean playBackground) {
+        this.playBackground = playBackground;
+    }
+
+    @Override
+    public void release() {
+
+        if (handler != null) {
+            handler.removeCallbacks(mTicker);
+        }
+
+
+        SoundManager.getInstance().release();
+        rlWVContainer.removeAllViews();
+        if (mControllerView != null) {
+            removeView(mControllerView);
+        }
+    }
+
     private void init(IVViewListener ivViewListener, Activity mContext) {
+
         this.listener = ivViewListener;
         if (mContext instanceof LifecycleOwner)
             ((LifecycleOwner) mContext).getLifecycle().addObserver(this);
+
+        release();
         initData();
     }
+
 
     /**
      * 加载互动协议数据
      */
     private void initData() {
+
+
         nowViewStatus = ViewState.STATE_GET_IV_INFO;
+        if (listener != null) {
+            listener.onIVViewStateChanged(nowViewStatus, nowViewStatus);
+        }
         if (url.startsWith("http")) {
             HttpClient.getInstanse().getIVideoInfo(url, new GetIVideoInfoCallback() {
 
@@ -196,7 +221,9 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                     post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onError("get_config_failed");
+                            if (listener != null) {
+                                listener.onError("get_config_failed");
+                            }
                         }
                     });
                 }
@@ -214,33 +241,12 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                 }
             });
         } else {
-            listener.onError("get_config_failed");
+            if (listener != null) {
+                listener.onError("get_config_failed");
+            }
         }
-
     }
 
-    @Override
-    public void release() {
-
-
-        if (handler != null) {
-            handler.removeCallbacks(mTicker);
-        }
-
-        if (mControllerView != null) {
-            removeView(mControllerView);
-            mControllerView = null;
-        }
-        SoundManager.getInstance().release();
-
-
-//        if (componentManager!=null){
-//            componentManager.release();
-//        }
-        rlWVContainer.removeAllViews();
-
-
-    }
 
     /**
      * 请求数据完成
@@ -250,31 +256,59 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     private void onLoadVideoInfoFinish(VideoProtocolInfo videoProtocolInfo) {
 
         this.videoProtocolInfo = videoProtocolInfo;
-        componentManager = new ComponentManager();
-        nowViewStatus = ViewState.STATE_READIED;
+        if (componentManager == null) {
+            componentManager = new ComponentManager();
+        }
+        componentManager.initParmas(getContext(), rlWVContainer, videoProtocolInfo, this);
 
         initControlView(videoProtocolInfo.release_info);
 
+        nowViewStatus = ViewState.STATE_READIED;
         if (listener != null) {
             listener.onIVViewStateChanged(nowViewStatus, videoProtocolInfo.release_info.url);
             listener.onEventCallback(new EventIntractInfoCallback(videoProtocolInfo).toJson());
         }
-
-
-        SoundManager.getInstance().release();
-        rlWVContainer.removeAllViews();
-
-        componentManager.initParmas(getContext(), rlWVContainer, videoProtocolInfo, this);
-
         preloadResouse();
 
         if (handler != null) {
             handler.removeCallbacks(mTicker);
             handler.post(mTicker);
         }
-
-
     }
+
+
+    /**
+     * 初始化播控
+     *
+     * @param releaseInfo
+     */
+    private void initControlView(VideoProtocolInfo.ReleaseInfo releaseInfo) {
+
+        if (releaseInfo != null) {
+            VideoProtocolInfo.PlayerController playerController = releaseInfo.getPlayerController();
+//            if (playerController.isShowContrller()) {
+            mControllerView = new ControllerView(getContext());
+            mControllerView.setOnControllerListener(new ControllerView.OnControllerListener() {
+
+                @Override
+                public void onPlayOrPause(boolean play) {
+
+                    ctrlPlayer(play);
+                }
+
+                @Override
+                public void onRestart() {
+//                        onComponentSeek(0);
+                    ctrlPlayer(true);
+                }
+            });
+            mControllerView.initController(Math.max(getMeasuredWidth(), getMeasuredHeight()), playerController);
+            addView(mControllerView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+
+//            }
+        }
+    }
+
 
     /**
      * 预加载资源
@@ -333,7 +367,6 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                 }
             }
         }
-
     }
 
     /**
@@ -351,24 +384,13 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     }
 
 
-    private Map<String, Long> resourseMap = new HashMap<String, Long>();
-
-
-//     long time;
+    // 轮询器
     private final Runnable mTicker = new Runnable() {
         public void run() {
 
 
             if (listener != null) {
-
-//                long newTime=System.currentTimeMillis();
-//                Log.d("LRM", "currentPosition=" +( newTime-time));
-//                time=newTime;
-
                 long currentPosition = listener.getPlayerCurrentTime();
-
-
-
 
                 downLoadResouse(currentPosition);
                 dealwithProtocol(currentPosition);
@@ -381,11 +403,8 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                     handler.postAtTime(mTicker, next);
                 }
             }
-
-
         }
     };
-
 
     /**
      * 下载资源文件
@@ -443,17 +462,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
             downloadFinish.clear();
         }
 
-
-//        LogUtils.d("downLoadResouse", "-----------------------------------");
-
     }
-
-    //正在下载的资源
-    private List<String> downloading = new ArrayList<>();
-    //已经下载的资源
-    private List<String> downloadFinish = new ArrayList<>();
-
-    private ComponentManager componentManager;
 
 
     /**
@@ -550,47 +559,87 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
             }
         }
-
-
     }
 
-
-    // 视频播放状态
-    private String playerState;
+    /**
+     * 事件信息回调
+     *
+     * @param action
+     */
+    @Override
+    public void onEventCallback(String action) {
+        if (listener != null) {
+            listener.onEventCallback(action);
+        }
+    }
 
     @Override
-    public void onPlayerStateChanged(String status) {
-        LogUtils.d(TAG, "onPlayerStateChanged----status=" + status);
+    public void onComponentSeek(long position) {
+        if (listener != null) {
+            listener.seekToTime(position);
+        }
+    }
 
-        this.playerState = status;
+    @Override
+    public void onShowBottomControllerView(boolean show) {
+        if (mControllerView != null) {
+            mControllerView.setBottomViewShowable(show);
+        }
+    }
 
-        if (nowViewStatus.equals(ViewState.STATE_READIED)) {
-//            videoPlaying = "onplay".equals(status);
-            componentManager.setVideoPlayerStatus(status);
-            if (mControllerView != null) {
-                mControllerView.setVideoPlayerStatus(status);
+    @Override
+    public void ctrlPlayer(boolean play) {
+        if (play && PlayerState.STATE_ONPLAY.equals(playerState))
+            return;
+
+        if (!play && !PlayerState.STATE_ONPLAY.equals(playerState))
+            return;
+
+        if (listener != null) {
+
+            listener.ctrlPlayer(play ? "play" : "pause");
+        }
+    }
+
+    /**
+     * 跳转网页链接
+     *
+     * @param href_url
+     */
+    @Override
+    public void onHrefUrl(String href_url) {
+        if (listener != null) {
+            boolean impl = listener.onHrefUrl(href_url);
+            if (!impl) {
+
+                Intent intent = new Intent(getContext(), WebActivity.class);
+                intent.putExtra("href_url", href_url);
+                getContext().startActivity(intent);
             }
         }
     }
 
     /**
-     * @param isOpen
+     * 拨打电话
+     *
+     * @param call_phone
      */
     @Override
-    public void setPureMode(boolean isOpen) {
+    public void callPhone(String call_phone) {
+        if (listener != null) {
+            boolean impl = listener.onCallPhone(call_phone);
+            if (!impl) {
 
+                if (Build.VERSION.SDK_INT < 23 || getContext().checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                    Intent mIntent = new Intent(Intent.ACTION_DIAL);
+                    mIntent.setData(Uri.parse("tel:" + call_phone));
+                    getContext().startActivity(mIntent);
+                }
+
+            }
+        }
     }
 
-    private boolean playBackground = false;
-
-    /**
-     * 音效允许后台播放
-     *
-     * @param playBackground
-     */
-    public void setPlaySoundBackground(boolean playBackground) {
-        this.playBackground = playBackground;
-    }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onResume() {
@@ -613,87 +662,13 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     public void onDestroy() {
         LogUtils.d(TAG, "onDestroy");
 
-        if (handler != null) {
-            handler.removeCallbacks(mTicker);
-            handler=null;
-        }
+//        if (handler != null) {
+//            handler.removeCallbacks(mTicker);
+//            handler=null;
+//        }
+//
+//        SoundManager.getInstance().release();
 
-        SoundManager.getInstance().release();
+        release();
     }
-
-
-    @Override
-    public void onEventCallback(String action) {
-        if (listener != null) {
-            listener.onEventCallback(action);
-        }
-    }
-
-    @Override
-    public void onShowBottomControllerView(boolean show) {
-
-        if (mControllerView != null) {
-            mControllerView.setBottomViewShowable(show);
-        }
-    }
-
-    /**
-     * 组件回调
-     *
-     * @param position
-     */
-    @Override
-    public void onComponentSeek(long position) {
-        if (listener != null) {
-            listener.seekToTime(position);
-        }
-    }
-
-    @Override
-    public void ctrlPlayer(boolean play) {
-
-        if (play && PlayerState.STATE_ONPLAY.equals(playerState))
-            return;
-
-        if (!play && !PlayerState.STATE_ONPLAY.equals(playerState))
-            return;
-
-        if (listener != null) {
-
-            listener.ctrlPlayer(play ? "play" : "pause");
-        }
-    }
-
-    @Override
-    public void callPhone(String call_phone) {
-
-//        "tel:" +
-
-        if (listener != null) {
-            boolean impl = listener.onCallPhone(call_phone);
-            if (!impl) {
-
-                if (Build.VERSION.SDK_INT < 23 || getContext().checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                    Intent mIntent = new Intent(Intent.ACTION_DIAL);
-                    mIntent.setData(Uri.parse("tel:" + call_phone));
-                    getContext().startActivity(mIntent);
-                }
-
-            }
-        }
-    }
-
-    @Override
-    public void onHrefUrl(String href_url) {
-        if (listener != null) {
-            boolean impl = listener.onHrefUrl(href_url);
-            if (!impl) {
-
-                Intent intent = new Intent(getContext(), WebActivity.class);
-                intent.putExtra("href_url", href_url);
-                getContext().startActivity(intent);
-            }
-        }
-    }
-
 }
