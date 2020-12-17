@@ -2,10 +2,12 @@ package com.ctrlvideo.nativeivview.component;
 
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -105,8 +107,34 @@ public class SelectedComponent extends RelativeLayout {
                 continue;
             }
 
+
+            boolean align_screen = option.align_screen;
+
+
+            float width = 0;
+            float height = 0;
+
+            float left = 0;
+            float top = 0;
+
+            VideoProtocolInfo.EventOptionStyle optionStyle = option.layout_style;
+            if (optionStyle != null) {
+                if (align_screen) {
+                    width = parentWidth * optionStyle.width / 100;
+                    height = parentHeight * optionStyle.height / 100;
+                    left = parentWidth * optionStyle.left / 100;
+                    top = parentHeight * optionStyle.top / 100;
+                } else {
+                    width = videoWidth * optionStyle.width / 100;
+                    height = videoHeight * optionStyle.height / 100;
+                    left = videoWidth * optionStyle.left / 100 + ((parentWidth - videoWidth) / 2);
+                    top = videoHeight * optionStyle.top / 100 + ((parentHeight - videoHeight) / 2);
+                }
+            }
+
+
             OptionView optionView = new OptionView(getContext());
-            optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight);
+            optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight, width, height);
             optionView.setOption(status, option);
 
             int finalI = i;
@@ -155,30 +183,6 @@ public class SelectedComponent extends RelativeLayout {
             });
 
 
-            boolean align_screen = option.align_screen;
-
-
-            float width = 0;
-            float height = 0;
-
-            float left = 0;
-            float top = 0;
-
-            VideoProtocolInfo.EventOptionStyle optionStyle = option.layout_style;
-            if (optionStyle != null) {
-                if (align_screen) {
-                    width = parentWidth * optionStyle.width / 100;
-                    height = parentHeight * optionStyle.height / 100;
-                    left = parentWidth * optionStyle.left / 100;
-                    top = parentHeight * optionStyle.top / 100;
-                } else {
-                    width = videoWidth * optionStyle.width / 100;
-                    height = videoHeight * optionStyle.height / 100;
-                    left = videoWidth * optionStyle.left / 100 + ((parentWidth - videoWidth) / 2);
-                    top = videoHeight * optionStyle.top / 100 + ((parentHeight - videoHeight) / 2);
-                }
-            }
-
             LayoutParams containerParmas = new LayoutParams((int) width, (int) height);
             containerParmas.leftMargin = (int) left;
             containerParmas.topMargin = (int) top;
@@ -206,8 +210,33 @@ public class SelectedComponent extends RelativeLayout {
                     continue;
                 }
 
+                boolean align_screen = option.align_screen;
+
+
+                float width = 0;
+                float height = 0;
+
+                float left = 0;
+                float top = 0;
+
+                VideoProtocolInfo.EventOptionStyle optionStyle = option.layout_style;
+                if (optionStyle != null) {
+                    if (align_screen) {
+                        width = parentWidth * optionStyle.width / 100;
+                        height = parentHeight * optionStyle.height / 100;
+                        left = parentWidth * optionStyle.left / 100;
+                        top = parentHeight * optionStyle.top / 100;
+                    } else {
+                        width = videoWidth * optionStyle.width / 100;
+                        height = videoHeight * optionStyle.height / 100;
+                        left = videoWidth * optionStyle.left / 100 + ((parentWidth - videoWidth) / 2);
+                        top = videoHeight * optionStyle.top / 100 + ((parentHeight - videoHeight) / 2);
+                    }
+                }
+
+
                 OptionView optionView = new OptionView(getContext());
-                optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight);
+                optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight, width, height);
                 optionView.setTag(option.option_id);
 
 
@@ -233,30 +262,6 @@ public class SelectedComponent extends RelativeLayout {
                     }
                 }
 
-
-                boolean align_screen = option.align_screen;
-
-
-                float width = 0;
-                float height = 0;
-
-                float left = 0;
-                float top = 0;
-
-                VideoProtocolInfo.EventOptionStyle optionStyle = option.layout_style;
-                if (optionStyle != null) {
-                    if (align_screen) {
-                        width = parentWidth * optionStyle.width / 100;
-                        height = parentHeight * optionStyle.height / 100;
-                        left = parentWidth * optionStyle.left / 100;
-                        top = parentHeight * optionStyle.top / 100;
-                    } else {
-                        width = videoWidth * optionStyle.width / 100;
-                        height = videoHeight * optionStyle.height / 100;
-                        left = videoWidth * optionStyle.left / 100 + ((parentWidth - videoWidth) / 2);
-                        top = videoHeight * optionStyle.top / 100 + ((parentHeight - videoHeight) / 2);
-                    }
-                }
 
                 LayoutParams containerParmas = new LayoutParams((int) width, (int) height);
                 containerParmas.leftMargin = (int) left;
@@ -312,4 +317,18 @@ public class SelectedComponent extends RelativeLayout {
         }
     };
 
+
+//    @Override
+//    protected void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//    }
+
+
+
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.d("onMeasure","onConfigurationChanged");
+    }
 }
