@@ -9,7 +9,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.RelativeLayout;
 
 import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
 import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
@@ -24,12 +23,12 @@ import java.util.List;
 /**
  * 单击类事件组件
  */
-public class ClickComponent extends RelativeLayout {
+public class ClickComponent extends BaseComponent {
 
     private String TAG = "ClickComponent";
 
 
-    private VideoProtocolInfo.EventComponent eventComponent;
+//    private VideoProtocolInfo.EventComponent eventComponent;
 
     private boolean loadFinish;
 
@@ -89,7 +88,7 @@ public class ClickComponent extends RelativeLayout {
     }
 
 
-    public void initComponent(int status, VideoProtocolInfo.EventComponent eventComponent, float parentWidth, float parentHeight, float videoWidth, float videoHeight) {
+    public void initComponent(int status, VideoProtocolInfo.EventComponent eventComponent) {
 
         this.eventComponent = eventComponent;
 
@@ -132,6 +131,7 @@ public class ClickComponent extends RelativeLayout {
 
 
             OptionView optionView = new OptionView(getContext());
+            optionView.setTag(option.option_id);
             optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight, width, height);
             optionView.setOption(status, option);
 
@@ -198,7 +198,7 @@ public class ClickComponent extends RelativeLayout {
     }
 
 
-    public void setComponentOption(boolean result, VideoProtocolInfo.EventComponent eventComponent, float parentWidth, float parentHeight, float videoWidth, float videoHeight) {
+    public void setComponentOption(boolean result, VideoProtocolInfo.EventComponent eventComponent) {
 
         this.eventComponent = eventComponent;
         List<VideoProtocolInfo.EventOption> options = eventComponent.options;
@@ -242,7 +242,8 @@ public class ClickComponent extends RelativeLayout {
 
 
                 OptionView optionView = new OptionView(getContext());
-                optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight,width,height);
+                optionView.setTag(option.option_id);
+                optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight, width, height);
                 optionView.setTag(option.option_id);
 
                 if (option.blink) {
@@ -278,7 +279,6 @@ public class ClickComponent extends RelativeLayout {
                     }
 
                 }
-
 
 
                 LayoutParams containerParmas = new LayoutParams((int) width, (int) height);

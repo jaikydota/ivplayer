@@ -26,43 +26,27 @@ public class ComponentManager {
 
     private float videoWidth;
     private float videoHeight;
-    private float parentWidth;
-    private float parentHeight;
-    private IComponentListener iComponentListener;
 
+    private IComponentListener iComponentListener;
 
     private RelativeLayout rootView;
 
 
-    public void initParmas(Context context,RelativeLayout rootView, VideoProtocolInfo videoProtocolInfo, IComponentListener iComponentListener) {
+    public void initParmas(Context context, RelativeLayout rootView, VideoProtocolInfo videoProtocolInfo, IComponentListener iComponentListener) {
         this.rootView = rootView;
         this.mContext = context;
 
 
-        this.parentWidth = rootView.getMeasuredWidth();
-        this.parentHeight = rootView.getMeasuredHeight();
         this.iComponentListener = iComponentListener;
 
-
-        float p_videoWidth = 0;
-        float p_videoHeight = 0;
 
         VideoProtocolInfo.ReleaseInfo releaseInfo = videoProtocolInfo.release_info;
         if (releaseInfo != null) {
             VideoProtocolInfo.VideoParams params = releaseInfo.v_params;
             if (params != null) {
 
-                p_videoWidth = params.width;
-                p_videoHeight = params.height;
-
-                float ratio = p_videoWidth / p_videoWidth;
-                if (ratio >= (parentWidth / parentHeight)) {
-                    this.videoWidth = parentWidth;
-                    this.videoHeight = parentWidth / p_videoWidth * p_videoHeight;
-                } else {
-                    this.videoWidth = parentHeight / p_videoHeight * p_videoWidth;
-                    this.videoHeight = parentHeight;
-                }
+                videoWidth = params.width;
+                videoHeight = params.height;
             }
         }
 
@@ -263,7 +247,8 @@ public class ComponentManager {
 
             selectedComponent = new SelectedComponent(mContext);
             selectedComponent.setTag(eventComponent.event_id);
-            selectedComponent.initComponent(OptionView.STATUS_DEFAULT, eventComponent, parentWidth, parentHeight, videoWidth, videoHeight);
+            selectedComponent.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
+            selectedComponent.initComponent(OptionView.STATUS_DEFAULT, eventComponent);
             selectedComponent.setOnSelectedListener(new SelectedComponent.OnSelectedListener() {
                 @Override
                 public void onOptionSelected(int option) {
@@ -274,7 +259,7 @@ public class ComponentManager {
                 }
             });
             rootView.addView(selectedComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-        }else {
+        } else {
 
             selectedComponent.checkLoadFinish();
         }
@@ -293,8 +278,9 @@ public class ComponentManager {
         if (clickComponent == null) {
 
             clickComponent = new ClickComponent(mContext);
+            clickComponent.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
             clickComponent.setTag(eventComponent.event_id);
-            clickComponent.initComponent(OptionView.STATUS_DEFAULT, eventComponent, parentWidth, parentHeight, videoWidth, videoHeight);
+            clickComponent.initComponent(OptionView.STATUS_DEFAULT, eventComponent);
             clickComponent.setOnOptionClickListener(new ClickComponent.OnOptionClickListener() {
                 @Override
                 public void onOptionClick(int option) {
@@ -304,7 +290,7 @@ public class ComponentManager {
                 }
             });
             rootView.addView(clickComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-        }else {
+        } else {
 
             clickComponent.checkLoadFinish();
         }
@@ -407,8 +393,9 @@ public class ComponentManager {
             if (clickComponent == null) {
 
                 clickComponent = new ClickComponent(mContext);
+                clickComponent.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
                 clickComponent.setTag(createId(eventComponent.event_id));
-                clickComponent.setComponentOption(result, eventComponent, parentWidth, parentHeight, videoWidth, videoHeight);
+                clickComponent.setComponentOption(result, eventComponent);
                 clickComponent.setOnShowResultListener(new OnComponentResultListener() {
                     @Override
                     public void onShowResultFinish(String enent_id) {
@@ -565,8 +552,9 @@ public class ComponentManager {
             if (selectedComponentResult == null) {
 
                 selectedComponentResult = new SelectedComponent(mContext);
+                selectedComponentResult.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
                 selectedComponentResult.setTag(createId(eventComponent.event_id));
-                selectedComponentResult.setComponentOption(optionIndex, eventComponent, parentWidth, parentHeight, videoWidth, videoHeight);
+                selectedComponentResult.setComponentOption(optionIndex, eventComponent);
                 selectedComponentResult.setOnShowResultListener(new OnComponentResultListener() {
                     @Override
                     public void onShowResultFinish(String enent_id) {

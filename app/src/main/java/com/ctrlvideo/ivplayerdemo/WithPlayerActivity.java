@@ -1,6 +1,5 @@
 package com.ctrlvideo.ivplayerdemo;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -24,8 +23,8 @@ public class WithPlayerActivity extends FragmentActivity {
 
         ivPlayer = findViewById(R.id.iv_Player);
 
-//        ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866", new IVPlayerListener() {
-        ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028427201742", new IVPlayerListener() {
+        ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5165902802815866", new IVPlayerListener() {
+//        ivPlayer.loadIVideo("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028427201742", new IVPlayerListener() {
             @Override
             public void onStateChanged(String state) {
 
@@ -93,8 +92,8 @@ public class WithPlayerActivity extends FragmentActivity {
         }
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-    }
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//    }
 }

@@ -2,14 +2,11 @@ package com.ctrlvideo.nativeivview.component;
 
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-import android.widget.RelativeLayout;
 
 import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
 import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
@@ -24,12 +21,12 @@ import java.util.List;
 /**
  * 选择类事件组件
  */
-public class SelectedComponent extends RelativeLayout {
+public class SelectedComponent extends BaseComponent {
 
     private String TAG = "SelectedComponent";
 
 
-    private VideoProtocolInfo.EventComponent eventComponent;
+//    private VideoProtocolInfo.EventComponent eventComponent;
 
     public SelectedComponent(Context context) {
         this(context, null);
@@ -90,9 +87,9 @@ public class SelectedComponent extends RelativeLayout {
     }
 
 
-    public void initComponent(int status, VideoProtocolInfo.EventComponent eventComponent, float parentWidth, float parentHeight, float videoWidth, float videoHeight) {
-
+    public void initComponent(int status, VideoProtocolInfo.EventComponent eventComponent) {
         this.eventComponent = eventComponent;
+
 
         List<VideoProtocolInfo.EventOption> options = eventComponent.options;
         if (options == null || options.isEmpty())
@@ -134,6 +131,7 @@ public class SelectedComponent extends RelativeLayout {
 
 
             OptionView optionView = new OptionView(getContext());
+            optionView.setTag(option.option_id);
             optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight, width, height);
             optionView.setOption(status, option);
 
@@ -191,9 +189,10 @@ public class SelectedComponent extends RelativeLayout {
     }
 
 
-    public void setComponentOption(int optionIndex, VideoProtocolInfo.EventComponent eventComponent, float parentWidth, float parentHeight, float videoWidth, float videoHeight) {
+    public void setComponentOption(int optionIndex, VideoProtocolInfo.EventComponent eventComponent) {
 
         this.eventComponent = eventComponent;
+
         List<VideoProtocolInfo.EventOption> options = eventComponent.options;
         if (options == null || options.isEmpty())
             return;
@@ -236,6 +235,7 @@ public class SelectedComponent extends RelativeLayout {
 
 
                 OptionView optionView = new OptionView(getContext());
+                optionView.setTag(option.option_id);
                 optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight, width, height);
                 optionView.setTag(option.option_id);
 
@@ -318,17 +318,4 @@ public class SelectedComponent extends RelativeLayout {
     };
 
 
-//    @Override
-//    protected void onConfigurationChanged(Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//    }
-
-
-
-
-    @Override
-    protected void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        Log.d("onMeasure","onConfigurationChanged");
-    }
 }
