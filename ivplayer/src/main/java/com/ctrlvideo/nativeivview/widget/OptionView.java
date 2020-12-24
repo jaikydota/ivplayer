@@ -269,28 +269,32 @@ public class OptionView extends RelativeLayout {
                 setAlpha(optionFilter.opacity / 100);
             }
             //设置文字样式
-            textView.setText(optionStyle.text);
-            textView.setTextColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.color)));
 
-            float font_size = optionStyle.font_size;
+            if (!NativeViewUtils.isNullOrEmptyString(optionStyle.text)){
+                textView.setText(optionStyle.text);
+                textView.setTextColor(Color.parseColor(NativeViewUtils.transformColor(optionStyle.color)));
 
-            float baseSize;
+                float font_size = optionStyle.font_size;
+
+                float baseSize;
 
 //            option.align_screen
-            boolean align_screen = option.align_screen;
-            if (align_screen) {
-                baseSize = getTextBaseSize(parentWidth, parentHeight);
-            } else {
-                baseSize = getTextBaseSize(videoWidth, videoHeight);
-            }
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, font_size * baseSize);
+                boolean align_screen = option.align_screen;
+                if (align_screen) {
+                    baseSize = getTextBaseSize(parentWidth, parentHeight);
+                } else {
+                    baseSize = getTextBaseSize(videoWidth, videoHeight);
+                }
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, font_size * baseSize);
 
 
-            if ("vertical-lr".equals(optionStyle.writing_mode)) {
-                textView.setEms(1);
-            } else {
-                textView.setMaxLines(1);
+                if ("vertical-lr".equals(optionStyle.writing_mode)) {
+                    textView.setEms(1);
+                } else {
+                    textView.setMaxLines(1);
+                }
             }
+
         }
 
 

@@ -58,6 +58,7 @@ public class VideoProtocolInfo {
 
         public float active_skip_time;//点击跳转
         public float ended_skip_time;//未点击跳转
+        public int click_num;
 
 
         //事件开始
@@ -97,6 +98,7 @@ public class VideoProtocolInfo {
         public float skip_start_time;
         public boolean blink;//闪烁;
         public String option_name;
+        public String type;
     }
 
     /**

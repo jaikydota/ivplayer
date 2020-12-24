@@ -4,7 +4,9 @@ public enum EventType {
 
     SELECT("select"),
     CLICK("click"),
+    RAPIDCLICK("rapidclick"),
     PASSIVITY("passivity");
+
 
     private String type;
 
