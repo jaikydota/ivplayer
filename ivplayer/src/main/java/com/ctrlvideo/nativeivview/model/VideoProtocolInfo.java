@@ -59,6 +59,7 @@ public class VideoProtocolInfo {
         public float active_skip_time;//点击跳转
         public float ended_skip_time;//未点击跳转
         public int click_num;
+        public int longpress_time;
 
 
         //事件开始

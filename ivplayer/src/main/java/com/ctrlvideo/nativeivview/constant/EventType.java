@@ -5,6 +5,7 @@ public enum EventType {
     SELECT("select"),
     CLICK("click"),
     RAPIDCLICK("rapidclick"),
+    LONGPRESS("longpress"),
     PASSIVITY("passivity");
 
 

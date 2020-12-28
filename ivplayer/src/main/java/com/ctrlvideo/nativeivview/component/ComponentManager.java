@@ -82,6 +82,8 @@ public class ComponentManager {
                 initClickComponent(eventComponent);
             } else if (EventType.RAPIDCLICK.getType().equals(type)) {
                 initRepeatClickComponent(eventComponent);
+            } else if (EventType.LONGPRESS.getType().equals(type)) {
+                initLongPressComponent(eventComponent);
             }
 
         }
@@ -111,7 +113,7 @@ public class ComponentManager {
         String classify = eventComponent.classify;
         String type = eventComponent.type;
         if (EventClassify.TE.getClassify().equals(classify)) {
-            if (EventType.SELECT.getType().equals(type) || EventType.CLICK.getType().equals(type) || EventType.RAPIDCLICK.getType().equals(type)) {
+            if (EventType.SELECT.getType().equals(type) || EventType.CLICK.getType().equals(type) || EventType.RAPIDCLICK.getType().equals(type) || EventType.LONGPRESS.getType().equals(type)) {
                 endSelectedComponent(eventComponent);
             }
         }
@@ -330,6 +332,37 @@ public class ComponentManager {
         }
     }
 
+    /**
+     * 长按类
+     *
+     * @param eventComponent
+     */
+    private void initLongPressComponent(VideoProtocolInfo.EventComponent eventComponent) {
+
+
+        LongPressComponent longPressComponent = rootView.findViewWithTag(eventComponent.event_id);
+
+        if (longPressComponent == null) {
+
+            longPressComponent = new LongPressComponent(mContext);
+            longPressComponent.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
+            longPressComponent.setTag(eventComponent.event_id);
+            longPressComponent.initComponent(OptionView.STATUS_DEFAULT, eventComponent);
+            longPressComponent.setOnOptionLongPressListener(new LongPressComponent.OnOptionLongPressListener() {
+                @Override
+                public void onOptionLongPress(int option) {
+                    LogUtils.d(TAG, "onOptionLongPress===" + option);
+                    setLongPressComponentResult(eventComponent, true);
+                }
+
+            });
+            rootView.addView(longPressComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+        } else {
+
+            longPressComponent.checkLoadFinish();
+        }
+    }
+
 
     /**
      * 事件结束点
@@ -354,6 +387,8 @@ public class ComponentManager {
                 setClickComponentResult(eventComponent, false);
             } else if (EventType.RAPIDCLICK.getType().equals(eventComponent.type)) {
                 setRepeatClickComponentResult(eventComponent, false);
+            } else if (EventType.LONGPRESS.getType().equals(eventComponent.type)) {
+                setLongPressComponentResult(eventComponent, false);
             }
         }
     }
@@ -579,6 +614,88 @@ public class ComponentManager {
                     }
                 });
                 rootView.addView(repeatClickComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+            }
+        }
+
+
+        if (result) {//触发功能
+
+            long ended_skip_time = (long) (eventComponent.active_skip_time * 1000);
+            if (ended_skip_time >= 0 && iComponentListener != null) {
+                videoSeek(ended_skip_time);
+                consumePassivePause();
+                iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
+            }
+
+        } else {//未触发
+            long ended_skip_time = (long) (eventComponent.ended_skip_time * 1000);
+            if (ended_skip_time >= 0) {
+                videoSeek(ended_skip_time);
+                iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, false).toJson());
+            }
+        }
+
+        //触发音效
+        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
+        if (options != null && !options.isEmpty()) {
+            VideoProtocolInfo.EventOption option = options.get(0);
+            VideoProtocolInfo.EventOptionCustom optionCustom = option.custom;
+            if (optionCustom != null) {
+                VideoProtocolInfo.EventOptionStatus status;
+                if (result) {
+                    status = optionCustom.click_ended;
+                } else {
+                    status = optionCustom.click_failed;
+                }
+
+                if (status != null) {
+                    String audioUrl = status.audio_url;
+                    if (!NativeViewUtils.isNullOrEmptyString(audioUrl)) {
+
+                        File localFile = new File(NativeViewUtils.getDowmloadFilePath(mContext), NativeViewUtils.getFileName(audioUrl));
+                        if (localFile.exists()) {
+                            SoundManager.getInstance().play(localFile.getAbsolutePath());
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+
+    /**
+     * 长按结果
+     *
+     * @param eventComponent
+     * @param result
+     */
+    private void setLongPressComponentResult(VideoProtocolInfo.EventComponent eventComponent, boolean result) {
+//        iComponentListener.onEventActionCallback(new EventActionInfoCallback(eventComponent, result).toJson());
+
+        LogUtils.d(TAG, "长按-----" + result);
+
+        if ((result && hasTriggersucceedSuStyle(eventComponent)) || (!result && hasTriggerFailStyle(eventComponent))) {
+
+
+            LongPressComponent longPressComponent = rootView.findViewWithTag(createId(eventComponent.event_id));
+            if (longPressComponent == null) {
+
+                longPressComponent = new LongPressComponent(mContext);
+                longPressComponent.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
+                longPressComponent.setTag(createId(eventComponent.event_id));
+                longPressComponent.setComponentOption(result, eventComponent);
+                longPressComponent.setOnShowResultListener(new OnComponentResultListener() {
+                    @Override
+                    public void onShowResultFinish(String enent_id) {
+
+                        ClickComponent view = rootView.findViewWithTag(createId(enent_id));
+                        if (view != null) {
+                            rootView.removeView(view);
+                        }
+                    }
+                });
+                rootView.addView(longPressComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
             }
         }
 
