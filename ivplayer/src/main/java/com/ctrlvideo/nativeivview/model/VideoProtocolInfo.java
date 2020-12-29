@@ -3,6 +3,7 @@ package com.ctrlvideo.nativeivview.model;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class VideoProtocolInfo {
@@ -100,6 +101,89 @@ public class VideoProtocolInfo {
         public boolean blink;//闪烁;
         public String option_name;
         public String type;
+        public float containerWidth;
+        public float containerHeight;
+        public float videoWidth;
+        public float videoHeight;
+
+
+        public float getWidth() {
+            float width = 0;
+            if (layout_style != null) {
+                if (align_screen) {
+                    width = containerWidth * layout_style.width / 100;
+                } else {
+                    width = videoWidth * layout_style.width / 100;
+                }
+            }
+            return width;
+        }
+
+        public float getHeight() {
+            float height = 0;
+            if (layout_style != null) {
+                if (align_screen) {
+                    height = containerHeight * layout_style.height / 100;
+                } else {
+                    height = videoHeight * layout_style.height / 100;
+                }
+            }
+            return height;
+        }
+
+        public float getLeft() {
+            float left = 0;
+            if (layout_style != null) {
+                if (align_screen) {
+                    left = containerWidth * layout_style.left / 100;
+                } else {
+                    left = videoWidth * layout_style.left / 100 + ((containerWidth - videoWidth) / 2);
+                }
+            }
+            return left;
+        }
+
+        public float getTop() {
+            float top = 0;
+            if (layout_style != null) {
+                if (align_screen) {
+                    top = containerHeight * layout_style.top / 100;
+                } else {
+                    top = videoHeight * layout_style.top / 100 + ((containerHeight - videoHeight) / 2);
+                }
+            }
+            return top;
+        }
+
+
+        public float getTextSize() {
+
+            float textSize = 0;
+            if (layout_style != null) {
+
+                float font_size = layout_style.font_size;
+
+                float baseSize;
+                if (align_screen) {
+                    baseSize = getTextBaseSize(containerWidth, containerHeight);
+                } else {
+                    baseSize = getTextBaseSize(videoWidth, videoHeight);
+                }
+
+
+                textSize = font_size * baseSize;
+
+            }
+
+            return textSize;
+        }
+
+
+        private float getTextBaseSize(float width, float height) {
+
+            BigDecimal bg = new BigDecimal((width + height) / 100);
+            return bg.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
+        }
     }
 
     /**

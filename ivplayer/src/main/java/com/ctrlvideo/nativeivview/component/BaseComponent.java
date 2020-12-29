@@ -91,34 +91,39 @@ public class BaseComponent extends RelativeLayout {
 
             if (option != null) {
 
+                option.containerWidth = parentWidth;
+                option.containerHeight = parentHeight;
+                option.videoWidth = videoWidth;
+                option.videoHeight = videoHeight;
 
-                float width = 0;
-                float height = 0;
-                float left = 0;
-                float top = 0;
 
-                VideoProtocolInfo.EventOptionStyle optionStyle = option.layout_style;
-                if (optionStyle != null) {
-                    boolean align_screen = option.align_screen;
-                    if (align_screen) {
-                        width = parentWidth * optionStyle.width / 100;
-                        height = parentHeight * optionStyle.height / 100;
-                        left = parentWidth * optionStyle.left / 100;
-                        top = parentHeight * optionStyle.top / 100;
-                    } else {
-                        width = videoWidth * optionStyle.width / 100;
-                        height = videoHeight * optionStyle.height / 100;
-                        left = videoWidth * optionStyle.left / 100 + ((parentWidth - videoWidth) / 2);
-                        top = videoHeight * optionStyle.top / 100 + ((parentHeight - videoHeight) / 2);
-                    }
-                }
+//                float width = 0;
+//                float height = 0;
+//                float left = 0;
+//                float top = 0;
+//
+//                VideoProtocolInfo.EventOptionStyle optionStyle = option.layout_style;
+//                if (optionStyle != null) {
+//                    boolean align_screen = option.align_screen;
+//                    if (align_screen) {
+//                        width = parentWidth * optionStyle.width / 100;
+//                        height = parentHeight * optionStyle.height / 100;
+//                        left = parentWidth * optionStyle.left / 100;
+//                        top = parentHeight * optionStyle.top / 100;
+//                    } else {
+//                        width = videoWidth * optionStyle.width / 100;
+//                        height = videoHeight * optionStyle.height / 100;
+//                        left = videoWidth * optionStyle.left / 100 + ((parentWidth - videoWidth) / 2);
+//                        top = videoHeight * optionStyle.top / 100 + ((parentHeight - videoHeight) / 2);
+//                    }
+//                }
 
                 LayoutParams layoutParams = (LayoutParams) optionView.getLayoutParams();
 
-                layoutParams.width = (int) width;
-                layoutParams.height = (int) height;
-                layoutParams.leftMargin = (int) left;
-                layoutParams.topMargin = (int) top;
+                layoutParams.width = (int) option.getWidth();
+                layoutParams.height = (int) option.getHeight();
+                layoutParams.leftMargin = (int) option.getLeft();
+                layoutParams.topMargin = (int) option.getTop();
 
                 optionView.setLayoutParams(layoutParams);
             }

@@ -105,34 +105,39 @@ public class ClickComponent extends BaseComponent {
                 continue;
             }
 
-            boolean align_screen = option.align_screen;
+//            boolean align_screen = option.align_screen;
+//
+//
+//            float width = 0;
+//            float height = 0;
+//
+//            float left = 0;
+//            float top = 0;
+//
+//            VideoProtocolInfo.EventOptionStyle optionStyle = option.layout_style;
+//            if (optionStyle != null) {
+//                if (align_screen) {
+//                    width = parentWidth * optionStyle.width / 100;
+//                    height = parentHeight * optionStyle.height / 100;
+//                    left = parentWidth * optionStyle.left / 100;
+//                    top = parentHeight * optionStyle.top / 100;
+//                } else {
+//                    width = videoWidth * optionStyle.width / 100;
+//                    height = videoHeight * optionStyle.height / 100;
+//                    left = videoWidth * optionStyle.left / 100 + ((parentWidth - videoWidth) / 2);
+//                    top = videoHeight * optionStyle.top / 100 + ((parentHeight - videoHeight) / 2);
+//                }
+//            }
 
-
-            float width = 0;
-            float height = 0;
-
-            float left = 0;
-            float top = 0;
-
-            VideoProtocolInfo.EventOptionStyle optionStyle = option.layout_style;
-            if (optionStyle != null) {
-                if (align_screen) {
-                    width = parentWidth * optionStyle.width / 100;
-                    height = parentHeight * optionStyle.height / 100;
-                    left = parentWidth * optionStyle.left / 100;
-                    top = parentHeight * optionStyle.top / 100;
-                } else {
-                    width = videoWidth * optionStyle.width / 100;
-                    height = videoHeight * optionStyle.height / 100;
-                    left = videoWidth * optionStyle.left / 100 + ((parentWidth - videoWidth) / 2);
-                    top = videoHeight * optionStyle.top / 100 + ((parentHeight - videoHeight) / 2);
-                }
-            }
+            option.containerWidth = parentWidth;
+            option.containerHeight = parentHeight;
+            option.videoWidth = videoWidth;
+            option.videoHeight = videoHeight;
 
 
             OptionView optionView = new OptionView(getContext());
             optionView.setTag(option.option_id);
-            optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight, width, height);
+//            optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight, option.getWidth(), option.getHeight());
             optionView.setOption(status, option);
 
             if (option.blink) {
@@ -190,9 +195,9 @@ public class ClickComponent extends BaseComponent {
             });
 
 
-            LayoutParams containerParmas = new LayoutParams((int) width, (int) height);
-            containerParmas.leftMargin = (int) left;
-            containerParmas.topMargin = (int) top;
+            LayoutParams containerParmas = new LayoutParams((int) option.getWidth(), (int) option.getHeight());
+            containerParmas.leftMargin = (int) option.getLeft();
+            containerParmas.topMargin = (int) option.getTop();
             addView(optionView, containerParmas);
         }
     }
@@ -217,33 +222,33 @@ public class ClickComponent extends BaseComponent {
                     continue;
                 }
 
-                boolean align_screen = option.align_screen;
+//                boolean align_screen = option.align_screen;
 
-                float width = 0;
-                float height = 0;
+//                float width = 0;
+//                float height = 0;
+//
+//                float left = 0;
+//                float top = 0;
 
-                float left = 0;
-                float top = 0;
-
-                VideoProtocolInfo.EventOptionStyle optionStyle = option.layout_style;
-                if (optionStyle != null) {
-                    if (align_screen) {
-                        width = parentWidth * optionStyle.width / 100;
-                        height = parentHeight * optionStyle.height / 100;
-                        left = parentWidth * optionStyle.left / 100;
-                        top = parentHeight * optionStyle.top / 100;
-                    } else {
-                        width = videoWidth * optionStyle.width / 100;
-                        height = videoHeight * optionStyle.height / 100;
-                        left = videoWidth * optionStyle.left / 100 + ((parentWidth - videoWidth) / 2);
-                        top = videoHeight * optionStyle.top / 100 + ((parentHeight - videoHeight) / 2);
-                    }
-                }
+//                VideoProtocolInfo.EventOptionStyle optionStyle = option.layout_style;
+//                if (optionStyle != null) {
+//                    if (align_screen) {
+//                        width = parentWidth * optionStyle.width / 100;
+//                        height = parentHeight * optionStyle.height / 100;
+//                        left = parentWidth * optionStyle.left / 100;
+//                        top = parentHeight * optionStyle.top / 100;
+//                    } else {
+//                        width = videoWidth * optionStyle.width / 100;
+//                        height = videoHeight * optionStyle.height / 100;
+//                        left = videoWidth * optionStyle.left / 100 + ((parentWidth - videoWidth) / 2);
+//                        top = videoHeight * optionStyle.top / 100 + ((parentHeight - videoHeight) / 2);
+//                    }
+//                }
 
 
                 OptionView optionView = new OptionView(getContext());
                 optionView.setTag(option.option_id);
-                optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight, width, height);
+//                optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight, width, height);
                 optionView.setTag(option.option_id);
 
                 if (option.blink) {
@@ -281,9 +286,9 @@ public class ClickComponent extends BaseComponent {
                 }
 
 
-                LayoutParams containerParmas = new LayoutParams((int) width, (int) height);
-                containerParmas.leftMargin = (int) left;
-                containerParmas.topMargin = (int) top;
+                LayoutParams containerParmas = new LayoutParams((int) option.getWidth(), (int)  option.getHeight());
+                containerParmas.leftMargin = (int)  option.getLeft();
+                containerParmas.topMargin = (int)  option.getHeight();
                 addView(optionView, containerParmas);
 
 
