@@ -607,7 +607,7 @@ public class ComponentManager {
                     @Override
                     public void onShowResultFinish(String enent_id) {
 
-                        ClickComponent view = rootView.findViewWithTag(createId(enent_id));
+                        View view = rootView.findViewWithTag(createId(enent_id));
                         if (view != null) {
                             rootView.removeView(view);
                         }
@@ -689,7 +689,7 @@ public class ComponentManager {
                     @Override
                     public void onShowResultFinish(String enent_id) {
 
-                        ClickComponent view = rootView.findViewWithTag(createId(enent_id));
+                        View view = rootView.findViewWithTag(createId(enent_id));
                         if (view != null) {
                             rootView.removeView(view);
                         }

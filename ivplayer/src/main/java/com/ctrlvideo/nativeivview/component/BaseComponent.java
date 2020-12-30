@@ -2,7 +2,7 @@ package com.ctrlvideo.nativeivview.component;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
 
 import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
 import com.ctrlvideo.nativeivview.utils.LogUtils;
@@ -10,7 +10,7 @@ import com.ctrlvideo.nativeivview.widget.OptionView;
 
 import java.util.List;
 
-public class BaseComponent extends RelativeLayout {
+public class BaseComponent extends FrameLayout {
 
     protected VideoProtocolInfo.EventComponent eventComponent;
 

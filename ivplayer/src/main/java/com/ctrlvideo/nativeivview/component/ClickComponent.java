@@ -249,7 +249,7 @@ public class ClickComponent extends BaseComponent {
                 OptionView optionView = new OptionView(getContext());
                 optionView.setTag(option.option_id);
 //                optionView.initParmas(parentWidth, parentHeight, videoWidth, videoHeight, width, height);
-                optionView.setTag(option.option_id);
+//                optionView.setTag(option.option_id);
 
                 if (option.blink) {
                     AlphaAnimation alphaAnimation1 = new AlphaAnimation(0.1f, 1.0f);
@@ -288,7 +288,7 @@ public class ClickComponent extends BaseComponent {
 
                 LayoutParams containerParmas = new LayoutParams((int) option.getWidth(), (int)  option.getHeight());
                 containerParmas.leftMargin = (int)  option.getLeft();
-                containerParmas.topMargin = (int)  option.getHeight();
+                containerParmas.topMargin = (int)  option.getTop();
                 addView(optionView, containerParmas);
 
 
