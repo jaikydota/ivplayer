@@ -1,5 +1,7 @@
 package com.ctrlvideo.nativeivview.model;
 
+import com.ctrlvideo.nativeivview.utils.NativeViewUtils;
+import com.ctrlvideo.nativeivview.widget.OptionView;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
@@ -183,6 +185,45 @@ public class VideoProtocolInfo {
 
             BigDecimal bg = new BigDecimal((width + height) / 100);
             return bg.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
+        }
+
+        /**
+         * 是否有触发成功失败显示的样式
+         *
+         * @param result
+         * @return
+         */
+        public boolean hasResultView(boolean result) {
+
+            if (custom != null) {
+                EventOptionStatus optionStatus;
+                if (result) {
+                    optionStatus = custom.click_ended;
+                } else {
+                    optionStatus = custom.click_failed;
+                }
+                if (optionStatus != null) {
+                    return !NativeViewUtils.isNullOrEmptyString(optionStatus.image_url);
+                }
+            }
+            return false;
+        }
+
+        public EventOptionStatus getOptionStatus(int status) {
+
+            if (custom != null) {
+
+                EventOptionStatus optionStatus = custom.click_default;
+                if (status == OptionView.STATUS_CLICK_ON) {
+                    optionStatus = custom.click_on;
+                } else if (status == OptionView.STATUS_CLICK_ENDED) {
+                    optionStatus = custom.click_ended;
+                } else if (status == OptionView.STATUS_CLICK_FAILED) {
+                    optionStatus = custom.click_failed;
+                }
+                return optionStatus;
+            }
+            return null;
         }
     }
 

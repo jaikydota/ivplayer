@@ -18,7 +18,7 @@ import com.ctrlvideo.nativeivview.widget.OptionView;
 import java.io.File;
 import java.util.List;
 
-public class ComponentManager {
+public class ComponentManager implements BaseComponent.OnComponentOptionListener, OnComponentResultListener {
 
     private String TAG = "ComponentManager";
 
@@ -76,16 +76,10 @@ public class ComponentManager {
         String classify = eventComponent.classify;
         String type = eventComponent.type;
         if (EventClassify.TE.getClassify().equals(classify)) {
-            if (EventType.SELECT.getType().equals(type)) {
-                initSelectedComponent(eventComponent);
-            } else if (EventType.CLICK.getType().equals(type)) {
-                initClickComponent(eventComponent);
-            } else if (EventType.RAPIDCLICK.getType().equals(type)) {
-                initRepeatClickComponent(eventComponent);
-            } else if (EventType.LONGPRESS.getType().equals(type)) {
-                initLongPressComponent(eventComponent);
-            }
 
+            if (EventType.SELECT.getType().equals(type) || EventType.CLICK.getType().equals(type) || EventType.RAPIDCLICK.getType().equals(type) || EventType.LONGPRESS.getType().equals(type)) {
+                initComponentView(eventComponent);
+            }
         }
     }
 
@@ -236,133 +230,34 @@ public class ComponentManager {
     //自动播放
     private boolean needPlay;
 
-    /**
-     * 选择类组件
-     *
-     * @param eventComponent
-     */
-    private void initSelectedComponent(VideoProtocolInfo.EventComponent eventComponent) {
 
+    private void initComponentView(VideoProtocolInfo.EventComponent eventComponent) {
+        BaseComponent component = rootView.findViewWithTag(eventComponent.event_id);
+        if (component == null) {
 
-        SelectedComponent selectedComponent = rootView.findViewWithTag(eventComponent.event_id);
+            String type = eventComponent.type;
 
-        if (selectedComponent == null) {
+            if (EventType.SELECT.getType().equals(type)) {
+                component = new SelectedComponent(mContext);
+            } else if (EventType.CLICK.getType().equals(type)) {
+                component = new ClickComponent(mContext);
+            } else if (EventType.RAPIDCLICK.getType().equals(type)) {
+                component = new RepeatClickComponent(mContext);
+            } else if (EventType.LONGPRESS.getType().equals(type)) {
+                component = new LongPressComponent(mContext);
+            }
+            if (component != null) {
+                component.setTag(eventComponent.event_id);
+                component.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
+                component.initComponent(OptionView.STATUS_DEFAULT, eventComponent);
+                component.setOnComponentOptionListener(this);
+                rootView.addView(component, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+            }
 
-
-            selectedComponent = new SelectedComponent(mContext);
-            selectedComponent.setTag(eventComponent.event_id);
-            selectedComponent.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
-            selectedComponent.initComponent(OptionView.STATUS_DEFAULT, eventComponent);
-            selectedComponent.setOnSelectedListener(new SelectedComponent.OnSelectedListener() {
-                @Override
-                public void onOptionSelected(int option) {
-
-                    LogUtils.d("ComponentManger", "onOptionSelected===" + option);
-
-                    setSelectedComponentResult(eventComponent, option);
-                }
-            });
-            rootView.addView(selectedComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
         } else {
-
-            selectedComponent.checkLoadFinish();
+            component.checkLoadFinish();
         }
     }
-
-    /**
-     * 单击类组件
-     *
-     * @param eventComponent
-     */
-    private void initClickComponent(VideoProtocolInfo.EventComponent eventComponent) {
-
-
-        ClickComponent clickComponent = rootView.findViewWithTag(eventComponent.event_id);
-
-        if (clickComponent == null) {
-
-            clickComponent = new ClickComponent(mContext);
-            clickComponent.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
-            clickComponent.setTag(eventComponent.event_id);
-            clickComponent.initComponent(OptionView.STATUS_DEFAULT, eventComponent);
-            clickComponent.setOnOptionClickListener(new ClickComponent.OnOptionClickListener() {
-                @Override
-                public void onOptionClick(int option) {
-//                    LogUtils.d(TAG, "option===" + option);
-
-                    setClickComponentResult(eventComponent, true);
-                }
-            });
-            rootView.addView(clickComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-        } else {
-
-            clickComponent.checkLoadFinish();
-        }
-    }
-
-    /**
-     * 重复点击类
-     *
-     * @param eventComponent
-     */
-    private void initRepeatClickComponent(VideoProtocolInfo.EventComponent eventComponent) {
-
-
-        RepeatClickComponent repeatClickComponent = rootView.findViewWithTag(eventComponent.event_id);
-
-        if (repeatClickComponent == null) {
-
-            repeatClickComponent = new RepeatClickComponent(mContext);
-            repeatClickComponent.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
-            repeatClickComponent.setTag(eventComponent.event_id);
-            repeatClickComponent.initComponent(OptionView.STATUS_DEFAULT, eventComponent);
-            repeatClickComponent.setOnOptionRepeatClickListener(new RepeatClickComponent.OnOptionRepeatClickListener() {
-                @Override
-                public void onOptionRepeatClick(int option) {
-
-                    LogUtils.d(TAG, "onOptionRepeatClick===" + option);
-
-                    setRepeatClickComponentResult(eventComponent, true);
-                }
-            });
-            rootView.addView(repeatClickComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-        } else {
-
-            repeatClickComponent.checkLoadFinish();
-        }
-    }
-
-    /**
-     * 长按类
-     *
-     * @param eventComponent
-     */
-    private void initLongPressComponent(VideoProtocolInfo.EventComponent eventComponent) {
-
-
-        LongPressComponent longPressComponent = rootView.findViewWithTag(eventComponent.event_id);
-
-        if (longPressComponent == null) {
-
-            longPressComponent = new LongPressComponent(mContext);
-            longPressComponent.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
-            longPressComponent.setTag(eventComponent.event_id);
-            longPressComponent.initComponent(OptionView.STATUS_DEFAULT, eventComponent);
-            longPressComponent.setOnOptionLongPressListener(new LongPressComponent.OnOptionLongPressListener() {
-                @Override
-                public void onOptionLongPress(int option) {
-                    LogUtils.d(TAG, "onOptionLongPress===" + option);
-                    setLongPressComponentResult(eventComponent, true);
-                }
-
-            });
-            rootView.addView(longPressComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-        } else {
-
-            longPressComponent.checkLoadFinish();
-        }
-    }
-
 
     /**
      * 事件结束点
@@ -394,59 +289,6 @@ public class ComponentManager {
     }
 
     /**
-     * 判断是否有成功样式
-     */
-    private boolean hasTriggersucceedSuStyle(VideoProtocolInfo.EventComponent eventComponent) {
-
-        boolean result = false;
-
-        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
-        if (options != null) {
-            for (VideoProtocolInfo.EventOption option : options) {
-                if (!option.hide_option) {
-                    VideoProtocolInfo.EventOptionCustom optionCustom = option.custom;
-                    if (optionCustom != null) {
-                        VideoProtocolInfo.EventOptionStatus status = optionCustom.click_ended;
-                        if (status != null) {
-                            if (!NativeViewUtils.isNullOrEmptyString(status.image_url)) {
-                                result = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * 判断是否有失败样式
-     */
-    private boolean hasTriggerFailStyle(VideoProtocolInfo.EventComponent eventComponent) {
-        boolean result = false;
-        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
-        if (options != null) {
-            for (VideoProtocolInfo.EventOption option : options) {
-
-                if (!option.hide_option) {
-                    VideoProtocolInfo.EventOptionCustom optionCustom = option.custom;
-                    if (optionCustom != null) {
-                        VideoProtocolInfo.EventOptionStatus status = optionCustom.click_failed;
-                        if (status != null) {
-                            if (!NativeViewUtils.isNullOrEmptyString(status.image_url)) {
-                                result = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
      * 单击组件
      *
      * @param eventComponent
@@ -455,11 +297,28 @@ public class ComponentManager {
     private void setClickComponentResult(VideoProtocolInfo.EventComponent eventComponent, boolean result) {
 //        iComponentListener.onEventActionCallback(new EventActionInfoCallback(eventComponent, result).toJson());
 
-        LogUtils.d(TAG, "单击选择-----" + result);
+//        LogUtils.d(TAG, "单击选择-----" + result);
 
-        if ((result && hasTriggersucceedSuStyle(eventComponent)) || (!result && hasTriggerFailStyle(eventComponent))) {
+//        if ((result && hasTriggersucceedSuStyle(eventComponent)) || (!result && hasTriggerFailStyle(eventComponent))) {
 
 
+        boolean resultView = false;
+        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
+        if (options != null) {
+            for (int i = 0; i < options.size(); i++) {
+                VideoProtocolInfo.EventOption option = options.get(i);
+                if (!option.hide_option) {
+                    if (option.hasResultView(result)) {
+                        resultView = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        LogUtils.d("setClickComponentResult", "resultView=" + resultView);
+
+        if (resultView) {
             ClickComponent clickComponent = rootView.findViewWithTag(createId(eventComponent.event_id));
             if (clickComponent == null) {
 
@@ -467,19 +326,13 @@ public class ComponentManager {
                 clickComponent.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
                 clickComponent.setTag(createId(eventComponent.event_id));
                 clickComponent.setComponentOption(result, eventComponent);
-                clickComponent.setOnShowResultListener(new OnComponentResultListener() {
-                    @Override
-                    public void onShowResultFinish(String enent_id) {
-
-                        ClickComponent view = rootView.findViewWithTag(createId(enent_id));
-                        if (view != null) {
-                            rootView.removeView(view);
-                        }
-                    }
-                });
+                clickComponent.setOnShowResultListener(this);
                 rootView.addView(clickComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
             }
         }
+
+
+//        }
 
 
         if (result) {//触发功能
@@ -554,7 +407,7 @@ public class ComponentManager {
         }
 
         //触发音效
-        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
+//        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
         if (options != null && !options.isEmpty()) {
             VideoProtocolInfo.EventOption option = options.get(0);
             VideoProtocolInfo.EventOptionCustom optionCustom = option.custom;
@@ -593,7 +446,22 @@ public class ComponentManager {
 
         LogUtils.d(TAG, "重复点击-----" + result);
 
-        if ((result && hasTriggersucceedSuStyle(eventComponent)) || (!result && hasTriggerFailStyle(eventComponent))) {
+        boolean resultView = false;
+        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
+        if (options != null) {
+            for (int i = 0; i < options.size(); i++) {
+                VideoProtocolInfo.EventOption option = options.get(i);
+                if (!option.hide_option) {
+                    if (option.hasResultView(result)) {
+                        resultView = true;
+                        break;
+                    }
+                }
+            }
+        }
+        LogUtils.d("setRepeatClickComponentResult", "resultView=" + resultView);
+
+        if (resultView) {
 
 
             RepeatClickComponent repeatClickComponent = rootView.findViewWithTag(createId(eventComponent.event_id));
@@ -603,16 +471,7 @@ public class ComponentManager {
                 repeatClickComponent.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
                 repeatClickComponent.setTag(createId(eventComponent.event_id));
                 repeatClickComponent.setComponentOption(result, eventComponent);
-                repeatClickComponent.setOnShowResultListener(new OnComponentResultListener() {
-                    @Override
-                    public void onShowResultFinish(String enent_id) {
-
-                        View view = rootView.findViewWithTag(createId(enent_id));
-                        if (view != null) {
-                            rootView.removeView(view);
-                        }
-                    }
-                });
+                repeatClickComponent.setOnShowResultListener(this);
                 rootView.addView(repeatClickComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
             }
         }
@@ -636,7 +495,7 @@ public class ComponentManager {
         }
 
         //触发音效
-        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
+//        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
         if (options != null && !options.isEmpty()) {
             VideoProtocolInfo.EventOption option = options.get(0);
             VideoProtocolInfo.EventOptionCustom optionCustom = option.custom;
@@ -675,9 +534,21 @@ public class ComponentManager {
 
         LogUtils.d(TAG, "长按-----" + result);
 
-        if ((result && hasTriggersucceedSuStyle(eventComponent)) || (!result && hasTriggerFailStyle(eventComponent))) {
+        boolean resultView = false;
+        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
+        if (options != null) {
+            for (int i = 0; i < options.size(); i++) {
+                VideoProtocolInfo.EventOption option = options.get(i);
+                if (!option.hide_option) {
+                    if (option.hasResultView(result)) {
+                        resultView = true;
+                        break;
+                    }
+                }
+            }
+        }
 
-
+        if (resultView) {
             LongPressComponent longPressComponent = rootView.findViewWithTag(createId(eventComponent.event_id));
             if (longPressComponent == null) {
 
@@ -685,19 +556,12 @@ public class ComponentManager {
                 longPressComponent.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
                 longPressComponent.setTag(createId(eventComponent.event_id));
                 longPressComponent.setComponentOption(result, eventComponent);
-                longPressComponent.setOnShowResultListener(new OnComponentResultListener() {
-                    @Override
-                    public void onShowResultFinish(String enent_id) {
-
-                        View view = rootView.findViewWithTag(createId(enent_id));
-                        if (view != null) {
-                            rootView.removeView(view);
-                        }
-                    }
-                });
+                longPressComponent.setOnShowResultListener(this);
                 rootView.addView(longPressComponent, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
             }
         }
+
+        LogUtils.d("setLongPressComponentResult", "resultView=" + resultView);
 
 
         if (result) {//触发功能
@@ -718,7 +582,7 @@ public class ComponentManager {
         }
 
         //触发音效
-        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
+//        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
         if (options != null && !options.isEmpty()) {
             VideoProtocolInfo.EventOption option = options.get(0);
             VideoProtocolInfo.EventOptionCustom optionCustom = option.custom;
@@ -762,23 +626,15 @@ public class ComponentManager {
             for (int i = 0; i < options.size(); i++) {
                 VideoProtocolInfo.EventOption option = options.get(i);
                 if (!option.hide_option) {
-                    VideoProtocolInfo.EventOptionCustom optionCustom = option.custom;
-                    if (optionCustom != null) {
-                        if (i == optionIndex) {
-
-                            if (optionCustom.click_ended != null && !NativeViewUtils.isNullOrEmptyString(optionCustom.click_ended.image_name)) {
-                                resultView = true;
-                            }
-
-                        } else {
-                            if (optionCustom.click_failed != null && !NativeViewUtils.isNullOrEmptyString(optionCustom.click_failed.image_name)) {
-                                resultView = true;
-                            }
-                        }
+                    if (option.hasResultView(i == optionIndex)) {
+                        resultView = true;
+                        break;
                     }
                 }
             }
         }
+
+        LogUtils.d("setSelectedComponentResult", "resultView=" + resultView);
 
         if (resultView) {
 
@@ -790,16 +646,7 @@ public class ComponentManager {
                 selectedComponentResult.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
                 selectedComponentResult.setTag(createId(eventComponent.event_id));
                 selectedComponentResult.setComponentOption(optionIndex, eventComponent);
-                selectedComponentResult.setOnShowResultListener(new OnComponentResultListener() {
-                    @Override
-                    public void onShowResultFinish(String enent_id) {
-
-                        SelectedComponent view = rootView.findViewWithTag(createId(enent_id));
-                        if (view != null) {
-                            rootView.removeView(view);
-                        }
-                    }
-                });
+                selectedComponentResult.setOnShowResultListener(this);
                 rootView.addView(selectedComponentResult, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
             }
         }
@@ -807,7 +654,7 @@ public class ComponentManager {
         if (options != null) {
             VideoProtocolInfo.EventOption option = options.get(optionIndex);
 
-            LogUtils.d("ComponentResult", "optionIndex=" + optionIndex + "---" + option.skip_start_time);
+//            LogUtils.d("ComponentResult", "optionIndex=" + optionIndex + "---" + option.skip_start_time);
 
             //跳转帧
             if (option.skip_start_time >= 0) {
@@ -857,7 +704,35 @@ public class ComponentManager {
         return id + "_result";
     }
 
-//    public void release() {
+    @Override
+    public void onOptionSelected(int optionIndex, VideoProtocolInfo.EventComponent eventComponent) {
+        setSelectedComponentResult(eventComponent, optionIndex);
+    }
+
+    @Override
+    public void onOptionClick(VideoProtocolInfo.EventComponent eventComponent) {
+        setClickComponentResult(eventComponent, true);
+    }
+
+    @Override
+    public void onOptionRepeatClick(VideoProtocolInfo.EventComponent eventComponent) {
+        setRepeatClickComponentResult(eventComponent, true);
+    }
+
+    @Override
+    public void onOptionLongPress(VideoProtocolInfo.EventComponent eventComponent) {
+        setLongPressComponentResult(eventComponent, true);
+    }
+
+    @Override
+    public void onShowResultFinish(String enent_id) {
+        View view = rootView.findViewWithTag(createId(enent_id));
+        if (view != null) {
+            rootView.removeView(view);
+        }
+    }
+
+    //    public void release() {
 //        rootView.removeAllViews();
 //    }
 }

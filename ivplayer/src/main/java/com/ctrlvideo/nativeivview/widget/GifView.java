@@ -65,7 +65,7 @@ public class GifView extends View {
             FileInputStream inputStream = new FileInputStream(path);
             movie = Movie.decodeStream(inputStream);
 
-            Log.d("GifView","耗时---"+(System.currentTimeMillis()-time));
+//            Log.d("GifView","耗时---"+(System.currentTimeMillis()-time));
             requestLayout();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
