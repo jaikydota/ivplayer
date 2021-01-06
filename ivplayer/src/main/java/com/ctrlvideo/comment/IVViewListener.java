@@ -91,4 +91,12 @@ public interface IVViewListener {
      * @return true：实现拨打电话    false：sdk内部消耗，如果APP 授权打电话权限，内部实现拨打电话
      */
     boolean onCallPhone(String phone);
+
+
+    /**
+     * 进度回调
+     *
+     * @param result 进度列表json字符串数据
+     */
+    void onProgressCallback(String result);
 }

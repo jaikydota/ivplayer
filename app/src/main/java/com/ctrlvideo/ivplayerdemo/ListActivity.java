@@ -134,6 +134,11 @@ public class ListActivity extends FragmentActivity {
                                 public void onCallPhone(String phone) {
 
                                 }
+
+                                @Override
+                                public void onProgressCallback(String result) {
+
+                                }
                             });
 
                             lastPlayer = ivPlayer;

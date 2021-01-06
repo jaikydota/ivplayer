@@ -3,8 +3,11 @@ package com.ctrlvideo.nativeivview.utils;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.ctrlvideo.nativeivview.model.VideoNodeInterval;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NativeViewUtils {
 
@@ -50,7 +53,7 @@ public class NativeViewUtils {
      */
     public static String getDowmloadFilePath(Context context) {
 
-        String path=new File(context.getCacheDir(), "ivsdk").getAbsolutePath();
+        String path = new File(context.getCacheDir(), "ivsdk").getAbsolutePath();
         LogUtils.d("getDowmloadFilePath", "path=" + path);
         return path;
 
@@ -87,4 +90,36 @@ public class NativeViewUtils {
         return (str == null || TextUtils.isEmpty(str));
 
     }
+
+
+    public static List<VideoNodeInterval> merge(List<VideoNodeInterval> intervals) {
+        List<VideoNodeInterval> intervals1 = new ArrayList<>();
+        if (intervals.size() == 0) {
+            return intervals;
+        }
+        for (int i = 0; i < intervals.size(); i++) {
+            for (int j = i + 1; j < intervals.size(); j++) {
+                if (intervals.get(i).start > intervals.get(j).start) {
+                    VideoNodeInterval tem = intervals.get(i);
+                    intervals.set(i, intervals.get(j));
+                    intervals.set(j, tem);
+                }
+            }
+        }
+        float min = intervals.get(0).start;
+        float max = intervals.get(0).end;
+        for (int i = 1; i < intervals.size(); i++) {
+            //重叠即合并区间
+            if (intervals.get(i).start <= max) {
+                max = intervals.get(i).end > max ? intervals.get(i).end : max;
+            } else {
+                intervals1.add(new VideoNodeInterval(min, max));
+                min = intervals.get(i).start;
+                max = intervals.get(i).end;
+            }
+        }
+        intervals1.add(new VideoNodeInterval(min, max));
+        return intervals1;
+    }
+
 }

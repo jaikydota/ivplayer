@@ -155,6 +155,11 @@ public class DemoActivity extends FragmentActivity implements View.OnClickListen
         public void onCallPhone(String phone) {
             Toast.makeText(DemoActivity.this, "拨打电话： " + phone, Toast.LENGTH_LONG).show();
         }
+
+        @Override
+        public void onProgressCallback(String resulr) {
+            Log.d(TAG, "onProgressCallback " + resulr);
+        }
     }
 
 

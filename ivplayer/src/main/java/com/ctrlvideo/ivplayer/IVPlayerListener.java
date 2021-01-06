@@ -52,4 +52,6 @@ public interface IVPlayerListener {
      */
     void onCallPhone(String phone);
 
+    void onProgressCallback(String result);
+
 }

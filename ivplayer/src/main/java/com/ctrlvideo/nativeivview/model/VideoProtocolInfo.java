@@ -23,8 +23,17 @@ public class VideoProtocolInfo {
 
         public boolean auto_indent;
         public List<EventRail> event_list;//事件轨
+        public List<VideoRail> video_list;//视频轨
         public String project_id;//项目ID
     }
+
+    /**
+     * 事件轨道
+     */
+    public class VideoRail {
+        public float duration;
+    }
+
 
     /**
      * 事件轨道

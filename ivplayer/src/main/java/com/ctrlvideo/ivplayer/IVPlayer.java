@@ -15,6 +15,7 @@ import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
 import com.ctrlvideo.nativeivview.utils.LogUtils;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -88,6 +89,8 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         playerView.setUseController(false);
         //监听播放器状态事件
         player.addListener(new ComponentListener());
+        PlaybackParameters playbackParameters = new PlaybackParameters(2, 1.0F);
+        player.setPlaybackParameters(playbackParameters);
     }
 
     public void release() {
@@ -315,6 +318,13 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
                 pListener.onCallPhone(phone);
             }
             return false;
+        }
+
+        @Override
+        public void onProgressCallback(String seekList) {
+            if (pListener != null) {
+                pListener.onProgressCallback(seekList);
+            }
         }
     }
 

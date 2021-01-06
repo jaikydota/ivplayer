@@ -134,6 +134,12 @@ public class PlayerActivity extends FragmentActivity {
                 Log.d(TAG, "onCallPhone--" + phone);
                 return false;
             }
+
+            @Override
+            public void onProgressCallback(String seekList) {
+                Log.d(TAG, "seekList--" + seekList);
+            }
+
         }, this);
     }
 

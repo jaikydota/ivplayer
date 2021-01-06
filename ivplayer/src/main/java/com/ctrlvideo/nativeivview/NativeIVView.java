@@ -31,6 +31,8 @@ import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
 import com.ctrlvideo.nativeivview.component.ComponentManager;
 import com.ctrlvideo.nativeivview.component.IComponentListener;
 import com.ctrlvideo.nativeivview.model.EventIntractInfoCallback;
+import com.ctrlvideo.nativeivview.model.ProgressCallback;
+import com.ctrlvideo.nativeivview.model.VideoNodeInterval;
 import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
 import com.ctrlvideo.nativeivview.net.HttpClient;
 import com.ctrlvideo.nativeivview.net.callback.DownloadCallback;
@@ -38,6 +40,7 @@ import com.ctrlvideo.nativeivview.net.callback.GetIVideoInfoCallback;
 import com.ctrlvideo.nativeivview.utils.LogUtils;
 import com.ctrlvideo.nativeivview.utils.NativeViewUtils;
 import com.ctrlvideo.nativeivview.widget.ControllerView;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -84,7 +87,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     private List<String> downloadFinish = new ArrayList<>();
 
     //轮询间隔
-    private long delay = 36;
+    private long delay = 18;
 
     // 视频播放状态
     private String playerState;
@@ -267,6 +270,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         if (listener != null) {
             listener.onIVViewStateChanged(nowViewStatus, videoProtocolInfo.release_info.url);
             listener.onEventCallback(new EventIntractInfoCallback(videoProtocolInfo).toJson());
+            listener.onProgressCallback(loadVideoInterval(videoProtocolInfo));
         }
         preloadResouse();
 
@@ -275,6 +279,126 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
             handler.post(mTicker);
         }
     }
+
+//    private String getSeekList(VideoProtocolInfo.Protocol protocol) {
+//
+//        List<Float> floatList = new ArrayList<>();
+//        if (protocol != null) {
+//
+//            List<VideoProtocolInfo.EventRail> eventRails = protocol.event_list;
+//            if (eventRails != null) {
+//                for (VideoProtocolInfo.EventRail eventRail : eventRails) {
+//                    if (!eventRail.hide_track) {
+//                        List<VideoProtocolInfo.EventComponent> eventComponents = eventRail.obj_list;
+//                        if (eventComponents != null) {
+//
+//                            for (VideoProtocolInfo.EventComponent eventComponent : eventComponents) {
+//
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return new Gson().toJson(floatList);
+//    }
+
+
+    /**
+     * 统计时间节点
+     */
+    private String loadVideoInterval(VideoProtocolInfo videoProtocolInfo) {
+
+
+        List<ProgressCallback> callbacks = new ArrayList<>();
+
+
+        long time = System.currentTimeMillis();
+
+        float duration = 0;
+        List<VideoNodeInterval> intervals = new ArrayList<>();
+        if (videoProtocolInfo != null) {
+
+            VideoProtocolInfo.Protocol protocol = videoProtocolInfo.protocol;
+            if (protocol != null) {
+
+                List<VideoProtocolInfo.EventRail> eventRails = protocol.event_list;
+                if (eventRails != null) {
+                    for (VideoProtocolInfo.EventRail eventRail : eventRails) {
+                        if (!eventRail.hide_track) {
+                            List<VideoProtocolInfo.EventComponent> eventComponents = eventRail.obj_list;
+                            if (eventComponents != null) {
+
+                                for (VideoProtocolInfo.EventComponent eventComponent : eventComponents) {
+
+                                    VideoNodeInterval interval = new VideoNodeInterval();
+                                    interval.start = eventComponent.start_time;
+                                    interval.end = eventComponent.end_time;
+
+                                    intervals.add(interval);
+                                }
+                            }
+                        }
+                    }
+
+                    List<VideoProtocolInfo.VideoRail> videoRails = protocol.video_list;
+                    if (videoRails != null) {
+
+                        for (VideoProtocolInfo.VideoRail videoRail : videoRails) {
+                            if (videoRail.duration > duration) {
+                                duration = videoRail.duration;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        ProgressCallback callbackEvent = new ProgressCallback();
+        callbackEvent.type = ProgressCallback.TYPE_EVENT;
+        callbackEvent.list = intervals;
+        callbacks.add(callbackEvent);
+
+//        LogUtils.d(TAG, "intervals=" + new Gson().toJson(intervals));
+
+
+        List<VideoNodeInterval> sortIntervals = NativeViewUtils.merge(intervals);
+        LogUtils.d(TAG, "intervals=" + new Gson().toJson(sortIntervals));
+        float lastEnd = 0;
+        List<VideoNodeInterval> seekIntervalList = new ArrayList<>();
+        if (sortIntervals != null) {
+            for (VideoNodeInterval sortInterval : sortIntervals) {
+                float nextStart = sortInterval.start - 0.5f;
+                if ((nextStart - lastEnd) >= 3) {
+                    VideoNodeInterval videoNodeInterval = new VideoNodeInterval(lastEnd, nextStart);
+                    seekIntervalList.add(videoNodeInterval);
+                }
+
+                float eventEndTime = sortInterval.end + 0.5f;
+                lastEnd = eventEndTime > lastEnd ? eventEndTime : lastEnd;
+            }
+        }
+
+
+        if ((duration - lastEnd) >= 3) {
+            VideoNodeInterval videoNodeInterval = new VideoNodeInterval(lastEnd, duration);
+            seekIntervalList.add(videoNodeInterval);
+        }
+
+        ProgressCallback callbackProgress = new ProgressCallback();
+        callbackProgress.type = ProgressCallback.TYPE_NODE;
+        callbackProgress.list = seekIntervalList;
+        callbacks.add(callbackProgress);
+
+        LogUtils.d(TAG, "intervals=" + new Gson().toJson(seekIntervalList));
+
+        LogUtils.d(TAG, "intervals=" + (System.currentTimeMillis() - time));
+
+        return new Gson().toJson(callbacks);
+
+    }
+
+//    private List<VideoNodeInterval> seekIntervalList;
 
 
     /**
