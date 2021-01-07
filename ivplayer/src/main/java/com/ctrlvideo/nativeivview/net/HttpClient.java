@@ -44,6 +44,19 @@ public class HttpClient {
         call.enqueue(callback);
 
     }
+    public void getDemoList(String url, Callback callback) {
+
+
+        Request request = new Request.Builder()
+                .get()
+                .url(url)
+                .build();
+        Call call = okHttpClient.newCall(request);
+
+        call.enqueue(callback);
+
+    }
+
 
     public void download(String url, String destFileDir, String destFileName, DownloadCallback downloadCallback) {
 

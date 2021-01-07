@@ -2,7 +2,6 @@ package com.ctrlvideo.ivplayerdemo;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ctrlvideo.ivplayer.IVPlayer;
-import com.ctrlvideo.ivplayer.IVPlayerListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +51,6 @@ public class ListActivity extends FragmentActivity {
         urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028427201742");
         urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5159028436931666");
         urlList.add("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5858022109443231");
-
 
 
     }
@@ -98,48 +95,7 @@ public class ListActivity extends FragmentActivity {
                                 (ListPlayerAdapter.ListPlayerHoldet) recyclerView.getChildViewHolder(currentView);
                         if (viewHolder != null) {
                             IVPlayer ivPlayer = viewHolder.videoPlayerView;
-                            ivPlayer.loadIVideo(urlList.get(firstCompletelyVisibleItemPosition), new IVPlayerListener() {
-                                @Override
-                                public void onStateChanged(String state) {
-
-                                }
-
-                                @Override
-                                public void onViewClick(String info) {
-
-                                }
-
-                                @Override
-                                public void onEventCallback(String result) {
-
-                                }
-
-                                @Override
-                                public void onError(String errorType) {
-
-                                    Toast.makeText(ListActivity.this,errorType,Toast.LENGTH_SHORT).show();
-                                }
-
-                                @Override
-                                public void onCustomNotify(String msg) {
-
-                                }
-
-                                @Override
-                                public void onHrefUrl(String url) {
-
-                                }
-
-                                @Override
-                                public void onCallPhone(String phone) {
-
-                                }
-
-                                @Override
-                                public void onProgressCallback(String result) {
-
-                                }
-                            });
+                            ivPlayer.loadIVideo(urlList.get(firstCompletelyVisibleItemPosition), null);
 
                             lastPlayer = ivPlayer;
                         }

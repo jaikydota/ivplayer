@@ -11,26 +11,20 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="demo"
-        android:text="Demo" />
+        android:onClick="fullscreen"
+        android:text="全屏" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="halffullscreen"
+        android:text="半屏" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="withPlayer"
-        android:text="带播放器" />
-  <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="Player"
-        android:text="不带播放器" />
+        android:onClick="mediaplayer"
+        android:text="MediaPlayer" />
 
-    <Button
-
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="list"
-        android:text="列表" />
 
 </LinearLayout>

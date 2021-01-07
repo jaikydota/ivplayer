@@ -15,7 +15,6 @@ import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
 import com.ctrlvideo.nativeivview.utils.LogUtils;
-import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -89,8 +88,8 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         playerView.setUseController(false);
         //监听播放器状态事件
         player.addListener(new ComponentListener());
-        PlaybackParameters playbackParameters = new PlaybackParameters(2, 1.0F);
-        player.setPlaybackParameters(playbackParameters);
+//        PlaybackParameters playbackParameters = new PlaybackParameters(2, 1.0F);
+//        player.setPlaybackParameters(playbackParameters);
     }
 
     public void release() {
@@ -360,21 +359,27 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
      * 播放互动视频
      */
     public void play() {
-        player.setPlayWhenReady(true);
+        if (player != null) {
+            player.setPlayWhenReady(true);
+        }
     }
 
     /**
      * 暂停互动视频
      */
     public void pause() {
-        player.setPlayWhenReady(false);
+        if (player != null) {
+            player.setPlayWhenReady(false);
+        }
     }
 
     /**
      * 停止互动视频
      */
     public void stop() {
-        player.stop();
+        if (player != null) {
+            player.stop();
+        }
     }
 
     /**
@@ -383,7 +388,10 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
      * @return true 正在播放，false未播放
      */
     public boolean isPlaying() {
-        return player.isPlaying();
+        if (player != null) {
+            return player.isPlaying();
+        }
+        return false;
     }
 
     /**
@@ -392,7 +400,9 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
      * @param msec 时间，毫秒
      */
     public void seekTo(int msec) {
-        player.seekTo(msec);
+        if (player != null) {
+            player.seekTo(msec);
+        }
     }
 
 

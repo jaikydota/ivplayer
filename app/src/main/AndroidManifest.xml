@@ -20,7 +20,7 @@
 
         </activity>
         <activity
-            android:name=".WithPlayerActivity"
+            android:name=".ExoplayerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"></activity>
 
 
@@ -31,8 +31,12 @@
 
         </activity>
 
-
         <activity android:name=".MainActivity">
+
+        </activity>
+
+
+        <activity android:name=".DemoListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
