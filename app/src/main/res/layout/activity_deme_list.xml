@@ -16,7 +16,8 @@
         android:background="#DAC6C6"
         android:gravity="center"
         android:onClick="demo"
-        android:text="demo" />
+        android:text="demo"
+        android:visibility="gone" />
 
     <TextView
         android:layout_width="match_parent"

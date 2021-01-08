@@ -20,10 +20,16 @@ public class PlayerActivity extends FragmentActivity {
     private VideoView mVideoView;
     private NativeIVView ivView;
 
+
+    private String pid;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
+
+
+        pid = getIntent().getStringExtra("pid");
 
         mVideoView = findViewById(R.id.video_view);
         mVideoView.setMediaController(null);
@@ -65,7 +71,7 @@ public class PlayerActivity extends FragmentActivity {
         });
 
 
-        ivView.initIVView("https://apiivetest.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5925315322305659", null, new IVViewListener() {
+        ivView.initIVView("https://apiive.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=" + pid, null, new IVViewListener() {
 
 
             @Override

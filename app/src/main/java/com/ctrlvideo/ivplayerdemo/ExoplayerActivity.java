@@ -74,7 +74,15 @@ public class ExoplayerActivity extends FragmentActivity {
         }
     }
 
-//    @Override
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (player!=null) {
+            player.release();
+        }
+    }
+
+    //    @Override
 //    public void onConfigurationChanged(Configuration newConfig) {
 //        super.onConfigurationChanged(newConfig);
 //    }

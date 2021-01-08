@@ -27,8 +27,8 @@ public class MainActivity extends FragmentActivity {
 
         Intent intent = new Intent(this, ExoplayerActivity.class);
 
-        intent.putExtra("pid",pid);
-        intent.putExtra("fullscreen",true);
+        intent.putExtra("pid", pid);
+        intent.putExtra("fullscreen", true);
 
         startActivity(intent);
     }
@@ -36,14 +36,17 @@ public class MainActivity extends FragmentActivity {
     public void halffullscreen(View view) {
 
         Intent intent = new Intent(this, ExoplayerActivity.class);
-        intent.putExtra("pid",pid);
-        intent.putExtra("fullscreen",false);
+        intent.putExtra("pid", pid);
+        intent.putExtra("fullscreen", false);
         startActivity(intent);
     }
 
     public void mediaplayer(View view) {
 
-        startActivity(new Intent(this, PlayerActivity.class));
+
+        Intent intent = new Intent(this, PlayerActivity.class);
+        intent.putExtra("pid", pid);
+        startActivity(intent);
     }
 
 //    public void list(View view) {
