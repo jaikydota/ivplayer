@@ -87,7 +87,11 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     private List<String> downloadFinish = new ArrayList<>();
 
     //轮询间隔
-    private long delay = 18;
+    private long delay = 36;
+
+    private float ratio = 1;
+
+    private float frameInterval=80;
 
     // 视频播放状态
     private String playerState;
@@ -425,6 +429,15 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 //                        onComponentSeek(0);
                     ctrlPlayer(true);
                 }
+
+                @Override
+                public void onRatioChange(float videoRatio) {
+
+                    ratio = videoRatio;
+                    if (listener != null) {
+                        listener.setVideoRatio(ratio);
+                    }
+                }
             });
             mControllerView.initController(Math.max(getMeasuredWidth(), getMeasuredHeight()), playerController);
             addView(mControllerView, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -450,11 +463,18 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         if (eventRails == null || eventRails.isEmpty()) return;
 
         for (VideoProtocolInfo.EventRail eventRail : eventRails) {
+
+            if (eventRail.hide_track) {
+                continue;
+            }
+
+
             List<VideoProtocolInfo.EventComponent> eventComponents = eventRail.obj_list;
 
             if (eventComponents != null && !eventComponents.isEmpty()) {
 
                 for (VideoProtocolInfo.EventComponent eventComponent : eventComponents) {
+
 
                     long loadTime = (long) (eventComponent.start_time * 1000 - 10000);
                     if (loadTime < 0) {
@@ -648,9 +668,9 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                     }
 
 
-                    if (eventComponent.startIsActive && (currentPosition < startTime || currentPosition >= (startTime + 40))) {//事件开始点
+                    if (eventComponent.startIsActive && (currentPosition < startTime || currentPosition >= (startTime + (frameInterval * ratio)))) {//事件开始点
                         eventComponent.startIsActive = false;
-                    } else if (eventComponent.endIsActive && (currentPosition < (endTime - 40) || currentPosition >= endTime)) {//事件结束点
+                    } else if (eventComponent.endIsActive && (currentPosition < (endTime - (frameInterval * ratio)) || currentPosition >= endTime)) {//事件结束点
                         eventComponent.endIsActive = false;
                     }
 
@@ -660,11 +680,11 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                     }
 
 
-                    if (!eventComponent.startIsActive && currentPosition >= startTime && currentPosition < (startTime + 40)) {
+                    if (!eventComponent.startIsActive && currentPosition >= startTime && currentPosition < (startTime + (frameInterval * ratio))) {
                         LogUtils.d(TAG, "事件开始----" + currentPosition + "----------" + eventComponent.event_id);
                         eventComponent.startIsActive = true;
 
-                    } else if (!eventComponent.endIsActive && currentPosition >= (endTime - 40) && currentPosition < endTime) {
+                    } else if (!eventComponent.endIsActive && currentPosition >= (endTime - (frameInterval * ratio)) && currentPosition < endTime) {
 
                         LogUtils.d(TAG, "事件结束----" + currentPosition + "----------" + eventComponent.event_id);
                         eventComponent.endIsActive = true;

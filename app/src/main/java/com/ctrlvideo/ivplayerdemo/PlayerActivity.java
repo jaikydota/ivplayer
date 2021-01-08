@@ -101,6 +101,11 @@ public class PlayerActivity extends FragmentActivity {
 
             }
 
+            @Override
+            public void setVideoRatio(float ratio) {
+
+            }
+
 //            @Override
 //            public void onIVViewClick(String info) {
 //

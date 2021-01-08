@@ -15,6 +15,7 @@ import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
 import com.ctrlvideo.nativeivview.utils.LogUtils;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -88,8 +89,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         playerView.setUseController(false);
         //监听播放器状态事件
         player.addListener(new ComponentListener());
-//        PlaybackParameters playbackParameters = new PlaybackParameters(2, 1.0F);
-//        player.setPlaybackParameters(playbackParameters);
+
     }
 
     public void release() {
@@ -210,7 +210,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
         @Override
         public void onEventCallback(String result) {
-//            LogUtils.d(TAG, "onEventCallback--- " + result);
+            LogUtils.d(TAG, "onEventCallback--- " + result);
             if (pListener != null) {
                 pListener.onEventCallback(result);
             }
@@ -255,7 +255,13 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
             }
         }
 
-//        /**
+        @Override
+        public void setVideoRatio(float ratio) {
+            PlaybackParameters playbackParameters = new PlaybackParameters(ratio, 1.0F);
+            player.setPlaybackParameters(playbackParameters);
+        }
+
+        //        /**
 //         * 当IvView点击时 [如点击IvView中控件将阻止向上冒泡，不会调用此方法]
 //         *
 //         * @param info 点击信息
@@ -321,6 +327,8 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
         @Override
         public void onProgressCallback(String seekList) {
+
+            LogUtils.d(TAG, "onProgressCallback---" + seekList);
             if (pListener != null) {
                 pListener.onProgressCallback(seekList);
             }

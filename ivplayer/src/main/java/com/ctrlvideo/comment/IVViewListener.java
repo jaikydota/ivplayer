@@ -35,6 +35,8 @@ public interface IVViewListener {
      */
     void ctrlPlayer(String state);
 
+    void setVideoRatio(float ratio);
+
 //    /**
 //     * 当IVView点击时 [如点击IvView中控件将阻止向上冒泡，不会调用此方法]
 //     *

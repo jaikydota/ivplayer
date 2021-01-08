@@ -1,8 +1,10 @@
 package com.ctrlvideo.nativeivview.widget;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +12,21 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.ctrlvideo.ivplayer.PlayerState;
 import com.ctrlvideo.ivplayer.R;
 import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static androidx.recyclerview.widget.RecyclerView.Adapter;
+import static androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 
 public class ControllerView extends RelativeLayout {
@@ -24,6 +37,9 @@ public class ControllerView extends RelativeLayout {
     private LinearLayout mBottomView;
 
     private ProgressBar mIvLoading;
+
+    private TextView mTvRatio;
+    private RecyclerView mRatioList;
 
     public ControllerView(Context context) {
         this(context, null);
@@ -46,6 +62,10 @@ public class ControllerView extends RelativeLayout {
         mIvStart = findViewById(R.id.iv_start);
         mIvStartOrPause = findViewById(R.id.iv_start_pause);
         mIvLoading = findViewById(R.id.iv_loading);
+        mTvRatio = findViewById(R.id.tv_ratio);
+        mRatioList = findViewById(R.id.ratiolist);
+
+        initRatioList();
 
         mIvStartOrPause.setOnClickListener(new OnClickListener() {
             @Override
@@ -75,6 +95,101 @@ public class ControllerView extends RelativeLayout {
             }
         });
 
+        mTvRatio.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                mRatioList.setVisibility((mRatioList.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE));
+            }
+        });
+
+    }
+
+    List<Float> ratioValues;
+
+    private void initRatioList() {
+
+
+        ratioValues = new ArrayList<>();
+
+        ratioValues.add(2.0f);
+        ratioValues.add(1.5f);
+        ratioValues.add(1.25f);
+        ratioValues.add(1.0f);
+        ratioValues.add(0.5f);
+
+        mTvRatio.setText(ratioValues.get(ratioIndex) + "X");
+
+        mRatioList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
+        ratioAdapter = new RatioAdapter();
+
+        mRatioList.setAdapter(ratioAdapter);
+    }
+
+    RatioAdapter ratioAdapter;
+
+    private int dip2px(float dpValue) {
+        final float scale = getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
+    private class RatioAdapter extends Adapter {
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            TextView textView = new TextView(getContext());
+            textView.setGravity(Gravity.CENTER);
+            textView.setPadding(0, dip2px(6), 0, dip2px(6));
+            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            textView.setLayoutParams(layoutParams);
+
+            return new RatioHolder(textView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            TextView textView = (TextView) holder.itemView;
+
+            float value = ratioValues.get(position);
+            textView.setText(value + "X");
+            if (position == ratioIndex) {
+                textView.setTextColor(Color.BLUE);
+            } else {
+                textView.setTextColor(Color.WHITE);
+            }
+
+
+            textView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ratioIndex = position;
+                    ratioAdapter.notifyDataSetChanged();
+                    mTvRatio.setText(value + "X");
+                    mRatioList.setVisibility(GONE);
+                    if (listener != null) {
+                        listener.onRatioChange(value);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return ratioValues.size();
+        }
+    }
+
+    int ratioIndex = 3;
+
+    private class RatioHolder extends ViewHolder {
+
+        public RatioHolder(@NonNull View itemView) {
+            super(itemView);
+        }
     }
 
     private VideoProtocolInfo.PlayerController playerController;
@@ -210,6 +325,8 @@ public class ControllerView extends RelativeLayout {
         void onPlayOrPause(boolean play);
 
         void onRestart();
+
+        void onRatioChange(float ratio);
     }
 
     public void onClick() {
@@ -238,6 +355,7 @@ public class ControllerView extends RelativeLayout {
         } else {
             if (mBottomView != null && getHandler() != null) {
                 mBottomView.setVisibility(GONE);
+                mRatioList.setVisibility(GONE);
                 getHandler().removeCallbacks(runnable);
             }
         }

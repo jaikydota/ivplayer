@@ -26,19 +26,50 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/shape_player_controller_bg"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
-        <ImageView
-            android:id="@+id/iv_start_pause"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_gravity="center"
-            android:layout_margin="4dp"
-            android:src="@drawable/ic_play_icon"
-            android:visibility="visible" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:visibility="gone"
+            android:id="@+id/ratiolist"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="#000000">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_player_controller_bg"
+            android:clickable="true">
+
+            <ImageView
+                android:id="@+id/iv_start_pause"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                android:layout_margin="4dp"
+                android:src="@drawable/ic_play_icon"
+                android:visibility="visible" />
+
+
+            <TextView
+                android:id="@+id/tv_ratio"
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:gravity="center"
+                android:text="1.0"
+                android:textColor="#ffffff" />
+
+
+        </FrameLayout>
+
 
     </LinearLayout>
+
 
 </RelativeLayout>

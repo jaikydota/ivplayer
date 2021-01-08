@@ -233,7 +233,7 @@ public class ImageOptionView extends RelativeLayout {
                             try {
                                 SVG svg = SVG.getFromFile(getContext(), path);
 
-                                Picture picture = svg.renderToPicture((int) option.getWidth(), (int) option.getWidth());
+                                Picture picture = svg.renderToPicture((int) option.getWidth(), (int) option.getHeight());
 
                                 int width = picture.getWidth();
                                 int height = picture.getHeight();
