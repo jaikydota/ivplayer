@@ -151,6 +151,7 @@ public class ComponentManager implements BaseComponent.OnComponentOptionListener
                 long skip_time = (long) (eventComponent.active_skip_time * 1000);
                 if (skip_time >= 0 && iComponentListener != null) {
                     videoSeek(skip_time);
+                    consumePassivePause();
                     iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                 }
             } else if ("play".equals(choice)) {//播放
@@ -160,24 +161,21 @@ public class ComponentManager implements BaseComponent.OnComponentOptionListener
 //                    }
 
                     videoPlay(true);
+                    consumePassivePause();
 
                     iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                 }
 
-                needPlay = false;
-                showBottomCtrllerView();
 
             } else if ("pause".equals(choice)) {//暂停
                 if (iComponentListener != null) {
 //                    if (videoPlaying) {
 //                        iComponentListener.ctrlPlayer(false);
 //                    }
-                    videoPlay(false);
+//                    videoPlay(false);
+                    triggerPassivePause();
                     iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                 }
-                needPlay = true;
-
-                showBottomCtrllerView();
 
             } else if ("href_url".equals(choice)) {//跳转链接
                 if (iComponentListener != null) {
@@ -222,13 +220,10 @@ public class ComponentManager implements BaseComponent.OnComponentOptionListener
     private void showBottomCtrllerView() {
 
         if (iComponentListener != null) {
-            iComponentListener.onShowBottomControllerView(!needPlay);
+            iComponentListener.onShowBottomControllerView(!passivePause);
         }
 
     }
-
-    //自动播放
-    private boolean needPlay;
 
 
     private void initComponentView(VideoProtocolInfo.EventComponent eventComponent) {
@@ -351,30 +346,22 @@ public class ComponentManager implements BaseComponent.OnComponentOptionListener
                 } else if ("toggle_playpause".equals(choice)) {//播放或者暂停
                     if (iComponentListener != null) {
 
-//                        if (PlayerState.STATE_ONPLAY.equals(status)){
-//                            iComponentListener.ctrlPlayer(false);
-//                        }else {
-//                            iComponentListener.ctrlPlayer(true);
-//                        }
-
-                        videoPlay(!PlayerState.STATE_ONPLAY.equals(status));
-
-//                        if (videoPlaying) {
-//                            iComponentListener.ctrlPlayer(false);
-//                        } else {
-//                            iComponentListener.ctrlPlayer(true);
-//                        }
+                        if (PlayerState.STATE_ONPLAY.equals(status)) {
+                            videoPlay(false);
+                        } else {
+                            videoPlay(true);
+                            consumePassivePause();
+                        }
                         iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
 
                     }
                 } else if ("play".equals(choice)) {//播放
                     if (iComponentListener != null) {
-//                        if (!videoPlaying) {
-//                            iComponentListener.ctrlPlayer(true);
-//                        }
                         videoPlay(true);
+                        consumePassivePause();
                         iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, true).toJson());
                     }
+
                 } else if ("pause".equals(choice)) {//暂停
                     if (iComponentListener != null) {
 //                        if (videoPlaying) {
@@ -661,7 +648,7 @@ public class ComponentManager implements BaseComponent.OnComponentOptionListener
                 if (iComponentListener != null) {
                     videoSeek((long) (option.skip_start_time * 1000));
                     consumePassivePause();
-                    showBottomCtrllerView();
+//                    showBottomCtrllerView();
                     iComponentListener.onEventCallback(new EventActionInfoCallback(eventComponent, optionIndex).toJson());
                 }
             }
@@ -685,18 +672,28 @@ public class ComponentManager implements BaseComponent.OnComponentOptionListener
 
     }
 
+    private boolean passivePause = false;
+
     /**
      * 消耗被动暂停
      */
     private void consumePassivePause() {
-        if (needPlay) {
-            needPlay = false;
 
+        if (passivePause) {
+            passivePause = false;
+            showBottomCtrllerView();
             videoPlay(true);
-//            if (!videoPlaying) {
-//                iComponentListener.ctrlPlayer(true);
-//            }
         }
+
+    }
+
+    /**
+     * 触发被动暂停
+     */
+    private void triggerPassivePause() {
+        passivePause = true;
+        showBottomCtrllerView();
+        videoPlay(false);
     }
 
 
