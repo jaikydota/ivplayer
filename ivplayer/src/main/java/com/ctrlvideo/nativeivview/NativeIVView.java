@@ -8,8 +8,11 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -32,6 +35,7 @@ import com.ctrlvideo.nativeivview.component.ComponentManager;
 import com.ctrlvideo.nativeivview.component.IComponentListener;
 import com.ctrlvideo.nativeivview.model.EventIntractInfoCallback;
 import com.ctrlvideo.nativeivview.model.ProgressCallback;
+import com.ctrlvideo.nativeivview.model.Resource;
 import com.ctrlvideo.nativeivview.model.VideoNodeInterval;
 import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
 import com.ctrlvideo.nativeivview.net.HttpClient;
@@ -44,10 +48,7 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 
 public class NativeIVView extends RelativeLayout implements LifecycleObserver, IView, IComponentListener {
@@ -65,8 +66,20 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     private boolean isTestEnv = true;
 
     private IVViewListener listener;
+    private int MSG_ASSET_DOWN_FAIL = 123;
 
-    private Handler handler = new Handler();
+    private Handler handler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == MSG_ASSET_DOWN_FAIL) {
+//                Log.d("hhhh", "下载失败");
+                if (listener != null) {
+                    listener.onMediaResourceDownloadFail();
+                }
+            }
+        }
+    };
 
     //当前视图状态
     private String nowViewStatus = ViewState.STATE_LOADING;
@@ -80,18 +93,26 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     private ControllerView mControllerView;
 
     //需要下载的资源
-    private Map<String, Long> resourseMap = new HashMap<String, Long>();
-    //正在下载的资源
-    private List<String> downloading = new ArrayList<>();
-    //已经下载的资源
-    private List<String> downloadFinish = new ArrayList<>();
+//    private Map<String, Long> resourseMap = new HashMap<String, Long>();
+    private List<Resource> resourseList = new ArrayList<Resource>();
+//    //正在下载的资源
+//    private List<String> downloading = new ArrayList<>();
+//    //已经下载的资源
+//    private List<String> downloadFinish = new ArrayList<>();
 
     //轮询间隔
     private long delay = 36;
 
+    //倍速
     private float ratio = 1;
 
-    private float frameInterval=80;
+    private float frameInterval = 80;
+
+    //提前下载资源时间
+    private long preDownloadAssetTime = 10 * 1000;
+
+    //下载资源超时时间
+    private long downloadAssetTimeOut = 20 * 1000;
 
     // 视频播放状态
     private String playerState;
@@ -155,6 +176,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     @Override
     public void onPlayerStateChanged(String status) {
 
+
         this.playerState = status;
 
         if (nowViewStatus.equals(ViewState.STATE_READIED)) {
@@ -162,7 +184,14 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                 componentManager.setVideoPlayerStatus(status);
             }
             if (mControllerView != null) {
-                mControllerView.setVideoPlayerStatus(status);
+                if (assetLoading) {
+                    Log.d("initComponentView", "onPlayerStateChanged----status=" + status);
+                    if (PlayerState.STATE_LOADED.equals(status)) {
+                        mControllerView.setVideoPlayerStatus(status);
+                    }
+                } else {
+                    mControllerView.setVideoPlayerStatus(status);
+                }
             }
         }
     }
@@ -186,6 +215,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
         if (handler != null) {
             handler.removeCallbacks(mTicker);
+            handler.removeMessages(MSG_ASSET_DOWN_FAIL);
         }
 
 
@@ -280,6 +310,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
         if (handler != null) {
             handler.removeCallbacks(mTicker);
+            handler.removeMessages(MSG_ASSET_DOWN_FAIL);
             handler.post(mTicker);
         }
     }
@@ -367,7 +398,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
 
         List<VideoNodeInterval> sortIntervals = NativeViewUtils.merge(intervals);
-        LogUtils.d(TAG, "intervals=" + new Gson().toJson(sortIntervals));
+
         float lastEnd = 0;
         List<VideoNodeInterval> seekIntervalList = new ArrayList<>();
         if (sortIntervals != null) {
@@ -394,9 +425,6 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         callbackProgress.list = seekIntervalList;
         callbacks.add(callbackProgress);
 
-        LogUtils.d(TAG, "intervals=" + new Gson().toJson(seekIntervalList));
-
-        LogUtils.d(TAG, "intervals=" + (System.currentTimeMillis() - time));
 
         return new Gson().toJson(callbacks);
 
@@ -452,7 +480,10 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
      */
     private void preloadResouse() {
 
-        resourseMap.clear();
+//        resourseMap.clear();
+
+        resourseList.clear();
+        resourseUrls.clear();
 
         if (videoProtocolInfo == null) return;
 
@@ -476,15 +507,21 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                 for (VideoProtocolInfo.EventComponent eventComponent : eventComponents) {
 
 
-                    long loadTime = (long) (eventComponent.start_time * 1000 - 10000);
+                    long loadTime = (long) (eventComponent.start_time * 1000 - preDownloadAssetTime);
+//                    long loadTime = (long) (eventComponent.start_time * 1000);
                     if (loadTime < 0) {
                         loadTime = 0;
                     }
+
 
                     List<VideoProtocolInfo.EventOption> eventOptions = eventComponent.options;
                     if (eventOptions != null && !eventOptions.isEmpty()) {
 
                         for (VideoProtocolInfo.EventOption eventOption : eventOptions) {
+
+                            if (eventOption.hide_option) {
+                                continue;
+                            }
 
                             VideoProtocolInfo.EventOptionCustom optionCustom = eventOption.custom;
                             if (optionCustom != null) {
@@ -513,6 +550,8 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         }
     }
 
+    private List<String> resourseUrls = new ArrayList<>();
+
     /**
      * 添加需要下载的资源
      *
@@ -521,10 +560,30 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
      */
     private void addResourseMap(String url, long time) {
         if (!NativeViewUtils.isNullOrEmptyString(url) && !new File(NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(url)).exists()) {
-            if (!resourseMap.containsKey(url) || time < resourseMap.get(url)) {
-                resourseMap.put(url, time);
+//            if (!resourseMap.containsKey(url) || time < resourseMap.get(url)) {
+//                resourseMap.put(url, time);
+//            }
+
+            if (resourseUrls.contains(url)) {
+
+                for (Resource resource : resourseList) {
+                    if (resource.url.equals(url)) {
+                        if (resource.time > time) {
+                            resource.time = time;
+                        }
+                    }
+                }
+
+            } else {
+                Resource resource = new Resource();
+                resource.url = url;
+                resource.time = time;
+                resourseList.add(resource);
+                resourseUrls.add(url);
             }
+
         }
+
     }
 
 
@@ -557,54 +616,101 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
      */
     private void downLoadResouse(long currentPosition) {
 
-        Set<String> keys = resourseMap.keySet();
+        if (!resourseList.isEmpty()) {
+            for (Resource resource : resourseList) {
+                long time = resource.time;
+                String url = resource.url;
+                if (currentPosition >= time) {
 
-        for (String key : keys) {
-            Long time = resourseMap.get(key);
-            if (currentPosition > time) {
-//                LogUtils.d("downLoadResouse", "下载文件---" + key);
+                    File file = new File(NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(url));
+                    if (!file.exists() && !resource.downloading) {
 
+                        HttpClient.getInstanse().download(url, NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(url), new DownloadCallback() {
+                            @Override
+                            public void onDownloadStart(String url) {
+                                LogUtils.d(TAG, "downLoadResouse  onDownloadStart----url---" + url);
+//                                downloading.add(url);
 
-                File file = new File(NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(key));
-                if (!file.exists() && !downloading.contains(key)) {
-                    HttpClient.getInstanse().download(key, NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(key), new DownloadCallback() {
-                        @Override
-                        public void onDownloadStart(String url) {
-                            LogUtils.d(TAG, "onDownloadStart----url---" + url);
-                            downloading.add(url);
-                        }
+                                resource.downloading = true;
+                            }
 
-                        @Override
-                        public void onDownloadFailed(String url, String error) {
-                            downloading.remove(url);
-                            LogUtils.d(TAG, "onDownloadFailed----url---" + url);
+                            @Override
+                            public void onDownloadFailed(String url, String error) {
+//                                downloading.remove(url);
+                                LogUtils.d(TAG, "downLoadResouse  onDownloadFailed----url---" + url);
+                                resource.downloading = false;
+                            }
 
-                        }
+                            @Override
+                            public void onDownloadSuccess(String url, File file) {
+                                LogUtils.d(TAG, "downLoadResouse  onDownloadSuccess----url---" + url);
+//                                downloading.remove(url);
+//                                downloadFinish.add(url);
 
-                        @Override
-                        public void onDownloadSuccess(String url, File file) {
-                            LogUtils.d(TAG, "onDownloadSuccess----url---" + url);
-                            downloading.remove(url);
+                                resource.downloading = false;
+                            }
 
-                            downloadFinish.add(url);
-                        }
-
-                        @Override
-                        public void onDownloading(String url, int progress) {
+                            @Override
+                            public void onDownloading(String url, int progress) {
 //                            LogUtils.d("downLoadResouse", "onDownloadStart----url---" + url);
-                        }
-                    });
+                            }
+                        });
+
+
+                    }
                 }
             }
         }
 
-        // 删除已经下载好的资源
-        if (downloadFinish != null) {
-            for (String url : downloadFinish) {
-                resourseMap.remove(url);
-            }
-            downloadFinish.clear();
-        }
+
+//        Set<String> keys = resourseMap.keySet();
+//
+//        for (String key : keys) {
+//            Long time = resourseMap.get(key);
+//            if (currentPosition > time) {
+////                LogUtils.d("downLoadResouse", "下载文件---" + key);
+//
+//
+//                File file = new File(NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(key));
+//                if (!file.exists() && !downloading.contains(key)) {
+//                    HttpClient.getInstanse().download(key, NativeViewUtils.getDowmloadFilePath(getContext()), NativeViewUtils.getFileName(key), new DownloadCallback() {
+//                        @Override
+//                        public void onDownloadStart(String url) {
+//                            LogUtils.d(TAG, "onDownloadStart----url---" + url);
+//                            downloading.add(url);
+//                        }
+//
+//                        @Override
+//                        public void onDownloadFailed(String url, String error) {
+//                            downloading.remove(url);
+//                            LogUtils.d(TAG, "onDownloadFailed----url---" + url);
+//
+//                        }
+//
+//                        @Override
+//                        public void onDownloadSuccess(String url, File file) {
+//                            LogUtils.d(TAG, "onDownloadSuccess----url---" + url);
+//                            downloading.remove(url);
+//
+//                            downloadFinish.add(url);
+//                        }
+//
+//                        @Override
+//                        public void onDownloading(String url, int progress) {
+////                            LogUtils.d("downLoadResouse", "onDownloadStart----url---" + url);
+//                        }
+//                    });
+//                }
+//            }
+//        }
+//
+//        // 删除已经下载好的资源
+//        if (downloadFinish != null) {
+//            for (String url : downloadFinish) {
+//                resourseMap.remove(url);
+//            }
+//            downloadFinish.clear();
+//        }
 
     }
 
@@ -703,7 +809,34 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
             }
         }
+
+
+        if (componentManager != null) {
+            boolean load = componentManager.checkMediaResourceLoad();
+            if (load == assetLoading) {
+                assetLoading = !load;
+                if (assetLoading) {
+                    LogUtils.d("initComponentView", "assetLoading   ---" + assetLoading);
+                    ctrlPlayer(false);
+                    onPlayerStateChanged(PlayerState.STATE_LOADED);
+                    if (handler != null) {
+                        handler.sendEmptyMessageDelayed(MSG_ASSET_DOWN_FAIL, downloadAssetTimeOut);
+                    }
+
+                } else {
+                    ctrlPlayer(true);
+                    LogUtils.d("initComponentView", "assetLoading   ---" + assetLoading);
+                    if (handler != null) {
+                        handler.removeMessages(MSG_ASSET_DOWN_FAIL);
+                    }
+                }
+            }
+        }
+
+
     }
+
+    private boolean assetLoading;
 
     /**
      * 事件信息回调
@@ -719,6 +852,12 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
     @Override
     public void onComponentSeek(long position) {
+
+        assetLoading = false;
+        if (handler != null) {
+            handler.removeMessages(MSG_ASSET_DOWN_FAIL);
+        }
+
         if (listener != null) {
             listener.seekToTime(position);
         }
@@ -806,10 +945,11 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     public void onDestroy() {
         LogUtils.d(TAG, "onDestroy");
 
-//        if (handler != null) {
-//            handler.removeCallbacks(mTicker);
-//            handler=null;
-//        }
+        if (handler != null) {
+            handler.removeCallbacks(mTicker);
+            handler.removeMessages(MSG_ASSET_DOWN_FAIL);
+            handler = null;
+        }
 //
 //        SoundManager.getInstance().release();
 

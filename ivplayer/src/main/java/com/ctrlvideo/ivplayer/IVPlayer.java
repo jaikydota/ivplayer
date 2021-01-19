@@ -333,6 +333,11 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
                 pListener.onProgressCallback(seekList);
             }
         }
+
+        @Override
+        public void onMediaResourceDownloadFail() {
+            LogUtils.d(TAG, "onMediaResourceDownloadFail---");
+        }
     }
 
 

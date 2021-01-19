@@ -171,6 +171,11 @@ public class BaseComponent extends FrameLayout {
     }
 
 
+    public boolean isLoadFinish() {
+        return loadFinish;
+    }
+
+
     public VideoProtocolInfo.EventOption getOption(String option_id) {
 
         if (eventComponent != null) {
@@ -193,6 +198,7 @@ public class BaseComponent extends FrameLayout {
         if (options == null || options.isEmpty())
             return;
 
+        boolean allFinish = true;
 
         for (int i = 0; i < options.size(); i++) {
 
@@ -224,6 +230,12 @@ public class BaseComponent extends FrameLayout {
                 alphaAnimation1.setRepeatMode(Animation.RESTART);
                 optionView.setAnimation(alphaAnimation1);
                 alphaAnimation1.start();
+            }
+
+
+            boolean isLoadFinish = optionView.isLoadFinish();
+            if (!isLoadFinish) {
+                allFinish = false;
             }
 
             int finalI = i;
@@ -279,6 +291,8 @@ public class BaseComponent extends FrameLayout {
             containerParmas.topMargin = (int) option.getTop();
             addView(optionView, containerParmas);
         }
+
+        loadFinish = allFinish;
 
 
     }
@@ -366,36 +380,38 @@ public class BaseComponent extends FrameLayout {
         }
     };
 
-    protected void handleMsg(Message msg){
-        String optionId = (String) msg.obj;
+    protected void handleMsg(Message msg) {
+
+            String optionId = (String) msg.obj;
 
 
-        View view = findViewWithTag(optionId);
-        if (view != null) {
-            view.setVisibility(View.GONE);
-        }
-
-
-        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
-        if (options == null || options.isEmpty())
-            return;
-
-
-        boolean allGone = true;
-
-        for (VideoProtocolInfo.EventOption option : options) {
-            View optionView = findViewWithTag(option.option_id);
-            if (optionView != null && optionView.getVisibility() == View.VISIBLE) {
-                allGone = false;
+            View view = findViewWithTag(optionId);
+            if (view != null) {
+                view.setVisibility(View.GONE);
             }
 
-        }
 
-        if (allGone && showResultListener != null) {
-            showResultListener.onShowResultFinish(eventComponent.event_id);
-        }
+            List<VideoProtocolInfo.EventOption> options = eventComponent.options;
+            if (options == null || options.isEmpty())
+                return;
+
+
+            boolean allGone = true;
+
+            for (VideoProtocolInfo.EventOption option : options) {
+                View optionView = findViewWithTag(option.option_id);
+                if (optionView != null && optionView.getVisibility() == View.VISIBLE) {
+                    allGone = false;
+                }
+
+            }
+
+            if (allGone && showResultListener != null) {
+                showResultListener.onShowResultFinish(eventComponent.event_id);
+            }
+
+
     }
-
 
 
     protected void onOptionTrigger(int optionIndex) {
@@ -422,6 +438,8 @@ public class BaseComponent extends FrameLayout {
         this.showResultListener = listener;
     }
 
+
+
     public interface OnComponentOptionListener {
         void onOptionSelected(int optionIndex, VideoProtocolInfo.EventComponent eventComponent);
 
@@ -430,5 +448,6 @@ public class BaseComponent extends FrameLayout {
         void onOptionRepeatClick(VideoProtocolInfo.EventComponent eventComponent);
 
         void onOptionLongPress(VideoProtocolInfo.EventComponent eventComponent);
+
     }
 }

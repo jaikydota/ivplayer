@@ -101,4 +101,10 @@ public interface IVViewListener {
      * @param result 进度列表json字符串数据
      */
     void onProgressCallback(String result);
+
+
+    /**
+     * 媒体资源下载失败
+     */
+    void onMediaResourceDownloadFail();
 }

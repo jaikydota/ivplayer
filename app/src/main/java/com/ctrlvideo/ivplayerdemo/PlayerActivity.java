@@ -151,6 +151,10 @@ public class PlayerActivity extends FragmentActivity {
                 Log.d(TAG, "seekList--" + seekList);
             }
 
+            @Override
+            public void onMediaResourceDownloadFail() {
+                Log.d(TAG, "onProgressCallback--" );
+            }
         }, this);
     }
 

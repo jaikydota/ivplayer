@@ -1,10 +1,13 @@
 package com.ctrlvideo.nativeivview.model;
 
+import android.content.Context;
+
 import com.ctrlvideo.nativeivview.utils.NativeViewUtils;
 import com.ctrlvideo.nativeivview.widget.OptionView;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -81,7 +84,28 @@ public class VideoProtocolInfo {
         //事件范围内
         public boolean eventIsActive;
 
+        public boolean isMediaAssetsDownload(Context context) {
 
+            boolean downloadFinish = true;
+
+            if (options != null && !options.isEmpty()) {
+                for (EventOption eventOption : options) {
+                    EventOptionCustom eventOptionCustom = eventOption.custom;
+                    if (eventOptionCustom != null) {
+                        EventOptionStatus optionStatus = eventOptionCustom.click_default;
+                        if (optionStatus != null) {
+
+                            String url = optionStatus.image_url;
+                            if (!NativeViewUtils.isNullOrEmptyString(url) && !new File(NativeViewUtils.getDowmloadFilePath(context), NativeViewUtils.getFileName(url)).exists()) {
+                                downloadFinish = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return downloadFinish;
+        }
     }
 
     /**

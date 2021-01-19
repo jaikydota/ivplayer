@@ -90,9 +90,13 @@ public class ComponentManager implements BaseComponent.OnComponentOptionListener
      * @param eventComponent
      */
     public void eventScopeOut(VideoProtocolInfo.EventComponent eventComponent) {
-        View componentView = rootView.findViewWithTag(eventComponent.event_id);
-        if (componentView != null) {
-            rootView.removeView(componentView);
+        View view = rootView.findViewWithTag(eventComponent.event_id);
+        if (view != null) {
+//            if (view instanceof BaseComponent) {
+//                BaseComponent baseComponent = (BaseComponent) view;
+//                baseComponent.releaseResourceLoadFailTime();
+//            }
+            rootView.removeView(view);
         }
     }
 
@@ -244,15 +248,74 @@ public class ComponentManager implements BaseComponent.OnComponentOptionListener
             if (component != null) {
                 component.setTag(eventComponent.event_id);
                 component.initParmas(rootView.getMeasuredWidth(), rootView.getMeasuredHeight(), videoWidth, videoHeight);
-                component.initComponent(OptionView.STATUS_DEFAULT, eventComponent);
                 component.setOnComponentOptionListener(this);
+                component.initComponent(OptionView.STATUS_DEFAULT, eventComponent);
                 rootView.addView(component, new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+
+//                if (!component.isLoadFinish()) {
+//                    Log.d("initComponentView", "第一次加载 资源未加载---" + eventComponent.event_id);
+//                    if (!assetLoading) {
+//                        assetLoading = true;
+//                    }
+//                } else {
+//                    Log.d("initComponentView", "第一次加载 资源已经加载---" + eventComponent.event_id);
+//                    assetLoading = false;
+//                }
             }
 
         } else {
+
+
+//            if (assetLoading) {
+//                Log.d("initComponentView", "资源未加载 再一次加载--- " + eventComponent.event_id);
             component.checkLoadFinish();
+//                if (component.isLoadFinish()) {
+//
+//                    Log.d("initComponentView", "资源加载完成---" + eventComponent.event_id);
+//                    assetLoading = false;
+//                }
+//            }
+
+//            if (!component.isLoadFinish()) {
+//                Log.d("initComponentView", "不是第一次加载 资源未加载");
+//            } else {
+//                Log.d("initComponentView", "不是第一次加载 资源已经加载");
+//            }
+
+
         }
+
+//        boolean load = checkMediaResourceLoad();
+//        if (load == assetLoading) {
+//            assetLoading = !load;
+//            if (assetLoading) {
+//                LogUtils.d("initComponentView", "正在加载中---" + eventComponent.event_id);
+//            } else {
+//                LogUtils.d("initComponentView", "资源加载完成---" + eventComponent.event_id);
+//            }
+//
+//        }
     }
+
+    public boolean checkMediaResourceLoad() {
+
+        boolean load = true;
+
+        int count = rootView.getChildCount();
+        for (int index = 0; index < count; index++) {
+            View view = rootView.getChildAt(index);
+            if (view instanceof BaseComponent) {
+                BaseComponent baseComponent = (BaseComponent) view;
+                if (!baseComponent.isLoadFinish()) {
+                    load = false;
+                    break;
+                }
+            }
+        }
+        return load;
+    }
+
+    private boolean assetLoading;
 
     /**
      * 事件结束点
@@ -720,6 +783,7 @@ public class ComponentManager implements BaseComponent.OnComponentOptionListener
     public void onOptionLongPress(VideoProtocolInfo.EventComponent eventComponent) {
         setLongPressComponentResult(eventComponent, true);
     }
+
 
     @Override
     public void onShowResultFinish(String enent_id) {
