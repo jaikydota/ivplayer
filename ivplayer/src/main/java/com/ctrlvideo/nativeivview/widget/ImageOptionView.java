@@ -1,6 +1,5 @@
 package com.ctrlvideo.nativeivview.widget;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -253,9 +252,11 @@ public class ImageOptionView extends RelativeLayout {
 
 
                         } else {
-                            Bitmap backgroundBitmap = BitmapFactory.decodeFile(path);
-                            imageView.setImageBitmap(backgroundBitmap);
-//                            imageView.setImageBitmap(decodeBitmap(path,getContext()));
+//                            Bitmap backgroundBitmap = BitmapFactory.decodeFile(path);
+//                            imageView.setImageBitmap(backgroundBitmap);
+                            imageView.setImageBitmap(decodeBitmap(path, option));
+
+//                       
                         }
 
                     }
@@ -267,19 +268,8 @@ public class ImageOptionView extends RelativeLayout {
 
     }
 
-    private int getScreenHeight(Activity context) {
 
-        return context.getWindowManager().getDefaultDisplay().getHeight(); // 屏幕高
-    }
-
-    private int getScreenWidth(Activity context) {
-
-        return context.getWindowManager().getDefaultDisplay().getWidth(); // 屏幕宽（像素，如：480px）
-
-    }
-
-
-    private Bitmap decodeBitmap(String localPath, Context context) {
+    private Bitmap decodeBitmap(String localPath, VideoProtocolInfo.EventOption option) {
         BitmapFactory.Options opts = new BitmapFactory.Options();
         // 置为true,仅仅返回图片的分辨率
         opts.inJustDecodeBounds = true;
@@ -288,8 +278,8 @@ public class ImageOptionView extends RelativeLayout {
         int srcHeight = opts.outHeight;
         int srcWidth = opts.outWidth;
         // 得到设备的分辨率
-        int screenHeight = getScreenHeight((Activity) context);
-        int screenWidth = getScreenWidth((Activity) context);
+        int screenHeight = (int) option.getHeight();
+        int screenWidth = (int) option.getWidth();
         // 通过比较得到合适的比例值;
         // 屏幕的 宽320 高 480 ,图片的宽3000 ,高是2262  3000/320=9  2262/480=5,,使用大的比例值
         int scale = 1;
