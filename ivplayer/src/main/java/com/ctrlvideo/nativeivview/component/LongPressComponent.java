@@ -35,7 +35,7 @@ public class LongPressComponent extends BaseComponent {
 
 //        this.optionIndex = optionIndex;
         if (handler != null) {
-            handler.sendEmptyMessageDelayed(1, eventComponent.longpress_time * 1000);
+            handler.sendEmptyMessageDelayed(MSG_LONG_PRESS, eventComponent.longpress_time * 1000);
         }
     }
 
@@ -43,7 +43,7 @@ public class LongPressComponent extends BaseComponent {
     protected void onOptionTriggerAfter(int optionIndex) {
         super.onOptionTriggerAfter(optionIndex);
         if (handler != null) {
-            handler.removeMessages(1);
+            handler.removeMessages(MSG_LONG_PRESS);
         }
     }
 
@@ -51,7 +51,7 @@ public class LongPressComponent extends BaseComponent {
     protected void onOptionTriggerCancel(int optionIndex) {
         super.onOptionTriggerCancel(optionIndex);
         if (handler != null) {
-            handler.removeMessages(1);
+            handler.removeMessages(MSG_LONG_PRESS);
         }
     }
 
@@ -62,7 +62,7 @@ public class LongPressComponent extends BaseComponent {
 
     @Override
     protected void handleMsg(Message msg) {
-        if (msg.what == 1) {
+        if (msg.what == MSG_LONG_PRESS) {
 
 
             if (listener != null) {

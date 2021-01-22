@@ -256,7 +256,7 @@ public class ImageOptionView extends RelativeLayout {
 //                            imageView.setImageBitmap(backgroundBitmap);
                             imageView.setImageBitmap(decodeBitmap(path, option));
 
-//                       
+//
                         }
 
                     }

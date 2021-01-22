@@ -54,6 +54,7 @@ public class ExoplayerActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
 
+        player.onResume();
 
         if (isLifeToPause) {
             isLifeToPause = false;
@@ -67,6 +68,8 @@ public class ExoplayerActivity extends FragmentActivity {
     protected void onPause() {
         super.onPause();
 
+        player.onPause();
+
         if (player.isPlaying()) {
             //暂停视频
             player.pause();
@@ -77,6 +80,9 @@ public class ExoplayerActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        player.onDestroy();
+
         if (player!=null) {
             player.release();
         }

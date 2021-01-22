@@ -46,6 +46,8 @@ public class DemoListActivity extends FragmentActivity {
         Intent intent= new Intent(this, ExoplayerActivity.class);
         intent.putExtra("pid", "5166003853478754");
 //        intent.putExtra("pid", "5139070546388488");
+
+//        Intent intent= new Intent(this, HandlerTestActivity.class);
         startActivity(intent);
     }
 

@@ -793,6 +793,32 @@ public class ComponentManager implements BaseComponent.OnComponentOptionListener
         }
     }
 
+    public void resume() {
+
+        int count = rootView.getChildCount();
+        for (int index = 0; index < count; index++) {
+            View view = rootView.getChildAt(index);
+            if (view instanceof BaseComponent) {
+                BaseComponent baseComponent = (BaseComponent) view;
+                baseComponent.resume();
+            }
+        }
+
+
+
+    }
+
+    public void pause() {
+        int count = rootView.getChildCount();
+        for (int index = 0; index < count; index++) {
+            View view = rootView.getChildAt(index);
+            if (view instanceof BaseComponent) {
+                BaseComponent baseComponent = (BaseComponent) view;
+                baseComponent.pause();
+            }
+        }
+    }
+
     //    public void release() {
 //        rootView.removeAllViews();
 //    }

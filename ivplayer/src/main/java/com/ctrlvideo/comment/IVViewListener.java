@@ -35,6 +35,11 @@ public interface IVViewListener {
      */
     void ctrlPlayer(String state);
 
+    /**
+     * 视频倍率
+     *
+     * @param ratio
+     */
     void setVideoRatio(float ratio);
 
 //    /**

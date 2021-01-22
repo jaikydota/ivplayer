@@ -32,9 +32,35 @@ public class SoundManager {
 
         AudioPlayer audioPlayer = new AudioPlayer();
         audioPlayer.play(url, loop);
+        audioPlayer.setOnAudioPlayCompleteListener(new AudioPlayer.OnAudioPlayCompleteListener() {
+            @Override
+            public void AudioPlayComplete() {
+                playerList.remove(audioPlayer);
+            }
+        });
 
         playerList.add(audioPlayer);
 
+    }
+
+    public void pause() {
+        if (playerList != null) {
+
+            for (AudioPlayer player : playerList) {
+                player.pause();
+            }
+
+        }
+    }
+
+    public void resume() {
+        if (playerList != null) {
+
+            for (AudioPlayer player : playerList) {
+                player.resume();
+            }
+
+        }
     }
 
     public void release() {

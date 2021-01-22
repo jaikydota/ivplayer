@@ -117,6 +117,18 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
     private String playerStatus;
 
+    public void onResume() {
+        ivView.onResume();
+    }
+
+    public void onPause() {
+        ivView.onPause();
+    }
+
+    public void onDestroy() {
+        ivView.onDestroy();
+    }
+
 
     //播放器状态改变listener
     private class ComponentListener implements Player.EventListener {

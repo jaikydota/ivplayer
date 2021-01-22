@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.AttributeSet;
@@ -19,10 +17,6 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.OnLifecycleEvent;
 
 import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
@@ -41,6 +35,7 @@ import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
 import com.ctrlvideo.nativeivview.net.HttpClient;
 import com.ctrlvideo.nativeivview.net.callback.DownloadCallback;
 import com.ctrlvideo.nativeivview.net.callback.GetIVideoInfoCallback;
+import com.ctrlvideo.nativeivview.utils.HandlerHelper;
 import com.ctrlvideo.nativeivview.utils.LogUtils;
 import com.ctrlvideo.nativeivview.utils.NativeViewUtils;
 import com.ctrlvideo.nativeivview.widget.ControllerView;
@@ -51,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class NativeIVView extends RelativeLayout implements LifecycleObserver, IView, IComponentListener {
+public class NativeIVView extends RelativeLayout implements IView, IComponentListener {
 
     private String TAG = "NativeIVView";
 
@@ -68,7 +63,7 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     private IVViewListener listener;
     private int MSG_ASSET_DOWN_FAIL = 123;
 
-    private Handler handler = new Handler(Looper.getMainLooper()) {
+    private HandlerHelper handler = new HandlerHelper() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -229,8 +224,8 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     private void init(IVViewListener ivViewListener, Activity mContext) {
 
         this.listener = ivViewListener;
-        if (mContext instanceof LifecycleOwner)
-            ((LifecycleOwner) mContext).getLifecycle().addObserver(this);
+//        if (mContext instanceof LifecycleOwner)
+//            ((LifecycleOwner) mContext).getLifecycle().addObserver(this);
 
         release();
         initData();
@@ -309,8 +304,6 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
         preloadResouse();
 
         if (handler != null) {
-            handler.removeCallbacks(mTicker);
-            handler.removeMessages(MSG_ASSET_DOWN_FAIL);
             handler.post(mTicker);
         }
     }
@@ -586,11 +579,15 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
 
     }
 
+    long time;
 
     // 轮询器
     private final Runnable mTicker = new Runnable() {
         public void run() {
 
+            long currentTime = System.currentTimeMillis();
+            LogUtils.d("mTicker", "间隔---" + (currentTime - time));
+            time = currentTime;
 
             if (listener != null) {
                 long currentPosition = listener.getPlayerCurrentTime();
@@ -602,7 +599,6 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
                 long next = now + (delay - now % delay);
 
                 if (handler != null) {
-                    handler.removeCallbacks(mTicker);
                     handler.postAtTime(mTicker, next);
                 }
             }
@@ -924,32 +920,59 @@ public class NativeIVView extends RelativeLayout implements LifecycleObserver, I
     }
 
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    //    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    @Override
     public void onResume() {
         //重置后恢复
         LogUtils.d(TAG, "onResume");
-
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    public void onPause() {
-        //重置后恢复
-        LogUtils.d(TAG, "onPause");
-        if (!playBackground) {
-            SoundManager.getInstance().release();
+        if (handler != null) {
+            if (ViewState.STATE_READIED.equals(nowViewStatus)) {
+                handler.post(mTicker);
+            }
+            handler.resume();
         }
+
+        if (componentManager != null) {
+            componentManager.resume();
+        }
+        SoundManager.getInstance().resume();
+
     }
 
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    public void onDestroy() {
-        LogUtils.d(TAG, "onDestroy");
+    //    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    @Override
+    public void onPause() {
 
         if (handler != null) {
             handler.removeCallbacks(mTicker);
-            handler.removeMessages(MSG_ASSET_DOWN_FAIL);
-            handler = null;
+            handler.pause();
         }
+
+        if (componentManager != null) {
+            componentManager.pause();
+        }
+
+        SoundManager.getInstance().pause();
+
+
+//        //重置后恢复
+//        LogUtils.d(TAG, "onPause");
+//        if (!playBackground) {
+//            SoundManager.getInstance().release();
+//        }
+    }
+
+
+    //    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    @Override
+    public void onDestroy() {
+        LogUtils.d(TAG, "onDestroy");
+
+//        if (handler != null) {
+//            handler.removeCallbacks(mTicker);
+//            handler.removeMessages(MSG_ASSET_DOWN_FAIL);
+//            handler = null;
+//        }
 //
 //        SoundManager.getInstance().release();
 

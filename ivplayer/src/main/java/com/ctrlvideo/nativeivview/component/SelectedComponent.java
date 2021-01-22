@@ -99,15 +99,14 @@ public class SelectedComponent extends BaseComponent {
 
 
                 Message message = new Message();
+                message.what = i;
                 message.obj = option.option_id;
                 handler.sendMessageDelayed(message, displayTime * 1000);
 
             }
-
         }
 
-
+        loadFinish = true;
     }
-
 
 }

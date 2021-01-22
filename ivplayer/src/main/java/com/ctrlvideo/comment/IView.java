@@ -41,4 +41,12 @@ public interface IView {
     void setPureMode(boolean isOpen);
 
     void release();
+
+
+    void onResume();
+
+    void onPause();
+
+    void onDestroy();
+
 }

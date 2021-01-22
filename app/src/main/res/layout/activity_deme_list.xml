@@ -17,7 +17,7 @@
         android:gravity="center"
         android:onClick="demo"
         android:text="demo"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <TextView
         android:layout_width="match_parent"

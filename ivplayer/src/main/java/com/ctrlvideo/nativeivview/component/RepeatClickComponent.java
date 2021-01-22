@@ -39,7 +39,7 @@ public class RepeatClickComponent extends BaseComponent {
 
 //                    Log.d(TAG, "click_num=" + eventComponent.click_num);
         if (handler != null) {
-            handler.removeMessages(1);
+            handler.removeMessages(MSG_REPEAT_CLICK);
         }
 
         if (clickCount >= eventComponent.click_num) {
@@ -49,7 +49,7 @@ public class RepeatClickComponent extends BaseComponent {
             }
         } else {
             if (handler != null) {
-                handler.sendEmptyMessageDelayed(1, intervalClickTime);
+                handler.sendEmptyMessageDelayed(MSG_REPEAT_CLICK, intervalClickTime);
             }
         }
 
@@ -70,11 +70,11 @@ public class RepeatClickComponent extends BaseComponent {
 
     @Override
     protected void handleMsg(Message msg) {
-        if (msg.what == 1) {
+        if (msg.what == MSG_REPEAT_CLICK) {
 
             clickCount--;
             if (clickCount > 0) {
-                handler.sendEmptyMessageDelayed(1, intervalClickTime);
+                handler.sendEmptyMessageDelayed(MSG_REPEAT_CLICK, intervalClickTime);
             }
 
 

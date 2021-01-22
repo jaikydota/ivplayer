@@ -38,7 +38,31 @@ public class AudioPlayer implements MediaPlayer.OnCompletionListener {
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+
         release();
+    }
+
+
+    private OnAudioPlayCompleteListener listener;
+
+    public void setOnAudioPlayCompleteListener(OnAudioPlayCompleteListener listener) {
+        this.listener = listener;
+    }
+
+    public void pause() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+        }
+    }
+
+    public void resume() {
+        if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
+            mediaPlayer.start();
+        }
+    }
+
+    public interface OnAudioPlayCompleteListener {
+        void AudioPlayComplete();
     }
 
     public void release() {

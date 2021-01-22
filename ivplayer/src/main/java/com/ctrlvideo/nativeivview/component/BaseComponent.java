@@ -1,10 +1,9 @@
 package com.ctrlvideo.nativeivview.component;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -12,6 +11,7 @@ import android.widget.FrameLayout;
 
 import com.ctrlvideo.nativeivview.audioplayer.SoundManager;
 import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
+import com.ctrlvideo.nativeivview.utils.HandlerHelper;
 import com.ctrlvideo.nativeivview.utils.LogUtils;
 import com.ctrlvideo.nativeivview.utils.NativeViewUtils;
 import com.ctrlvideo.nativeivview.widget.OptionView;
@@ -21,9 +21,13 @@ import java.util.List;
 
 public class BaseComponent extends FrameLayout {
 
+
+    protected int MSG_LONG_PRESS = 10000;
+    protected int MSG_REPEAT_CLICK = 10001;
+
     protected VideoProtocolInfo.EventComponent eventComponent;
 
-    private boolean loadFinish;
+    protected boolean loadFinish;
 
     private float videoWidthPixel;
     private float videoHeightPixel;
@@ -360,55 +364,59 @@ public class BaseComponent extends FrameLayout {
 
 
                 Message message = new Message();
+                message.what = i;
                 message.obj = option.option_id;
                 handler.sendMessageDelayed(message, displayTime * 1000);
 
             }
 
         }
+        loadFinish = true;
 
 
     }
 
 
-    Handler handler = new Handler(Looper.getMainLooper()) {
+    HandlerHelper handler = new HandlerHelper() {
 
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+
+            Log.d("handleMsg", "-----" + msg.what);
             handleMsg(msg);
         }
     };
 
     protected void handleMsg(Message msg) {
 
-            String optionId = (String) msg.obj;
+        String optionId = (String) msg.obj;
 
 
-            View view = findViewWithTag(optionId);
-            if (view != null) {
-                view.setVisibility(View.GONE);
+        View view = findViewWithTag(optionId);
+        if (view != null) {
+            view.setVisibility(View.GONE);
+        }
+
+
+        List<VideoProtocolInfo.EventOption> options = eventComponent.options;
+        if (options == null || options.isEmpty())
+            return;
+
+
+        boolean allGone = true;
+
+        for (VideoProtocolInfo.EventOption option : options) {
+            View optionView = findViewWithTag(option.option_id);
+            if (optionView != null && optionView.getVisibility() == View.VISIBLE) {
+                allGone = false;
             }
 
+        }
 
-            List<VideoProtocolInfo.EventOption> options = eventComponent.options;
-            if (options == null || options.isEmpty())
-                return;
-
-
-            boolean allGone = true;
-
-            for (VideoProtocolInfo.EventOption option : options) {
-                View optionView = findViewWithTag(option.option_id);
-                if (optionView != null && optionView.getVisibility() == View.VISIBLE) {
-                    allGone = false;
-                }
-
-            }
-
-            if (allGone && showResultListener != null) {
-                showResultListener.onShowResultFinish(eventComponent.event_id);
-            }
+        if (allGone && showResultListener != null) {
+            showResultListener.onShowResultFinish(eventComponent.event_id);
+        }
 
 
     }
@@ -438,7 +446,17 @@ public class BaseComponent extends FrameLayout {
         this.showResultListener = listener;
     }
 
+    public void resume() {
+        if (handler != null) {
+            handler.resume();
+        }
+    }
 
+    public void pause() {
+        if (handler != null) {
+            handler.pause();
+        }
+    }
 
     public interface OnComponentOptionListener {
         void onOptionSelected(int optionIndex, VideoProtocolInfo.EventComponent eventComponent);
