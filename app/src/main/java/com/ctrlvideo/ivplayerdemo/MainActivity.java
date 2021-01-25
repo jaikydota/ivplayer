@@ -16,6 +16,14 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         pid = getIntent().getStringExtra("pid");
+
+
+//        List<String> urls = new ArrayList<>();
+//        urls.add("https://apiive.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5166003853478754");
+//        urls.add("https://apiive.ctrlvideo.com/player/ajax/get_ivideo_info/?project_id=5166459489024370");
+//        NativeIVSDK.getInstance(this).preloadMediaResource(urls);
+
+
     }
 
 //    public void demo(View view) {
