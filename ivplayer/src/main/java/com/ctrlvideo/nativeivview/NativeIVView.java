@@ -15,6 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
@@ -41,9 +44,6 @@ import com.google.gson.Gson;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 
 public class NativeIVView extends RelativeLayout implements IView, IComponentListener {
@@ -207,6 +207,8 @@ public class NativeIVView extends RelativeLayout implements IView, IComponentLis
 
     @Override
     public void release() {
+
+        playerState = null;
 
         if (handler != null) {
             handler.removeCallbacks(mTicker);
@@ -807,7 +809,7 @@ public class NativeIVView extends RelativeLayout implements IView, IComponentLis
         }
 
 
-        if (componentManager != null) {
+        if (componentManager != null && !NativeViewUtils.isNullOrEmptyString(playerState)) {
             boolean load = componentManager.checkMediaResourceLoad();
             if (load == assetLoading) {
                 assetLoading = !load;
