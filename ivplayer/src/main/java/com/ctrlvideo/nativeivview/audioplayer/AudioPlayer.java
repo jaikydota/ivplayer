@@ -39,6 +39,9 @@ public class AudioPlayer implements MediaPlayer.OnCompletionListener {
     @Override
     public void onCompletion(MediaPlayer mp) {
 
+        if (listener != null) {
+            listener.AudioPlayComplete();
+        }
         release();
     }
 
