@@ -6,5 +6,4 @@ package com.ctrlvideo.comment;
 public interface ViewState {
     String STATE_READIED = "onReadied";
     String STATE_LOADING = "onLoading";
-    String STATE_GET_IV_INFO = "onGetIVInfo";
 }

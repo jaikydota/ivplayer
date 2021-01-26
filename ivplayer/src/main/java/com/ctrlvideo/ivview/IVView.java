@@ -461,9 +461,7 @@ public class IVView extends RelativeLayout implements IView {
         Log.d(TAG, "webPageStateChanged " + state + "  " + data);
         nowViewStatus = state;
 
-        //如果是互动点信息下发
-        if (state.equals(ViewState.STATE_GET_IV_INFO))
-            data = data.replaceAll("#douhao#", ",");
+//            data = data.replaceAll("#douhao#", ",");
 
 //        Log.d(TAG, data);
         final String result = data;

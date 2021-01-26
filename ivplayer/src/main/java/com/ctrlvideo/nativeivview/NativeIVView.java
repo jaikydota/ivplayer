@@ -238,7 +238,7 @@ public class NativeIVView extends RelativeLayout implements IView, IComponentLis
     private void initData() {
 
 
-        nowViewStatus = ViewState.STATE_GET_IV_INFO;
+        nowViewStatus = ViewState.STATE_LOADING;
         if (listener != null) {
             listener.onIVViewStateChanged(nowViewStatus, nowViewStatus);
         }

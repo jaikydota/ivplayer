@@ -42,12 +42,12 @@ public interface IVViewListener {
      */
     void setVideoRatio(float ratio);
 
-//    /**
-//     * 当IVView点击时 [如点击IvView中控件将阻止向上冒泡，不会调用此方法]
-//     *
-//     * @param info 点击信息
-//     */
-//    void onIVViewClick(String info);
+    /**
+     * 当IVView点击时 [如点击IvView中控件将阻止向上冒泡，不会调用此方法]
+     *
+     * @param info 点击信息
+     */
+    void onIVViewClick(String info);
 
 
 //    /**
