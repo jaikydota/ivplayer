@@ -5,7 +5,7 @@ package com.ctrlvideo.ivplayer;
  */
 public interface PlayerState {
     String STATE_READY = "ready";//视频初始化完成
-    String STATE_LOADED = "loaded";//视频正在加载中
+    String STATE_LOADING = "loading";//视频正在缓冲中
     String STATE_ONPAUSE = "onpause";//视频暂停
     String STATE_ONPLAY = "onplay";//视频播放
     String STATE_END = "end";//视频播放结束

@@ -15,9 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
@@ -44,6 +41,9 @@ import com.google.gson.Gson;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 
 public class NativeIVView extends RelativeLayout implements IView, IComponentListener {
@@ -181,7 +181,7 @@ public class NativeIVView extends RelativeLayout implements IView, IComponentLis
             if (mControllerView != null) {
                 if (assetLoading) {
                     Log.d("initComponentView", "onPlayerStateChanged----status=" + status);
-                    if (PlayerState.STATE_LOADED.equals(status)) {
+                    if (PlayerState.STATE_LOADING.equals(status)) {
                         mControllerView.setVideoPlayerStatus(status);
                     }
                 } else {
@@ -814,7 +814,7 @@ public class NativeIVView extends RelativeLayout implements IView, IComponentLis
                 if (assetLoading) {
                     LogUtils.d("initComponentView", "assetLoading   ---" + assetLoading);
                     ctrlPlayer(false);
-                    onPlayerStateChanged(PlayerState.STATE_LOADED);
+                    onPlayerStateChanged(PlayerState.STATE_LOADING);
                     if (handler != null) {
                         handler.sendEmptyMessageDelayed(MSG_ASSET_DOWN_FAIL, downloadAssetTimeOut);
                     }

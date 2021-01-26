@@ -14,16 +14,16 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.ctrlvideo.ivplayer.PlayerState;
 import com.ctrlvideo.ivplayer.R;
 import com.ctrlvideo.nativeivview.model.VideoProtocolInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import static androidx.recyclerview.widget.RecyclerView.Adapter;
 import static androidx.recyclerview.widget.RecyclerView.ViewHolder;
@@ -268,7 +268,7 @@ public class ControllerView extends RelativeLayout {
             mIvStartOrPause.setImageResource(R.drawable.ic_play_icon);
 
 
-        } else if (PlayerState.STATE_LOADED.equals(status)) {
+        } else if (PlayerState.STATE_LOADING.equals(status)) {
 
             mIvStart.setVisibility(View.GONE);
             mIvLoading.setVisibility(View.VISIBLE);

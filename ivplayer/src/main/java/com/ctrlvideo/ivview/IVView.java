@@ -20,24 +20,20 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.OnLifecycleEvent;
-
 import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
 import com.ctrlvideo.ivplayer.R;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 
 /**
  * Author by Jaiky, Date on 2020/4/8.
  */
 @SuppressLint("NewApi")
-public class IVView extends RelativeLayout implements LifecycleObserver, IView {
+public class IVView extends RelativeLayout implements IView {
 
     protected String TAG = "IVSDKView";
 
@@ -121,24 +117,27 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
             enableFeature = false;
     }
 
-    ;
 
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    @Override
     public void onResume() {
         //重置后恢复
         setPureMode(false);
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    @Override
     public void onPause() {
         //暂停后，设置纯净模式
         setPureMode(true);
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    @Override
     public void onDestroy() {
         Log.d(TAG, "IVView onDestroy");
+    }
+
+    @Override
+    public void release() {
+
     }
 
     //是否启用
@@ -166,8 +165,6 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
     private void init(IVViewListener ivViewListener, Activity mContext) {
         nowViewStatus = ViewState.STATE_LOADING;
 
-        //设置测试环境
-//        isTestEnv = openTestEnv;
         lastTime = "0";
         lastEventState = "";
         lastEventTime = 0L;
@@ -178,10 +175,6 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
         this.listener = ivViewListener;
 
         if (enableFeature) {
-            //绑定生命周期
-            if (mContext instanceof LifecycleOwner)
-                ((LifecycleOwner) mContext).getLifecycle().addObserver(this);
-
             initWebView();
         } else {
             //如果小于API 21,通知无法使用
@@ -194,8 +187,6 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
 //        Log.d(TAG, "initIVView: " + pid + " OpenTestEnv: " + openTestEnv);
 //        nowViewStatus = ViewState.STATE_LOADING;
 //
-//        //设置测试环境
-//        isTestEnv = openTestEnv;
 //        lastTime = "0";
 //        lastEventState = "";
 //        lastEventTime = 0L;
@@ -293,6 +284,10 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
     }
 
 
+    /**
+     * 是否纯净模式
+     * @return true 纯净模式， false 非纯净模式
+     */
     public boolean isPureMode() {
         return isPureMode;
     }
@@ -316,10 +311,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
         }
     }
 
-    @Override
-    public void release() {
 
-    }
 
     //使用本地录音模式
     public void useSelfRecord(boolean isOpen) {
@@ -361,7 +353,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
     //调用JS开始暂停播放 status "onplay" 播放，"onpause" 暂停
     @Override
     public void onPlayerStateChanged(String status) {
-        if (enableFeature && nowViewStatus.equals(ViewState.STATE_READIED)) {
+        if (enableFeature) {
             Log.d(TAG, "evalJS OnPlayerStateChanged " + status);
             webView.evaluateJavascript("javascript:onSDKPlayerStateChanged('" + status + "')", null);
         }
@@ -376,7 +368,7 @@ public class IVView extends RelativeLayout implements LifecycleObserver, IView {
 
     //调用语音识别结果
     public void recognResultSend(String result) {
-        if (enableFeature && nowViewStatus.equals(ViewState.STATE_READIED)) {
+        if (enableFeature) {
             Log.d(TAG, "evalJS recognTextSend " + result);
             webView.evaluateJavascript("javascript:recognTextSend('" + result + "')", null);
         }

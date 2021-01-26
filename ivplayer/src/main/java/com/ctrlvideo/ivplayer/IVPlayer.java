@@ -8,9 +8,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LifecycleObserver;
-
 import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.IView;
 import com.ctrlvideo.comment.ViewState;
@@ -24,12 +21,14 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import androidx.annotation.NonNull;
+
 
 /**
  * Author by Jaiky, Date on 2020/4/8.
  */
 @SuppressLint("NewApi")
-public class IVPlayer extends RelativeLayout implements LifecycleObserver {
+public class IVPlayer extends RelativeLayout {
 
     protected String TAG = "IVSDKView";
 
@@ -68,11 +67,9 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         RelativeLayout inflate = (RelativeLayout) LayoutInflater.from(context).inflate(R.layout.view_player, this, true);
         playerView = findViewById(R.id.video_view);
         ivView = findViewById(R.id.ivViewContainer);
-//
 
     }
 
-    ;
 
 
     private void initializePlayer() {
@@ -93,10 +90,6 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
     }
 
     public void release() {
-//        if (player != null) {
-//            player.release();
-//        }
-
         if (player != null) {
             player.release();
             playerView.setPlayer(null);
@@ -110,7 +103,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
         ivView.initIVView(config_url, null, new IVListener(), (Activity) mContext);
     }
 
-    private void loadVidePid(String pid) {
+    private void loadVideoPid(String pid) {
         //ivView初始化，此处传pid
         ivView.initIVViewPid(pid, null, new IVListener(), (Activity) mContext);
     }
@@ -149,7 +142,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
                 case Player.STATE_BUFFERING:
                     LogUtils.d(TAG, "onPlayerStateChanged: playing media---STATE_BUFFERING");
 
-                    playerStatus = PlayerState.STATE_LOADED;
+                    playerStatus = PlayerState.STATE_LOADING;
                     ivView.onPlayerStateChanged(playerStatus);
                     if (pListener != null) {
                         pListener.onStateChanged(playerStatus);
@@ -215,7 +208,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
 
 
                 if (pListener != null) {
-                    pListener.onStateChanged(PlayerState.STATE_LOADED);
+                    pListener.onStateChanged(PlayerState.STATE_LOADING);
                 }
             }
         }
@@ -373,7 +366,7 @@ public class IVPlayer extends RelativeLayout implements LifecycleObserver {
      * @param pid 智令互动编辑器制作的互动视频项目id
      */
     public void loadIVideoPid(@NonNull String pid, @NonNull IVPlayerListener playerListener) {
-        this.loadVidePid(pid);
+        this.loadVideoPid(pid);
         this.pListener = playerListener;
     }
 

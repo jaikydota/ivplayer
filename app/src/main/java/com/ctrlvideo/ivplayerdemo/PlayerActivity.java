@@ -5,13 +5,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.VideoView;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
-
 import com.ctrlvideo.comment.IVViewListener;
 import com.ctrlvideo.comment.ViewState;
 import com.ctrlvideo.ivplayer.PlayerState;
 import com.ctrlvideo.nativeivview.NativeIVView;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
 public class PlayerActivity extends FragmentActivity {
 
@@ -63,7 +63,7 @@ public class PlayerActivity extends FragmentActivity {
             public boolean onInfo(MediaPlayer mp, int what, int extra) {
 
                 if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
-                    ivView.onPlayerStateChanged(PlayerState.STATE_LOADED);
+                    ivView.onPlayerStateChanged(PlayerState.STATE_LOADING);
                 }
 
                 return true;
@@ -78,7 +78,7 @@ public class PlayerActivity extends FragmentActivity {
             public void onIVViewStateChanged(String state, String data) {
 
                 if (ViewState.STATE_READIED.equals(state)) {
-                    ivView.onPlayerStateChanged(PlayerState.STATE_LOADED);
+                    ivView.onPlayerStateChanged(PlayerState.STATE_LOADING);
                     mVideoView.setVideoPath(data);
                 }
 
